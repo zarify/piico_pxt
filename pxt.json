@@ -1,0 +1,43 @@
+{
+    "name": "makecode-piicodev",
+    "version": "0.1.0",
+    "description": "PiicoDev sensor ecosystem support for BBC micro:bit V2",
+    "license": "MIT",
+    "author": "zarify",
+    "dependencies": {
+        "core": "*",
+        "radio": "*"
+    },
+    "files": [
+        "README.md",
+        "main.ts",
+        "picodev-unified.ts",
+        "picodev-bme280.ts",
+        "picodev-vl53l1x.ts",
+        "picodev-veml6040.ts",
+        "picodev-cap1203.ts",
+        "picodev-buzzer.ts",
+        "picodev-rgb.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true,
+    "targetVersions": {
+        "target": "5.0.12",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "blocksprj",
+    "yotta": {
+        "config": {
+            "microbit-dal": {
+                "bluetooth": {
+                    "enabled": 0
+                }
+            }
+        }
+    }
+}

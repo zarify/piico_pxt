@@ -1,0 +1,191 @@
+/**
+ * PiicoDev BME280 Temperature, Humidity, and Pressure Sensor
+ * 
+ * Provides environmental sensing capabilities with compensation algorithms
+ * for accurate temperature, humidity, and atmospheric pressure readings.
+ */
+
+//% weight=95 color=#0078D7 icon="\uf2c9"
+namespace piicodev {
+
+    /**
+     * Oversampling mode for BME280 sensor
+     */
+    export enum Oversampling {
+        //% block="skip (off)"
+        Skip = 0,
+        //% block="×1"
+        X1 = 1,
+        //% block="×2"
+        X2 = 2,
+        //% block="×4"
+        X4 = 3,
+        //% block="×8"
+        X8 = 4,
+        //% block="×16"
+        X16 = 5
+    }
+
+    /**
+     * IIR Filter coefficient for BME280
+     */
+    export enum IIRFilter {
+        //% block="off"
+        Off = 0,
+        //% block="2"
+        Coeff2 = 1,
+        //% block="4"
+        Coeff4 = 2,
+        //% block="8"
+        Coeff8 = 3,
+        //% block="16"
+        Coeff16 = 4
+    }
+
+    /**
+     * BME280 Environment Sensor class
+     */
+    export class BME280 {
+        private addr: number;
+        private tFine: number;
+
+        // Calibration data
+        private T1: number;
+        private T2: number;
+        private T3: number;
+        private P1: number;
+        private P2: number;
+        private P3: number;
+        private P4: number;
+        private P5: number;
+        private P6: number;
+        private P7: number;
+        private P8: number;
+        private P9: number;
+        private H1: number;
+        private H2: number;
+        private H3: number;
+        private H4: number;
+        private H5: number;
+        private H6: number;
+
+        constructor(address: number = 0x77) {
+            this.addr = address;
+            this.tFine = 0;
+
+            // Initialize calibration data with default values
+            this.T1 = 0; this.T2 = 0; this.T3 = 0;
+            this.P1 = 0; this.P2 = 0; this.P3 = 0;
+            this.P4 = 0; this.P5 = 0; this.P6 = 0;
+            this.P7 = 0; this.P8 = 0; this.P9 = 0;
+            this.H1 = 0; this.H2 = 0; this.H3 = 0;
+            this.H4 = 0; this.H5 = 0; this.H6 = 0;
+
+            // TODO: Initialize sensor and read calibration data from device
+            // This will be implemented in Phase 4
+        }
+
+        /**
+         * Read temperature in degrees Celsius
+         */
+        //% blockId=bme280_read_temperature
+        //% block="$this read temperature (°C)"
+        //% weight=100
+        readTemperature(): number {
+            // TODO: Implement temperature reading with compensation
+            return 0;
+        }
+
+        /**
+         * Read humidity as percentage
+         */
+        //% blockId=bme280_read_humidity
+        //% block="$this read humidity (%)"
+        //% weight=99
+        readHumidity(): number {
+            // TODO: Implement humidity reading with compensation
+            return 0;
+        }
+
+        /**
+         * Read atmospheric pressure in hPa (hectopascals)
+         */
+        //% blockId=bme280_read_pressure
+        //% block="$this read pressure (hPa)"
+        //% weight=98
+        readPressure(): number {
+            // TODO: Implement pressure reading with compensation
+            return 0;
+        }
+
+        /**
+         * Calculate altitude in meters based on sea level pressure
+         */
+        //% blockId=bme280_altitude
+        //% block="$this calculate altitude at sea level $seaLevelPressure hPa"
+        //% seaLevelPressure.defl=1013.25
+        //% weight=97
+        altitude(seaLevelPressure: number): number {
+            // TODO: Implement altitude calculation
+            return 0;
+        }
+
+        /**
+         * Set temperature oversampling mode
+         */
+        //% blockId=bme280_set_temp_oversampling
+        //% block="$this set temperature oversampling $mode"
+        //% advanced=true
+        //% weight=50
+        setTemperatureOversampling(mode: Oversampling): void {
+            // TODO: Implement oversampling configuration
+        }
+
+        /**
+         * Set pressure oversampling mode
+         */
+        //% blockId=bme280_set_pressure_oversampling
+        //% block="$this set pressure oversampling $mode"
+        //% advanced=true
+        //% weight=49
+        setPressureOversampling(mode: Oversampling): void {
+            // TODO: Implement oversampling configuration
+        }
+
+        /**
+         * Set humidity oversampling mode
+         */
+        //% blockId=bme280_set_humidity_oversampling
+        //% block="$this set humidity oversampling $mode"
+        //% advanced=true
+        //% weight=48
+        setHumidityOversampling(mode: Oversampling): void {
+            // TODO: Implement oversampling configuration
+        }
+
+        /**
+         * Set IIR filter coefficient
+         */
+        //% blockId=bme280_set_iir_filter
+        //% block="$this set IIR filter $coefficient"
+        //% advanced=true
+        //% weight=47
+        setIIRFilter(coefficient: IIRFilter): void {
+            // TODO: Implement IIR filter configuration
+        }
+    }
+
+    /**
+     * Create a new BME280 sensor instance
+     */
+    //% blockId=create_bme280
+    //% block="create BME280 sensor||at address $address"
+    //% blockSetVariable=bme280
+    //% address.defl=0x77
+    //% weight=95
+    //% expandableArgumentMode="toggle"
+    export function createBME280(address?: number): BME280 {
+        if (address === undefined) address = 0x77;
+        return new BME280(address);
+    }
+}
