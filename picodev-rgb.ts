@@ -32,7 +32,7 @@ namespace piicodev {
     /**
      * PiicoDev RGB LED class
      */
-    export class RGB {
+    class RGB {
         private addr: number;
         private pixels: number[][];
         private brightness: number;
@@ -54,14 +54,14 @@ namespace piicodev {
          * @param blue Blue intensity (0-255)
          */
         //% blockId=rgb_set_pixel_rgb
-        //% block="$this set pixel $pixel to red $red green $green blue $blue"
+        //% block="RGB set pixel $pixel to red $red green $green blue $blue"
         //% pixel.min=0 pixel.max=2 pixel.defl=0
         //% red.min=0 red.max=255 red.defl=255
         //% green.min=0 green.max=255 green.defl=0
         //% blue.min=0 blue.max=255 blue.defl=0
         //% weight=100
         //% inlineInputMode=inline
-        setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
+        public setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
             if (pixel >= 0 && pixel <= 2) {
                 this.pixels[pixel] = [red, green, blue];
             }
@@ -73,10 +73,10 @@ namespace piicodev {
          * @param color Named color
          */
         //% blockId=rgb_set_pixel_color
-        //% block="$this set pixel $pixel to $color"
+        //% block="RGB set pixel $pixel to $color"
         //% pixel.min=0 pixel.max=2 pixel.defl=0
         //% weight=99
-        setPixelColor(pixel: number, color: RGBColor): void {
+        public setPixelColor(pixel: number, color: RGBColor): void {
             let rgb = this.getColorRGB(color);
             this.setPixelRGB(pixel, rgb[0], rgb[1], rgb[2]);
         }
@@ -87,11 +87,11 @@ namespace piicodev {
          * @param position Position on color wheel (0.0-1.0)
          */
         //% blockId=rgb_set_pixel_wheel
-        //% block="$this set pixel $pixel using color wheel $position"
+        //% block="RGB set pixel $pixel using color wheel $position"
         //% pixel.min=0 pixel.max=2 pixel.defl=0
         //% position.min=0 position.max=1 position.defl=0
         //% weight=98
-        setPixelColorWheel(pixel: number, position: number): void {
+        public setPixelColorWheel(pixel: number, position: number): void {
             let rgb = this.wheel(position, 1, 1);
             this.setPixelRGB(pixel, rgb[0], rgb[1], rgb[2]);
         }
@@ -103,13 +103,13 @@ namespace piicodev {
          * @param blue Blue intensity (0-255)
          */
         //% blockId=rgb_set_all_rgb
-        //% block="$this set all pixels to red $red green $green blue $blue"
+        //% block="RGB set all pixels to red $red green $green blue $blue"
         //% red.min=0 red.max=255 red.defl=255
         //% green.min=0 green.max=255 green.defl=0
         //% blue.min=0 blue.max=255 blue.defl=0
         //% weight=97
         //% inlineInputMode=inline
-        setAllRGB(red: number, green: number, blue: number): void {
+        public setAllRGB(red: number, green: number, blue: number): void {
             for (let i = 0; i < 3; i++) {
                 this.pixels[i] = [red, green, blue];
             }
@@ -120,9 +120,9 @@ namespace piicodev {
          * @param color Named color
          */
         //% blockId=rgb_set_all_color
-        //% block="$this set all pixels to $color"
+        //% block="RGB set all pixels to $color"
         //% weight=96
-        setAllColor(color: RGBColor): void {
+        public setAllColor(color: RGBColor): void {
             let rgb = this.getColorRGB(color);
             this.setAllRGB(rgb[0], rgb[1], rgb[2]);
         }
@@ -131,9 +131,9 @@ namespace piicodev {
          * Update the LEDs with the current pixel values
          */
         //% blockId=rgb_show
-        //% block="$this show"
+        //% block="RGB show"
         //% weight=95
-        show(): void {
+        public show(): void {
             // TODO: Implement I2C write to update LEDs
         }
 
@@ -141,9 +141,9 @@ namespace piicodev {
          * Clear all LEDs (turn off)
          */
         //% blockId=rgb_clear
-        //% block="$this clear all"
+        //% block="RGB clear all"
         //% weight=94
-        clear(): void {
+        public clear(): void {
             this.setAllRGB(0, 0, 0);
             this.show();
         }
@@ -153,10 +153,10 @@ namespace piicodev {
          * @param level Brightness (0-255)
          */
         //% blockId=rgb_set_brightness
-        //% block="$this set brightness $level"
+        //% block="RGB set brightness $level"
         //% level.min=0 level.max=255 level.defl=50
         //% weight=93
-        setBrightness(level: number): void {
+        public setBrightness(level: number): void {
             this.brightness = Math.max(0, Math.min(255, level));
             // TODO: Send brightness to device
         }
@@ -165,12 +165,12 @@ namespace piicodev {
          * Control the power LED on the RGB module
          */
         //% blockId=rgb_power_led
-        //% block="$this set power LED $on"
+        //% block="RGB set power LED $on"
         //% on.shadow="toggleOnOff"
         //% on.defl=true
         //% advanced=true
         //% weight=50
-        setPowerLED(on: boolean): void {
+        public setPowerLED(on: boolean): void {
             // TODO: Implement LED control
         }
 
@@ -178,11 +178,11 @@ namespace piicodev {
          * Change the I2C address (for using multiple RGB modules)
          */
         //% blockId=rgb_change_address
-        //% block="$this change address to $newAddress"
+        //% block="RGB change address to $newAddress"
         //% advanced=true
         //% weight=49
         //% newAddress.defl=0x08
-        changeAddress(newAddress: number): void {
+        public changeAddress(newAddress: number): void {
             // TODO: Implement address change
             this.addr = newAddress;
         }
@@ -234,6 +234,125 @@ namespace piicodev {
         }
     }
 
+    // Wrapper functions to call methods on the internal RGB instance
+    /**
+     * Set a pixel to specific RGB values
+     */
+    //% blockId=rgb_set_pixel_rgb
+    //% block="RGB set pixel $pixel to red $red green $green blue $blue"
+    //% pixel.min=0 pixel.max=2 pixel.defl=0
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=0
+    //% blue.min=0 blue.max=255 blue.defl=0
+    //% weight=100
+    //% inlineInputMode=inline
+    export function setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
+        if (_rgb) _rgb.setPixelRGB(pixel, red, green, blue);
+    }
+
+    /**
+     * Set a pixel to a named color
+     */
+    //% blockId=rgb_set_pixel_color
+    //% block="RGB set pixel $pixel to $color"
+    //% pixel.min=0 pixel.max=2 pixel.defl=0
+    //% weight=99
+    export function setPixelColor(pixel: number, color: RGBColor): void {
+        if (_rgb) _rgb.setPixelColor(pixel, color);
+    }
+
+    /**
+     * Set a pixel using color wheel position (0.0-1.0)
+     */
+    //% blockId=rgb_set_pixel_wheel
+    //% block="RGB set pixel $pixel using color wheel $position"
+    //% pixel.min=0 pixel.max=2 pixel.defl=0
+    //% position.min=0 position.max=1 position.defl=0
+    //% weight=98
+    export function setPixelColorWheel(pixel: number, position: number): void {
+        if (_rgb) _rgb.setPixelColorWheel(pixel, position);
+    }
+
+    /**
+     * Set all pixels to the same RGB values
+     */
+    //% blockId=rgb_set_all_rgb
+    //% block="RGB set all pixels to red $red green $green blue $blue"
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=0
+    //% blue.min=0 blue.max=255 blue.defl=0
+    //% weight=97
+    //% inlineInputMode=inline
+    export function setAllRGB(red: number, green: number, blue: number): void {
+        if (_rgb) _rgb.setAllRGB(red, green, blue);
+    }
+
+    /**
+     * Set all pixels to a named color
+     */
+    //% blockId=rgb_set_all_color
+    //% block="RGB set all pixels to $color"
+    //% weight=96
+    export function setAllColor(color: RGBColor): void {
+        if (_rgb) _rgb.setAllColor(color);
+    }
+
+    /**
+     * Update the LEDs with the current pixel values
+     */
+    //% blockId=rgb_show
+    //% block="RGB show"
+    //% weight=95
+    export function rgbShow(): void {
+        if (_rgb) _rgb.show();
+    }
+
+    /**
+     * Clear all LEDs (turn off)
+     */
+    //% blockId=rgb_clear
+    //% block="RGB clear all"
+    //% weight=94
+    export function rgbClear(): void {
+        if (_rgb) _rgb.clear();
+    }
+
+    /**
+     * Set brightness level
+     */
+    //% blockId=rgb_set_brightness
+    //% block="RGB set brightness $level"
+    //% level.min=0 level.max=255 level.defl=50
+    //% weight=93
+    export function setBrightness(level: number): void {
+        if (_rgb) _rgb.setBrightness(level);
+    }
+
+    /**
+     * Control the power LED on the RGB module
+     */
+    //% blockId=rgb_power_led
+    //% block="RGB set power LED $on"
+    //% on.shadow="toggleOnOff"
+    //% on.defl=true
+    //% advanced=true
+    //% weight=50
+    export function setPowerLED(on: boolean): void {
+        if (_rgb) _rgb.setPowerLED(on);
+    }
+
+    /**
+     * Change the I2C address (for using multiple RGB modules)
+     */
+    //% blockId=rgb_change_address
+    //% block="RGB change address to $newAddress"
+    //% advanced=true
+    //% weight=49
+    //% newAddress.defl=0x08
+    export function changeRGBAddress(newAddress: number): void {
+        if (_rgb) _rgb.changeAddress(newAddress);
+    }
+
     /**
      * Create a new PiicoDev RGB LED instance
      */
@@ -243,8 +362,11 @@ namespace piicodev {
     //% address.defl=0x08
     //% weight=70
     //% expandableArgumentMode="toggle"
-    export function createRGB(address?: number): RGB {
+    export function createRGB(address?: number): void {
         if (address === undefined) address = 0x08;
-        return new RGB(address);
+        _rgb = new RGB(address);
     }
+
+    // Internal singleton instance
+    let _rgb: RGB;
 }

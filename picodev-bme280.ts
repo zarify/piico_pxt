@@ -45,7 +45,7 @@ namespace piicodev {
     /**
      * BME280 Environment Sensor class
      */
-    export class BME280 {
+    class BME280 {
         private addr: number;
         private tFine: number;
 
@@ -89,9 +89,9 @@ namespace piicodev {
          * Read temperature in degrees Celsius
          */
         //% blockId=bme280_read_temperature
-        //% block="$this read temperature (°C)"
+        //% block="BME280 read temperature (°C)"
         //% weight=100
-        readTemperature(): number {
+        public readTemperature(): number {
             // TODO: Implement temperature reading with compensation
             return 0;
         }
@@ -100,9 +100,9 @@ namespace piicodev {
          * Read humidity as percentage
          */
         //% blockId=bme280_read_humidity
-        //% block="$this read humidity (%)"
+        //% block="BME280 read humidity (%)"
         //% weight=99
-        readHumidity(): number {
+        public readHumidity(): number {
             // TODO: Implement humidity reading with compensation
             return 0;
         }
@@ -111,9 +111,9 @@ namespace piicodev {
          * Read atmospheric pressure in hPa (hectopascals)
          */
         //% blockId=bme280_read_pressure
-        //% block="$this read pressure (hPa)"
+        //% block="BME280 read pressure (hPa)"
         //% weight=98
-        readPressure(): number {
+        public readPressure(): number {
             // TODO: Implement pressure reading with compensation
             return 0;
         }
@@ -122,10 +122,10 @@ namespace piicodev {
          * Calculate altitude in meters based on sea level pressure
          */
         //% blockId=bme280_altitude
-        //% block="$this calculate altitude at sea level $seaLevelPressure hPa"
+        //% block="BME280 calculate altitude at sea level $seaLevelPressure hPa"
         //% seaLevelPressure.defl=1013.25
         //% weight=97
-        altitude(seaLevelPressure: number): number {
+        public altitude(seaLevelPressure: number): number {
             // TODO: Implement altitude calculation
             return 0;
         }
@@ -134,10 +134,10 @@ namespace piicodev {
          * Set temperature oversampling mode
          */
         //% blockId=bme280_set_temp_oversampling
-        //% block="$this set temperature oversampling $mode"
+        //% block="BME280 set temperature oversampling $mode"
         //% advanced=true
         //% weight=50
-        setTemperatureOversampling(mode: Oversampling): void {
+        public setTemperatureOversampling(mode: Oversampling): void {
             // TODO: Implement oversampling configuration
         }
 
@@ -145,10 +145,10 @@ namespace piicodev {
          * Set pressure oversampling mode
          */
         //% blockId=bme280_set_pressure_oversampling
-        //% block="$this set pressure oversampling $mode"
+        //% block="BME280 set pressure oversampling $mode"
         //% advanced=true
         //% weight=49
-        setPressureOversampling(mode: Oversampling): void {
+        public setPressureOversampling(mode: Oversampling): void {
             // TODO: Implement oversampling configuration
         }
 
@@ -156,10 +156,10 @@ namespace piicodev {
          * Set humidity oversampling mode
          */
         //% blockId=bme280_set_humidity_oversampling
-        //% block="$this set humidity oversampling $mode"
+        //% block="BME280 set humidity oversampling $mode"
         //% advanced=true
         //% weight=48
-        setHumidityOversampling(mode: Oversampling): void {
+        public setHumidityOversampling(mode: Oversampling): void {
             // TODO: Implement oversampling configuration
         }
 
@@ -167,12 +167,105 @@ namespace piicodev {
          * Set IIR filter coefficient
          */
         //% blockId=bme280_set_iir_filter
-        //% block="$this set IIR filter $coefficient"
+        //% block="BME280 set IIR filter $coefficient"
         //% advanced=true
         //% weight=47
-        setIIRFilter(coefficient: IIRFilter): void {
+        public setIIRFilter(coefficient: IIRFilter): void {
             // TODO: Implement IIR filter configuration
         }
+    }
+
+    // Internal singleton instance
+    let _bme280: BME280;
+
+    // Wrapper functions to call methods on the internal BME280 instance
+    /**
+     * Read temperature in degrees Celsius
+     */
+    //% blockId=bme280_read_temperature
+    //% block="BME280 read temperature (°C)"
+    //% weight=100
+    export function bme280ReadTemperature(): number {
+        if (_bme280) return _bme280.readTemperature();
+        return 0;
+    }
+
+    /**
+     * Read humidity as percentage
+     */
+    //% blockId=bme280_read_humidity
+    //% block="BME280 read humidity (%)"
+    //% weight=99
+    export function bme280ReadHumidity(): number {
+        if (_bme280) return _bme280.readHumidity();
+        return 0;
+    }
+
+    /**
+     * Read atmospheric pressure in hPa (hectopascals)
+     */
+    //% blockId=bme280_read_pressure
+    //% block="BME280 read pressure (hPa)"
+    //% weight=98
+    export function bme280ReadPressure(): number {
+        if (_bme280) return _bme280.readPressure();
+        return 0;
+    }
+
+    /**
+     * Calculate altitude in meters based on sea level pressure
+     */
+    //% blockId=bme280_altitude
+    //% block="BME280 calculate altitude at sea level $seaLevelPressure hPa"
+    //% seaLevelPressure.defl=1013.25
+    //% weight=97
+    export function bme280Altitude(seaLevelPressure: number): number {
+        if (_bme280) return _bme280.altitude(seaLevelPressure);
+        return 0;
+    }
+
+    /**
+     * Set temperature oversampling mode
+     */
+    //% blockId=bme280_set_temp_oversampling
+    //% block="BME280 set temperature oversampling $mode"
+    //% advanced=true
+    //% weight=50
+    export function bme280SetTemperatureOversampling(mode: Oversampling): void {
+        if (_bme280) _bme280.setTemperatureOversampling(mode);
+    }
+
+    /**
+     * Set pressure oversampling mode
+     */
+    //% blockId=bme280_set_pressure_oversampling
+    //% block="BME280 set pressure oversampling $mode"
+    //% advanced=true
+    //% weight=49
+    export function bme280SetPressureOversampling(mode: Oversampling): void {
+        if (_bme280) _bme280.setPressureOversampling(mode);
+    }
+
+    /**
+     * Set humidity oversampling mode
+     */
+    //% blockId=bme280_set_humidity_oversampling
+    //% block="BME280 set humidity oversampling $mode"
+    //% advanced=true
+    //% weight=48
+    export function bme280SetHumidityOversampling(mode: Oversampling): void {
+        if (_bme280) _bme280.setHumidityOversampling(mode);
+    }
+
+    /**
+     * Set IIR filter coefficient
+     */
+    //% blockId=bme280_set_iir_filter
+    //% block="BME280 set IIR filter $coefficient"
+    //% advanced=true
+    //% weight=47
+    export function bme280SetIIRFilter(coefficient: IIRFilter): void {
+        if (_bme280) _bme280.setIIRFilter(coefficient);
     }
 
     /**
@@ -184,8 +277,8 @@ namespace piicodev {
     //% address.defl=0x77
     //% weight=95
     //% expandableArgumentMode="toggle"
-    export function createBME280(address?: number): BME280 {
+    export function createBME280(address?: number): void {
         if (address === undefined) address = 0x77;
-        return new BME280(address);
+        _bme280 = new BME280(address);
     }
 }

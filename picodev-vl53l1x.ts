@@ -22,7 +22,7 @@ namespace piicodev {
     /**
      * VL53L1X Distance Sensor class
      */
-    export class VL53L1X {
+    class VL53L1X {
         private addr: number;
         private status: string;
 
@@ -38,9 +38,9 @@ namespace piicodev {
          * Read distance measurement in millimeters
          */
         //% blockId=vl53l1x_read_distance
-        //% block="$this read distance (mm)"
+        //% block="VL53L1X read distance (mm)"
         //% weight=100
-        readDistance(): number {
+        public readDistance(): number {
             // TODO: Implement distance reading
             return 0;
         }
@@ -49,9 +49,9 @@ namespace piicodev {
          * Get the status of the last measurement
          */
         //% blockId=vl53l1x_get_status
-        //% block="$this measurement status"
+        //% block="VL53L1X measurement status"
         //% weight=99
-        getStatus(): string {
+        public getStatus(): string {
             return this.status;
         }
 
@@ -59,10 +59,10 @@ namespace piicodev {
          * Reset the sensor
          */
         //% blockId=vl53l1x_reset
-        //% block="$this reset sensor"
+        //% block="VL53L1X reset sensor"
         //% advanced=true
         //% weight=50
-        reset(): void {
+        public reset(): void {
             // TODO: Implement sensor reset
         }
 
@@ -70,11 +70,11 @@ namespace piicodev {
          * Change the I2C address (for using multiple sensors)
          */
         //% blockId=vl53l1x_change_address
-        //% block="$this change address to $newAddress"
+        //% block="VL53L1X change address to $newAddress"
         //% advanced=true
         //% weight=49
         //% newAddress.defl=0x29
-        changeAddress(newAddress: number): void {
+        public changeAddress(newAddress: number): void {
             // TODO: Implement address change
             this.addr = newAddress;
         }
@@ -83,12 +83,72 @@ namespace piicodev {
          * Set distance mode
          */
         //% blockId=vl53l1x_set_distance_mode
-        //% block="$this set distance mode $mode"
+        //% block="VL53L1X set distance mode $mode"
         //% advanced=true
         //% weight=48
-        setDistanceMode(mode: DistanceMode): void {
+        public setDistanceMode(mode: DistanceMode): void {
             // TODO: Implement distance mode configuration
         }
+    }
+
+    // Internal singleton instance
+    let _vl53l1x: VL53L1X;
+
+    // Wrapper functions to call methods on the internal VL53L1X instance
+    /**
+     * Read distance measurement in millimeters
+     */
+    //% blockId=vl53l1x_read_distance
+    //% block="VL53L1X read distance (mm)"
+    //% weight=100
+    export function vl53l1xReadDistance(): number {
+        if (_vl53l1x) return _vl53l1x.readDistance();
+        return 0;
+    }
+
+    /**
+     * Get the status of the last measurement
+     */
+    //% blockId=vl53l1x_get_status
+    //% block="VL53L1X measurement status"
+    //% weight=99
+    export function vl53l1xGetStatus(): string {
+        if (_vl53l1x) return _vl53l1x.getStatus();
+        return "OK";
+    }
+
+    /**
+     * Reset the sensor
+     */
+    //% blockId=vl53l1x_reset
+    //% block="VL53L1X reset sensor"
+    //% advanced=true
+    //% weight=50
+    export function vl53l1xReset(): void {
+        if (_vl53l1x) _vl53l1x.reset();
+    }
+
+    /**
+     * Change the I2C address (for using multiple sensors)
+     */
+    //% blockId=vl53l1x_change_address
+    //% block="VL53L1X change address to $newAddress"
+    //% advanced=true
+    //% weight=49
+    //% newAddress.defl=0x29
+    export function vl53l1xChangeAddress(newAddress: number): void {
+        if (_vl53l1x) _vl53l1x.changeAddress(newAddress);
+    }
+
+    /**
+     * Set distance mode
+     */
+    //% blockId=vl53l1x_set_distance_mode
+    //% block="VL53L1X set distance mode $mode"
+    //% advanced=true
+    //% weight=48
+    export function vl53l1xSetDistanceMode(mode: DistanceMode): void {
+        if (_vl53l1x) _vl53l1x.setDistanceMode(mode);
     }
 
     /**
@@ -100,8 +160,8 @@ namespace piicodev {
     //% address.defl=0x29
     //% weight=90
     //% expandableArgumentMode="toggle"
-    export function createVL53L1X(address?: number): VL53L1X {
+    export function createVL53L1X(address?: number): void {
         if (address === undefined) address = 0x29;
-        return new VL53L1X(address);
+        _vl53l1x = new VL53L1X(address);
     }
 }

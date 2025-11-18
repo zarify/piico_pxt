@@ -20,7 +20,7 @@ namespace piicodev {
     /**
      * CAP1203 Touch Sensor class
      */
-    export class CAP1203 {
+    class CAP1203 {
         private addr: number;
         private mode: TouchMode;
         private sensitivity: number;
@@ -39,10 +39,10 @@ namespace piicodev {
          * @param pad Pad number (1, 2, or 3)
          */
         //% blockId=cap1203_is_pressed
-        //% block="$this is pad $pad pressed?"
+        //% block="CAP1203 is pad $pad pressed?"
         //% pad.min=1 pad.max=3 pad.defl=1
         //% weight=100
-        isPadPressed(pad: number): boolean {
+        public isPadPressed(pad: number): boolean {
             // TODO: Implement touch detection
             return false;
         }
@@ -52,10 +52,10 @@ namespace piicodev {
          * @param pad Pad number (1, 2, or 3)
          */
         //% blockId=cap1203_read_raw
-        //% block="$this pad $pad raw value"
+        //% block="CAP1203 pad $pad raw value"
         //% pad.min=1 pad.max=3 pad.defl=1
         //% weight=99
-        readRawValue(pad: number): number {
+        public readRawValue(pad: number): number {
             // TODO: Implement raw value reading
             return 0;
         }
@@ -64,11 +64,11 @@ namespace piicodev {
          * Set touch sensitivity (0 = most sensitive, 7 = least sensitive)
          */
         //% blockId=cap1203_set_sensitivity
-        //% block="$this set sensitivity $level"
+        //% block="CAP1203 set sensitivity $level"
         //% level.min=0 level.max=7 level.defl=3
         //% advanced=true
         //% weight=50
-        setSensitivity(level: number): void {
+        public setSensitivity(level: number): void {
             // TODO: Implement sensitivity configuration
             this.sensitivity = level;
         }
@@ -77,12 +77,63 @@ namespace piicodev {
          * Clear touch interrupt
          */
         //% blockId=cap1203_clear_interrupt
-        //% block="$this clear interrupt"
+        //% block="CAP1203 clear interrupt"
         //% advanced=true
         //% weight=49
-        clearInterrupt(): void {
+        public clearInterrupt(): void {
             // TODO: Implement interrupt clearing
         }
+    }
+
+    // Internal singleton instance
+    let _cap1203: CAP1203;
+
+    // Wrapper functions to call methods on the internal CAP1203 instance
+    /**
+     * Check if a specific touch pad is currently pressed
+     */
+    //% blockId=cap1203_is_pressed
+    //% block="CAP1203 is pad $pad pressed?"
+    //% pad.min=1 pad.max=3 pad.defl=1
+    //% weight=100
+    export function cap1203IsPadPressed(pad: number): boolean {
+        if (_cap1203) return _cap1203.isPadPressed(pad);
+        return false;
+    }
+
+    /**
+     * Get raw touch value (delta count) for a pad
+     */
+    //% blockId=cap1203_read_raw
+    //% block="CAP1203 pad $pad raw value"
+    //% pad.min=1 pad.max=3 pad.defl=1
+    //% weight=99
+    export function cap1203ReadRawValue(pad: number): number {
+        if (_cap1203) return _cap1203.readRawValue(pad);
+        return 0;
+    }
+
+    /**
+     * Set touch sensitivity (0 = most sensitive, 7 = least sensitive)
+     */
+    //% blockId=cap1203_set_sensitivity
+    //% block="CAP1203 set sensitivity $level"
+    //% level.min=0 level.max=7 level.defl=3
+    //% advanced=true
+    //% weight=50
+    export function cap1203SetSensitivity(level: number): void {
+        if (_cap1203) _cap1203.setSensitivity(level);
+    }
+
+    /**
+     * Clear touch interrupt
+     */
+    //% blockId=cap1203_clear_interrupt
+    //% block="CAP1203 clear interrupt"
+    //% advanced=true
+    //% weight=49
+    export function cap1203ClearInterrupt(): void {
+        if (_cap1203) _cap1203.clearInterrupt();
     }
 
     /**
@@ -97,10 +148,10 @@ namespace piicodev {
     //% weight=80
     //% expandableArgumentMode="toggle"
     //% inlineInputMode=inline
-    export function createCAP1203(mode?: TouchMode, sensitivity?: number, address?: number): CAP1203 {
+    export function createCAP1203(mode?: TouchMode, sensitivity?: number, address?: number): void {
         if (mode === undefined) mode = TouchMode.Multi;
         if (sensitivity === undefined) sensitivity = 3;
         if (address === undefined) address = 0x28;
-        return new CAP1203(mode, sensitivity, address);
+        _cap1203 = new CAP1203(mode, sensitivity, address);
     }
 }
