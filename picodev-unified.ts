@@ -175,6 +175,21 @@ namespace picodevUnified {
     }
 
     /**
+     * Convert a value to signed (handle two's complement for both 8 and 16-bit)
+     * @param value Unsigned value
+     * @returns Signed value as number
+     */
+    export function toSigned(value: number): number {
+        if (value > 32767) {
+            return value - 65536;
+        }
+        if (value > 127) {
+            return value - 256;
+        }
+        return value;
+    }
+
+    /**
      * Update specific bits in a register using a mask
      * @param address I2C device address (7-bit)
      * @param register Register address (8-bit)

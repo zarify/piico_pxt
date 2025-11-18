@@ -34,11 +34,39 @@ namespace piicodev {
     class VEML6040 {
         private addr: number;
 
+        // Register addresses
+        private static readonly REG_RED = 0x08;
+        private static readonly REG_GREEN = 0x09;
+        private static readonly REG_BLUE = 0x0A;
+        private static readonly REG_WHITE = 0x0B;
+        private static readonly REG_CONFIG = 0x00;
+
+        // Sensitivity factor for ambient light calculation
+        private static readonly SENSITIVITY = 0.25168;
+
         constructor(address: number = 0x10) {
             this.addr = address;
+            this.initialize();
+        }
 
-            // TODO: Initialize sensor
-            // This will be implemented in Phase 4
+        /**
+         * Initialize the sensor
+         */
+        private initialize(): void {
+            try {
+                // Shutdown sensor
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, 0x01); // shutdown
+                picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
+
+                // Re-initialize with default settings
+                buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, 0x00); // default settings
+                picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
+                basic.pause(50);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -48,8 +76,12 @@ namespace piicodev {
         //% block="VEML6040 read red light"
         //% weight=100
         public readRed(): number {
-            // TODO: Implement red light reading
-            return 0;
+            try {
+                return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_RED);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -59,8 +91,12 @@ namespace piicodev {
         //% block="VEML6040 read green light"
         //% weight=99
         public readGreen(): number {
-            // TODO: Implement green light reading
-            return 0;
+            try {
+                return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_GREEN);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -70,8 +106,12 @@ namespace piicodev {
         //% block="VEML6040 read blue light"
         //% weight=98
         public readBlue(): number {
-            // TODO: Implement blue light reading
-            return 0;
+            try {
+                return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_BLUE);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -81,8 +121,47 @@ namespace piicodev {
         //% block="VEML6040 read white light"
         //% weight=97
         public readWhite(): number {
-            // TODO: Implement white light reading
-            return 0;
+            try {
+                return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_WHITE);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
+        }
+
+        /**
+         * Convert RGB to HSV
+         * Returns object with hue (0-360), saturation (0-1), value (0-1)
+         */
+        private rgbToHsv(r: number, g: number, b: number): number[] {
+            let rf = r / 65535;
+            let gf = g / 65535;
+            let bf = b / 65535;
+
+            let max = Math.max(rf, Math.max(gf, bf));
+            let min = Math.min(rf, Math.min(gf, bf));
+            let delta = max - min;
+
+            // Calculate hue
+            let hue = 0;
+            if (delta !== 0) {
+                if (max === rf) {
+                    hue = 60 * (((gf - bf) / delta) % 6);
+                } else if (max === gf) {
+                    hue = 60 * (((bf - rf) / delta) + 2);
+                } else {
+                    hue = 60 * (((rf - gf) / delta) + 4);
+                }
+            }
+
+            // Ensure hue is positive
+            if (hue < 0) hue += 360;
+
+            // Calculate saturation
+            let sat = max === 0 ? 0 : delta / max;
+
+            // Value is just max
+            return [hue, sat, max];
         }
 
         /**
@@ -92,8 +171,34 @@ namespace piicodev {
         //% block="VEML6040 classify color"
         //% weight=96
         public classifyColor(): string {
-            // TODO: Implement color classification algorithm
-            return "none";
+            try {
+                let r = this.readRed();
+                let g = this.readGreen();
+                let b = this.readBlue();
+
+                let hsv = this.rgbToHsv(r, g, b);
+                let hue = hsv[0];
+                let brightness = hsv[2];
+
+                // If brightness is too low, it's not a valid color
+                if (brightness < 0.1) {
+                    return "none";
+                }
+
+                // Classify based on hue
+                // Using 60-degree sectors for basic color classification
+                if (hue < 30 || hue >= 330) return "red";
+                if (hue >= 30 && hue < 90) return "yellow";
+                if (hue >= 90 && hue < 150) return "green";
+                if (hue >= 150 && hue < 210) return "cyan";
+                if (hue >= 210 && hue < 270) return "blue";
+                if (hue >= 270 && hue < 330) return "magenta";
+
+                return "none";
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return "none";
+            }
         }
 
         /**
@@ -103,8 +208,16 @@ namespace piicodev {
         //% block="VEML6040 color hue (0-360)"
         //% weight=95
         public getHue(): number {
-            // TODO: Implement HSV conversion for hue
-            return 0;
+            try {
+                let r = this.readRed();
+                let g = this.readGreen();
+                let b = this.readBlue();
+                let hsv = this.rgbToHsv(r, g, b);
+                return Math.round(hsv[0]);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -114,8 +227,16 @@ namespace piicodev {
         //% block="VEML6040 color saturation (%)"
         //% weight=94
         public getSaturation(): number {
-            // TODO: Implement HSV conversion for saturation
-            return 0;
+            try {
+                let r = this.readRed();
+                let g = this.readGreen();
+                let b = this.readBlue();
+                let hsv = this.rgbToHsv(r, g, b);
+                return Math.round(hsv[1] * 100);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -125,8 +246,16 @@ namespace piicodev {
         //% block="VEML6040 color brightness (%)"
         //% weight=93
         public getBrightness(): number {
-            // TODO: Implement HSV conversion for value
-            return 0;
+            try {
+                let r = this.readRed();
+                let g = this.readGreen();
+                let b = this.readBlue();
+                let hsv = this.rgbToHsv(r, g, b);
+                return Math.round(hsv[2] * 100);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -137,8 +266,13 @@ namespace piicodev {
         //% advanced=true
         //% weight=50
         public getAmbientLight(): number {
-            // TODO: Implement ambient light calculation
-            return 0;
+            try {
+                let g = this.readGreen();
+                return Math.round(g * VEML6040.SENSITIVITY);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -149,8 +283,35 @@ namespace piicodev {
         //% advanced=true
         //% weight=49
         public getColorTemperature(): number {
-            // TODO: Implement CCT calculation
-            return 0;
+            try {
+                let r = this.readRed();
+                let g = this.readGreen();
+                let b = this.readBlue();
+
+                // CCT calculation using CIE 1960 chromaticity coordinates
+                // These constants are based on the color temperature calculation algorithm
+                let colorX = -0.023249 * r + 0.291014 * g + (-0.36488) * b;
+                let colorY = -0.042799 * r + 0.272148 * g + (-0.279591) * b;
+                let colorZ = -0.155901 * r + 0.251534 * g + (-0.07624) * b;
+
+                let colorTotal = colorX + colorY + colorZ;
+                if (colorTotal === 0) {
+                    return 0;
+                }
+
+                let cx = colorX / colorTotal;
+                let cy = colorY / colorTotal;
+
+                // McCamy's approximation for CCT
+                let n = (cx - 0.332) / (0.1858 - cy);
+                let cct = 449.0 * Math.pow(n, 3) + 3525.0 * Math.pow(n, 2) +
+                    6823.3 * n + 5520.33;
+
+                return Math.round(cct);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
     }
 

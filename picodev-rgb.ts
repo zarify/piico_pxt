@@ -37,13 +37,32 @@ namespace piicodev {
         private pixels: number[][];
         private brightness: number;
 
+        // Register addresses
+        private static readonly REG_LED_VALUES = 0x07;
+        private static readonly REG_BRIGHTNESS = 0x06;
+        private static readonly REG_CLEAR = 0x04;
+        private static readonly REG_CTRL = 0x03;
+        private static readonly REG_I2C_ADDR = 0x05;
+
         constructor(address: number = 0x08) {
             this.addr = address;
             this.brightness = 50;
             this.pixels = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
 
-            // TODO: Initialize RGB module
-            // This will be implemented in Phase 2
+            // Initialize RGB module
+            this.initialize();
+        }
+
+        /**
+         * Initialize the RGB module
+         */
+        private initialize(): void {
+            try {
+                this.setBrightness(this.brightness);
+                this.show();
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -63,7 +82,11 @@ namespace piicodev {
         //% inlineInputMode=inline
         public setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
             if (pixel >= 0 && pixel <= 2) {
-                this.pixels[pixel] = [red, green, blue];
+                this.pixels[pixel] = [
+                    Math.max(0, Math.min(255, red)),
+                    Math.max(0, Math.min(255, green)),
+                    Math.max(0, Math.min(255, blue))
+                ];
             }
         }
 
@@ -111,7 +134,7 @@ namespace piicodev {
         //% inlineInputMode=inline
         public setAllRGB(red: number, green: number, blue: number): void {
             for (let i = 0; i < 3; i++) {
-                this.pixels[i] = [red, green, blue];
+                this.setPixelRGB(i, red, green, blue);
             }
         }
 
@@ -134,7 +157,18 @@ namespace piicodev {
         //% block="RGB show"
         //% weight=95
         public show(): void {
-            // TODO: Implement I2C write to update LEDs
+            try {
+                // Build buffer with all 9 bytes (3 pixels × 3 RGB values)
+                let buf = pins.createBuffer(9);
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        buf.setNumber(NumberFormat.UInt8LE, i * 3 + j, this.pixels[i][j]);
+                    }
+                }
+                picodevUnified.writeRegister(this.addr, RGB.REG_LED_VALUES, buf);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -144,8 +178,17 @@ namespace piicodev {
         //% block="RGB clear all"
         //% weight=94
         public clear(): void {
-            this.setAllRGB(0, 0, 0);
-            this.show();
+            try {
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, 0x01);
+                picodevUnified.writeRegister(this.addr, RGB.REG_CLEAR, buf);
+
+                // Reset internal pixel state
+                this.pixels = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+                basic.pause(1);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -157,8 +200,14 @@ namespace piicodev {
         //% level.min=0 level.max=255 level.defl=50
         //% weight=93
         public setBrightness(level: number): void {
-            this.brightness = Math.max(0, Math.min(255, level));
-            // TODO: Send brightness to device
+            try {
+                this.brightness = Math.max(0, Math.min(255, level));
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, this.brightness);
+                picodevUnified.writeRegister(this.addr, RGB.REG_BRIGHTNESS, buf);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -171,7 +220,14 @@ namespace piicodev {
         //% advanced=true
         //% weight=50
         public setPowerLED(on: boolean): void {
-            // TODO: Implement LED control
+            try {
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, on ? 0x01 : 0x00);
+                picodevUnified.writeRegister(this.addr, RGB.REG_CTRL, buf);
+                basic.pause(1);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -183,8 +239,20 @@ namespace piicodev {
         //% weight=49
         //% newAddress.defl=0x08
         public changeAddress(newAddress: number): void {
-            // TODO: Implement address change
-            this.addr = newAddress;
+            try {
+                // Validate address range
+                if (newAddress < 0x08 || newAddress > 0x77) {
+                    return;
+                }
+
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, newAddress);
+                picodevUnified.writeRegister(this.addr, RGB.REG_I2C_ADDR, buf);
+                this.addr = newAddress;
+                basic.pause(5);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**

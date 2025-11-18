@@ -48,6 +48,10 @@ namespace piicodev {
     class BME280 {
         private addr: number;
         private tFine: number;
+        private tempMode: Oversampling;
+        private pressMode: Oversampling;
+        private humidMode: Oversampling;
+        private filterCoeff: IIRFilter;
 
         // Calibration data
         private T1: number;
@@ -72,6 +76,10 @@ namespace piicodev {
         constructor(address: number = 0x77) {
             this.addr = address;
             this.tFine = 0;
+            this.tempMode = Oversampling.X2;
+            this.pressMode = Oversampling.X16;
+            this.humidMode = Oversampling.X1;
+            this.filterCoeff = IIRFilter.Coeff2;
 
             // Initialize calibration data with default values
             this.T1 = 0; this.T2 = 0; this.T3 = 0;
@@ -81,8 +89,105 @@ namespace piicodev {
             this.H1 = 0; this.H2 = 0; this.H3 = 0;
             this.H4 = 0; this.H5 = 0; this.H6 = 0;
 
-            // TODO: Initialize sensor and read calibration data from device
-            // This will be implemented in Phase 4
+            // Initialize sensor and read calibration data
+            this.initialize();
+        }
+
+        /**
+         * Initialize the sensor and read calibration coefficients
+         */
+        private initialize(): void {
+            try {
+                // Read calibration data from device
+                this.T1 = picodevUnified.readRegisterUInt16LE(this.addr, 0x88);
+                this.T2 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x8A));
+                this.T3 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x8C));
+                this.P1 = picodevUnified.readRegisterUInt16LE(this.addr, 0x8E);
+                this.P2 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x90));
+                this.P3 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x92));
+                this.P4 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x94));
+                this.P5 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x96));
+                this.P6 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x98));
+                this.P7 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x9A));
+                this.P8 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x9C));
+                this.P9 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x9E));
+
+                this.H1 = picodevUnified.readRegisterByte(this.addr, 0xA1);
+                this.H2 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0xE1));
+                this.H3 = picodevUnified.readRegisterByte(this.addr, 0xE3);
+
+                // H4 and H5 are split across registers
+                let reg28 = picodevUnified.readRegisterByte(this.addr, 0xE4);
+                let reg29 = picodevUnified.readRegisterByte(this.addr, 0xE5);
+                let reg2A = picodevUnified.readRegisterByte(this.addr, 0xE6);
+                this.H4 = (reg28 << 4) + (reg29 & 0x0F);
+                this.H5 = (reg2A << 4) + ((reg29 >> 4) & 0x0F);
+
+                this.H6 = picodevUnified.toSigned(picodevUnified.readRegisterByte(this.addr, 0xE7));
+
+                // Configure sensor
+                this.configureHumidity();
+                this.configureControl();
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
+        }
+
+        /**
+         * Configure humidity oversampling
+         */
+        private configureHumidity(): void {
+            let buf = pins.createBuffer(1);
+            buf.setNumber(NumberFormat.UInt8LE, 0, this.humidMode);
+            picodevUnified.writeRegister(this.addr, 0xF2, buf);
+            basic.pause(2);
+        }
+
+        /**
+         * Configure control register (temperature and pressure oversampling, mode)
+         */
+        private configureControl(): void {
+            let buf = pins.createBuffer(1);
+            let ctrl = (this.pressMode << 5) | (this.tempMode << 2) | 0x01; // 0x01 = normal mode
+            buf.setNumber(NumberFormat.UInt8LE, 0, ctrl);
+            picodevUnified.writeRegister(this.addr, 0xF4, buf);
+            basic.pause(2);
+        }
+
+        /**
+         * Read raw sensor data
+         */
+        private readRawData(): number[] {
+            // Calculate measurement time based on oversampling modes
+            let sleepTime = 1250;
+            if (this.tempMode > 0) sleepTime += 2300 * (1 << this.tempMode);
+            if (this.pressMode > 0) sleepTime += 575 + 2300 * (1 << this.pressMode);
+            if (this.humidMode > 0) sleepTime += 575 + 2300 * (1 << this.humidMode);
+
+            basic.pause(1 + Math.idiv(sleepTime, 1000));
+
+            // Wait for measurement to complete
+            while ((picodevUnified.readRegisterByte(this.addr, 0xF3) & 0x08) !== 0) {
+                basic.pause(1);
+            }
+
+            // Read pressure (3 bytes at 0xF7)
+            let rawP = (picodevUnified.readRegisterByte(this.addr, 0xF7) << 16) |
+                (picodevUnified.readRegisterByte(this.addr, 0xF8) << 8) |
+                picodevUnified.readRegisterByte(this.addr, 0xF9);
+            rawP = rawP >> 4;
+
+            // Read temperature (3 bytes at 0xFA)
+            let rawT = (picodevUnified.readRegisterByte(this.addr, 0xFA) << 16) |
+                (picodevUnified.readRegisterByte(this.addr, 0xFB) << 8) |
+                picodevUnified.readRegisterByte(this.addr, 0xFC);
+            rawT = rawT >> 4;
+
+            // Read humidity (2 bytes at 0xFD)
+            let rawH = (picodevUnified.readRegisterByte(this.addr, 0xFD) << 8) |
+                picodevUnified.readRegisterByte(this.addr, 0xFE);
+
+            return [rawT, rawP, rawH];
         }
 
         /**
@@ -92,8 +197,13 @@ namespace piicodev {
         //% block="BME280 read temperature (°C)"
         //% weight=100
         public readTemperature(): number {
-            // TODO: Implement temperature reading with compensation
-            return 0;
+            try {
+                let raw = this.readRawData();
+                return this.compensateTemperature(raw[0]) / 100;
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -103,8 +213,14 @@ namespace piicodev {
         //% block="BME280 read humidity (%)"
         //% weight=99
         public readHumidity(): number {
-            // TODO: Implement humidity reading with compensation
-            return 0;
+            try {
+                let raw = this.readRawData();
+                this.compensateTemperature(raw[0]); // Must read temperature first
+                return this.compensateHumidity(raw[2]) / 1024;
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -114,8 +230,60 @@ namespace piicodev {
         //% block="BME280 read pressure (hPa)"
         //% weight=98
         public readPressure(): number {
-            // TODO: Implement pressure reading with compensation
-            return 0;
+            try {
+                let raw = this.readRawData();
+                this.compensateTemperature(raw[0]); // Must read temperature first
+                return this.compensatePressure(raw[1]) / 256 / 100;
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
+        }
+
+        /**
+         * Compensate raw temperature data and return in 0.01°C units
+         */
+        private compensateTemperature(rawT: number): number {
+            let var1 = ((rawT >> 3) - (this.T1 << 1)) * (this.T2 >> 11);
+            let var2 = (rawT >> 4) - this.T1;
+            var2 = ((var2 * var2) >> 12) * (this.T3 >> 14);
+            this.tFine = var1 + var2;
+            return (this.tFine * 5 + 128) >> 8;
+        }
+
+        /**
+         * Compensate raw pressure data and return in Pa
+         */
+        private compensatePressure(rawP: number): number {
+            let var1 = (this.tFine >> 1) - 64000;
+            let var2 = var1 * var1 * (this.P6 >> 16);
+            var2 = var2 + (var1 * this.P5 << 17);
+            var2 = var2 + (this.P4 << 35);
+            var1 = ((var1 * var1 * (this.P3 >> 8)) >> 13) + ((this.P2 * var1) << 12);
+            var1 = (((1 << 47) + var1) * this.P1) >> 33;
+
+            if (var1 === 0) return 0; // avoid exception caused by division by zero
+
+            let pressure = ((1048576 - rawP) - (var2 >> 12)) * 3125 / var1;
+            var1 = (this.P9 * (pressure >> 13) * (pressure >> 13)) >> 25;
+            var2 = (this.P8 * pressure) >> 19;
+            pressure = ((pressure + var1 + var2) >> 8) + (this.P7 << 4);
+            return pressure;
+        }
+
+        /**
+         * Compensate raw humidity data and return in 1/1024 %RH
+         */
+        private compensateHumidity(rawH: number): number {
+            let var_h = this.tFine - 76800;
+            var_h = ((rawH << 14) - (this.H4 << 20) - (this.H5 * var_h) + 16384) >> 15;
+            var_h = ((((var_h * var_h) >> 11) * (this.H1 << 4)) >> 20) +
+                (((this.H2 << 11) * var_h) >> 10);
+            var_h = ((var_h + 2097152) * this.H3) >> 14;
+            var_h = (var_h - (((var_h >> 15) * (var_h >> 15)) >> 7) * (this.H6 >> 4));
+            var_h = var_h < 0 ? 0 : var_h;
+            var_h = var_h > 419430400 ? 419430400 : var_h;
+            return var_h >> 12;
         }
 
         /**
@@ -126,8 +294,13 @@ namespace piicodev {
         //% seaLevelPressure.defl=1013.25
         //% weight=97
         public altitude(seaLevelPressure: number): number {
-            // TODO: Implement altitude calculation
-            return 0;
+            try {
+                let pressure = this.readPressure();
+                return 44330 * (1 - Math.pow(pressure / seaLevelPressure, 1 / 5.255));
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -138,7 +311,8 @@ namespace piicodev {
         //% advanced=true
         //% weight=50
         public setTemperatureOversampling(mode: Oversampling): void {
-            // TODO: Implement oversampling configuration
+            this.tempMode = mode;
+            this.configureControl();
         }
 
         /**
@@ -149,7 +323,8 @@ namespace piicodev {
         //% advanced=true
         //% weight=49
         public setPressureOversampling(mode: Oversampling): void {
-            // TODO: Implement oversampling configuration
+            this.pressMode = mode;
+            this.configureControl();
         }
 
         /**
@@ -160,7 +335,8 @@ namespace piicodev {
         //% advanced=true
         //% weight=48
         public setHumidityOversampling(mode: Oversampling): void {
-            // TODO: Implement oversampling configuration
+            this.humidMode = mode;
+            this.configureHumidity();
         }
 
         /**
@@ -171,7 +347,10 @@ namespace piicodev {
         //% advanced=true
         //% weight=47
         public setIIRFilter(coefficient: IIRFilter): void {
-            // TODO: Implement IIR filter configuration
+            this.filterCoeff = coefficient;
+            let buf = pins.createBuffer(1);
+            buf.setNumber(NumberFormat.UInt8LE, 0, coefficient << 2);
+            picodevUnified.writeRegister(this.addr, 0xF5, buf);
         }
     }
 

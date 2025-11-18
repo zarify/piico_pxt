@@ -26,12 +26,44 @@ namespace piicodev {
         private addr: number;
         private firmwareVersion: number[];
 
+        // Register addresses
+        private static readonly REG_STATUS = 0x01;
+        private static readonly REG_FIRMWARE_MAJ = 0x02;
+        private static readonly REG_FIRMWARE_MIN = 0x03;
+        private static readonly REG_I2C_ADDR = 0x04;
+        private static readonly REG_TONE = 0x05;
+        private static readonly REG_VOLUME = 0x06;
+        private static readonly REG_LED = 0x07;
+
         constructor(address: number = 0x5C) {
             this.addr = address;
             this.firmwareVersion = [0, 0];
 
-            // TODO: Initialize buzzer and read firmware version
-            // This will be implemented in Phase 2
+            // Initialize buzzer
+            this.initialize();
+        }
+
+        /**
+         * Initialize the buzzer
+         */
+        private initialize(): void {
+            try {
+                // Enable power LED
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, 0x01);
+                picodevUnified.writeRegister(this.addr, Buzzer.REG_LED, buf);
+
+                // Read firmware version
+                this.firmwareVersion[0] = picodevUnified.readRegisterByte(this.addr, Buzzer.REG_FIRMWARE_MAJ);
+                this.firmwareVersion[1] = picodevUnified.readRegisterByte(this.addr, Buzzer.REG_FIRMWARE_MIN);
+
+                // Set default volume if supported (firmware v1.0+)
+                if (this.firmwareVersion[0] >= 1) {
+                    this.setVolume(BuzzerVolume.High);
+                }
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -46,8 +78,24 @@ namespace piicodev {
         //% weight=100
         //% expandableArgumentMode="toggle"
         public playTone(frequency: number, duration?: number): void {
-            // TODO: Implement tone generation
-            // If duration is 0 or undefined, play continuously
+            try {
+                // Clamp frequency to valid range
+                if (frequency < 20) frequency = 20;
+                if (frequency > 20000) frequency = 20000;
+
+                let dur = duration || 0;
+                if (dur < 0) dur = 0;
+
+                // Write frequency (16-bit big-endian) and duration (16-bit big-endian)
+                let buf = pins.createBuffer(4);
+                buf.setNumber(NumberFormat.UInt8LE, 0, (frequency >> 8) & 0xFF);
+                buf.setNumber(NumberFormat.UInt8LE, 1, frequency & 0xFF);
+                buf.setNumber(NumberFormat.UInt8LE, 2, (dur >> 8) & 0xFF);
+                buf.setNumber(NumberFormat.UInt8LE, 3, dur & 0xFF);
+                picodevUnified.writeRegister(this.addr, Buzzer.REG_TONE, buf);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -57,7 +105,8 @@ namespace piicodev {
         //% block="Buzzer stop tone"
         //% weight=99
         public stopTone(): void {
-            // TODO: Implement tone stopping (send frequency 0)
+            // Stop tone is equivalent to playing frequency 0
+            this.playTone(0);
         }
 
         /**
@@ -67,8 +116,25 @@ namespace piicodev {
         //% block="Buzzer set volume $volume"
         //% weight=98
         public setVolume(volume: BuzzerVolume): void {
-            // TODO: Implement volume control
-            // Check firmware version and warn if not supported
+            try {
+                // Only works on firmware v1.0+
+                if (this.firmwareVersion[0] < 1) {
+                    serial.writeLine("Warning: Volume not implemented on this hardware revision");
+                    return;
+                }
+
+                // Volume must be 0, 1, or 2
+                if (volume < 0 || volume > 2) {
+                    return;
+                }
+
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, volume & 0xFF);
+                picodevUnified.writeRegister(this.addr, Buzzer.REG_VOLUME, buf);
+                basic.pause(5);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -92,7 +158,14 @@ namespace piicodev {
         //% advanced=true
         //% weight=49
         public setPowerLED(on: boolean): void {
-            // TODO: Implement LED control
+            try {
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, on ? 0x01 : 0x00);
+                picodevUnified.writeRegister(this.addr, Buzzer.REG_LED, buf);
+                basic.pause(1);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -104,8 +177,20 @@ namespace piicodev {
         //% weight=48
         //% newAddress.defl=0x5C
         public changeAddress(newAddress: number): void {
-            // TODO: Implement address change
-            this.addr = newAddress;
+            try {
+                // Validate address range
+                if (newAddress < 0x08 || newAddress > 0x77) {
+                    return;
+                }
+
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, newAddress & 0xFF);
+                picodevUnified.writeRegister(this.addr, Buzzer.REG_I2C_ADDR, buf);
+                this.addr = newAddress;
+                basic.pause(5);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
     }
 

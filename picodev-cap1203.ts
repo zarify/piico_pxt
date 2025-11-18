@@ -25,13 +25,68 @@ namespace piicodev {
         private mode: TouchMode;
         private sensitivity: number;
 
+        // Register addresses
+        private static readonly REG_MAIN_CONTROL = 0x00;
+        private static readonly REG_GENERAL_STATUS = 0x02;
+        private static readonly REG_SENSOR_INPUT_STATUS = 0x03;
+        private static readonly REG_SENSITIVITY_CONTROL = 0x1F;
+        private static readonly REG_MULTIPLE_TOUCH_CONFIG = 0x2A;
+        private static readonly REG_DELTA_COUNT_1 = 0x10;
+        private static readonly REG_DELTA_COUNT_2 = 0x11;
+        private static readonly REG_DELTA_COUNT_3 = 0x12;
+
         constructor(mode: TouchMode = TouchMode.Multi, sensitivity: number = 3, address: number = 0x28) {
             this.addr = address;
             this.mode = mode;
             this.sensitivity = sensitivity;
 
-            // TODO: Initialize sensor with mode and sensitivity settings
-            // This will be implemented in Phase 3
+            // Initialize sensor with mode and sensitivity settings
+            this.initialize();
+        }
+
+        /**
+         * Initialize the sensor
+         */
+        private initialize(): void {
+            try {
+                // Configure touch mode (single or multi-touch)
+                let modeValue = this.mode === TouchMode.Single ? 0x80 : 0x00;
+                this.setBits(CAP1203.REG_MULTIPLE_TOUCH_CONFIG, modeValue, 0x80);
+
+                // Configure sensitivity (0-7, where 0 is most sensitive)
+                if (this.sensitivity >= 0 && this.sensitivity <= 7) {
+                    let sensValue = this.sensitivity << 4;
+                    this.setBits(CAP1203.REG_SENSITIVITY_CONTROL, sensValue, 0x70);
+                }
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
+        }
+
+        /**
+         * Set or clear specific bits in a register using a mask
+         */
+        private setBits(register: number, byteValue: number, mask: number): void {
+            // Read current register value
+            let oldByte = picodevUnified.readRegisterByte(this.addr, register);
+
+            // Modify the bits according to mask
+            let tempByte = oldByte;
+            for (let n = 0; n < 8; n++) {
+                let bitMask = (mask >> n) & 1;
+                if (bitMask === 1) {
+                    if (((byteValue >> n) & 1) === 1) {
+                        tempByte = tempByte | (1 << n);
+                    } else {
+                        tempByte = tempByte & ~(1 << n);
+                    }
+                }
+            }
+
+            // Write modified value back
+            let buf = pins.createBuffer(1);
+            buf.setNumber(NumberFormat.UInt8LE, 0, tempByte);
+            picodevUnified.writeRegister(this.addr, register, buf);
         }
 
         /**
@@ -43,8 +98,22 @@ namespace piicodev {
         //% pad.min=1 pad.max=3 pad.defl=1
         //% weight=100
         public isPadPressed(pad: number): boolean {
-            // TODO: Implement touch detection
-            return false;
+            try {
+                // Clear interrupt first
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, 0);
+                picodevUnified.writeRegister(this.addr, CAP1203.REG_MAIN_CONTROL, buf);
+
+                // Read sensor input status
+                let status = picodevUnified.readRegisterByte(this.addr, CAP1203.REG_SENSOR_INPUT_STATUS);
+
+                // Check if the specific pad is pressed (bit corresponds to pad)
+                let padBit = 1 << (pad - 1);
+                return (status & padBit) !== 0;
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return false;
+            }
         }
 
         /**
@@ -56,8 +125,27 @@ namespace piicodev {
         //% pad.min=1 pad.max=3 pad.defl=1
         //% weight=99
         public readRawValue(pad: number): number {
-            // TODO: Implement raw value reading
-            return 0;
+            try {
+                let register = 0;
+                if (pad === 1) {
+                    register = CAP1203.REG_DELTA_COUNT_1;
+                } else if (pad === 2) {
+                    register = CAP1203.REG_DELTA_COUNT_2;
+                } else if (pad === 3) {
+                    register = CAP1203.REG_DELTA_COUNT_3;
+                } else {
+                    return 0;
+                }
+
+                let deltaData = picodevUnified.readRegister(this.addr, register, 1);
+                if (deltaData.length > 0) {
+                    return deltaData.getNumber(NumberFormat.UInt8LE, 0);
+                }
+                return 0;
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+                return 0;
+            }
         }
 
         /**
@@ -69,8 +157,15 @@ namespace piicodev {
         //% advanced=true
         //% weight=50
         public setSensitivity(level: number): void {
-            // TODO: Implement sensitivity configuration
-            this.sensitivity = level;
+            try {
+                if (level >= 0 && level <= 7) {
+                    this.sensitivity = level;
+                    let sensValue = level << 4;
+                    this.setBits(CAP1203.REG_SENSITIVITY_CONTROL, sensValue, 0x70);
+                }
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
 
         /**
@@ -81,7 +176,16 @@ namespace piicodev {
         //% advanced=true
         //% weight=49
         public clearInterrupt(): void {
-            // TODO: Implement interrupt clearing
+            try {
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, 0);
+                picodevUnified.writeRegister(this.addr, CAP1203.REG_MAIN_CONTROL, buf);
+
+                // Read the status to complete the interrupt clear
+                picodevUnified.readRegisterByte(this.addr, CAP1203.REG_MAIN_CONTROL);
+            } catch (e) {
+                picodevUnified.logI2CError(this.addr);
+            }
         }
     }
 
