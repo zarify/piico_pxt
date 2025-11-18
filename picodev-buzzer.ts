@@ -123,6 +123,7 @@ namespace piicodev {
     //% weight=100
     //% expandableArgumentMode="toggle"
     export function playTone(frequency: number, duration?: number): void {
+        if (!_buzzer) _buzzer = new Buzzer(0x5C);
         if (_buzzer) _buzzer.playTone(frequency, duration);
     }
 
@@ -133,6 +134,7 @@ namespace piicodev {
     //% block="Buzzer stop tone"
     //% weight=99
     export function stopTone(): void {
+        if (!_buzzer) _buzzer = new Buzzer(0x5C);
         if (_buzzer) _buzzer.stopTone();
     }
 
@@ -143,6 +145,7 @@ namespace piicodev {
     //% block="Buzzer set volume $volume"
     //% weight=98
     export function setVolume(volume: BuzzerVolume): void {
+        if (!_buzzer) _buzzer = new Buzzer(0x5C);
         if (_buzzer) _buzzer.setVolume(volume);
     }
 
@@ -154,6 +157,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=50
     export function buzzerGetFirmwareVersion(): string {
+        if (!_buzzer) _buzzer = new Buzzer(0x5C);
         if (_buzzer) return _buzzer.getFirmwareVersion();
         return "0.0";
     }
@@ -168,6 +172,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=49
     export function buzzerSetPowerLED(on: boolean): void {
+        if (!_buzzer) _buzzer = new Buzzer(0x5C);
         if (_buzzer) _buzzer.setPowerLED(on);
     }
 
@@ -180,17 +185,13 @@ namespace piicodev {
     //% weight=48
     //% newAddress.defl=0x5C
     export function buzzerChangeAddress(newAddress: number): void {
+        if (!_buzzer) _buzzer = new Buzzer(0x5C);
         if (_buzzer) _buzzer.changeAddress(newAddress);
     }
 
     /**
      * Create a new PiicoDev Buzzer instance
      */
-    //% blockId=create_buzzer
-    //% block="create PiicoDev Buzzer||at address $address"
-    //% address.defl=0x5C
-    //% weight=75
-    //% expandableArgumentMode="toggle"
     export function createBuzzer(address?: number): void {
         if (address === undefined) address = 0x5C;
         _buzzer = new Buzzer(address);

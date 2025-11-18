@@ -165,6 +165,7 @@ namespace piicodev {
     //% block="VEML6040 read red light"
     //% weight=100
     export function veml6040ReadRed(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.readRed();
         return 0;
     }
@@ -176,6 +177,7 @@ namespace piicodev {
     //% block="VEML6040 read green light"
     //% weight=99
     export function veml6040ReadGreen(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.readGreen();
         return 0;
     }
@@ -187,6 +189,7 @@ namespace piicodev {
     //% block="VEML6040 read blue light"
     //% weight=98
     export function veml6040ReadBlue(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.readBlue();
         return 0;
     }
@@ -198,6 +201,7 @@ namespace piicodev {
     //% block="VEML6040 read white light"
     //% weight=97
     export function veml6040ReadWhite(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.readWhite();
         return 0;
     }
@@ -209,6 +213,7 @@ namespace piicodev {
     //% block="VEML6040 classify color"
     //% weight=96
     export function veml6040ClassifyColor(): string {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.classifyColor();
         return "none";
     }
@@ -220,6 +225,7 @@ namespace piicodev {
     //% block="VEML6040 color hue (0-360)"
     //% weight=95
     export function veml6040GetHue(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getHue();
         return 0;
     }
@@ -231,6 +237,7 @@ namespace piicodev {
     //% block="VEML6040 color saturation (%)"
     //% weight=94
     export function veml6040GetSaturation(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getSaturation();
         return 0;
     }
@@ -242,6 +249,7 @@ namespace piicodev {
     //% block="VEML6040 color brightness (%)"
     //% weight=93
     export function veml6040GetBrightness(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getBrightness();
         return 0;
     }
@@ -254,6 +262,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=50
     export function veml6040GetAmbientLight(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getAmbientLight();
         return 0;
     }
@@ -266,6 +275,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=49
     export function veml6040GetColorTemperature(): number {
+        if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getColorTemperature();
         return 0;
     }
@@ -273,11 +283,6 @@ namespace piicodev {
     /**
      * Create a new VEML6040 color sensor instance
      */
-    //% blockId=create_veml6040
-    //% block="create VEML6040 color sensor||at address $address"
-    //% address.defl=0x10
-    //% weight=85
-    //% expandableArgumentMode="toggle"
     export function createVEML6040(address?: number): void {
         if (address === undefined) address = 0x10;
         _veml6040 = new VEML6040(address);

@@ -186,6 +186,7 @@ namespace piicodev {
     //% block="BME280 read temperature (°C)"
     //% weight=100
     export function bme280ReadTemperature(): number {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) return _bme280.readTemperature();
         return 0;
     }
@@ -197,6 +198,7 @@ namespace piicodev {
     //% block="BME280 read humidity (%)"
     //% weight=99
     export function bme280ReadHumidity(): number {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) return _bme280.readHumidity();
         return 0;
     }
@@ -208,6 +210,7 @@ namespace piicodev {
     //% block="BME280 read pressure (hPa)"
     //% weight=98
     export function bme280ReadPressure(): number {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) return _bme280.readPressure();
         return 0;
     }
@@ -220,6 +223,7 @@ namespace piicodev {
     //% seaLevelPressure.defl=1013.25
     //% weight=97
     export function bme280Altitude(seaLevelPressure: number): number {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) return _bme280.altitude(seaLevelPressure);
         return 0;
     }
@@ -232,6 +236,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=50
     export function bme280SetTemperatureOversampling(mode: Oversampling): void {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) _bme280.setTemperatureOversampling(mode);
     }
 
@@ -243,6 +248,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=49
     export function bme280SetPressureOversampling(mode: Oversampling): void {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) _bme280.setPressureOversampling(mode);
     }
 
@@ -254,6 +260,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=48
     export function bme280SetHumidityOversampling(mode: Oversampling): void {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) _bme280.setHumidityOversampling(mode);
     }
 
@@ -265,17 +272,13 @@ namespace piicodev {
     //% advanced=true
     //% weight=47
     export function bme280SetIIRFilter(coefficient: IIRFilter): void {
+        if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) _bme280.setIIRFilter(coefficient);
     }
 
     /**
      * Create a new BME280 sensor instance
      */
-    //% blockId=create_bme280
-    //% block="create BME280 sensor||at address $address"
-    //% address.defl=0x77
-    //% weight=95
-    //% expandableArgumentMode="toggle"
     export function createBME280(address?: number): void {
         if (address === undefined) address = 0x77;
         _bme280 = new BME280(address);

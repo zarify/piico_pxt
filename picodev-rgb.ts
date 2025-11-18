@@ -247,6 +247,7 @@ namespace piicodev {
     //% weight=100
     //% inlineInputMode=inline
     export function setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setPixelRGB(pixel, red, green, blue);
     }
 
@@ -258,6 +259,7 @@ namespace piicodev {
     //% pixel.min=0 pixel.max=2 pixel.defl=0
     //% weight=99
     export function setPixelColor(pixel: number, color: RGBColor): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setPixelColor(pixel, color);
     }
 
@@ -270,6 +272,7 @@ namespace piicodev {
     //% position.min=0 position.max=1 position.defl=0
     //% weight=98
     export function setPixelColorWheel(pixel: number, position: number): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setPixelColorWheel(pixel, position);
     }
 
@@ -284,6 +287,7 @@ namespace piicodev {
     //% weight=97
     //% inlineInputMode=inline
     export function setAllRGB(red: number, green: number, blue: number): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setAllRGB(red, green, blue);
     }
 
@@ -294,6 +298,7 @@ namespace piicodev {
     //% block="RGB set all pixels to $color"
     //% weight=96
     export function setAllColor(color: RGBColor): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setAllColor(color);
     }
 
@@ -304,6 +309,7 @@ namespace piicodev {
     //% block="RGB show"
     //% weight=95
     export function rgbShow(): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.show();
     }
 
@@ -314,6 +320,7 @@ namespace piicodev {
     //% block="RGB clear all"
     //% weight=94
     export function rgbClear(): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.clear();
     }
 
@@ -325,6 +332,7 @@ namespace piicodev {
     //% level.min=0 level.max=255 level.defl=50
     //% weight=93
     export function setBrightness(level: number): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setBrightness(level);
     }
 
@@ -338,6 +346,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=50
     export function setPowerLED(on: boolean): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.setPowerLED(on);
     }
 
@@ -350,17 +359,13 @@ namespace piicodev {
     //% weight=49
     //% newAddress.defl=0x08
     export function changeRGBAddress(newAddress: number): void {
+        if (!_rgb) _rgb = new RGB(0x08);
         if (_rgb) _rgb.changeAddress(newAddress);
     }
 
     /**
      * Create a new PiicoDev RGB LED instance
      */
-    //% blockId=create_rgb
-    //% block="create PiicoDev RGB||at address $address"
-    //% address.defl=0x08
-    //% weight=70
-    //% expandableArgumentMode="toggle"
     export function createRGB(address?: number): void {
         if (address === undefined) address = 0x08;
         _rgb = new RGB(address);

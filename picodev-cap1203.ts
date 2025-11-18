@@ -97,6 +97,7 @@ namespace piicodev {
     //% pad.min=1 pad.max=3 pad.defl=1
     //% weight=100
     export function cap1203IsPadPressed(pad: number): boolean {
+        if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) return _cap1203.isPadPressed(pad);
         return false;
     }
@@ -109,6 +110,7 @@ namespace piicodev {
     //% pad.min=1 pad.max=3 pad.defl=1
     //% weight=99
     export function cap1203ReadRawValue(pad: number): number {
+        if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) return _cap1203.readRawValue(pad);
         return 0;
     }
@@ -122,6 +124,7 @@ namespace piicodev {
     //% advanced=true
     //% weight=50
     export function cap1203SetSensitivity(level: number): void {
+        if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) _cap1203.setSensitivity(level);
     }
 
@@ -133,20 +136,13 @@ namespace piicodev {
     //% advanced=true
     //% weight=49
     export function cap1203ClearInterrupt(): void {
+        if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) _cap1203.clearInterrupt();
     }
 
     /**
      * Create a new CAP1203 touch sensor instance
      */
-    //% blockId=create_cap1203
-    //% block="create CAP1203 touch sensor||mode $mode|sensitivity $sensitivity|address $address"
-    //% mode.defl=TouchMode.Multi
-    //% sensitivity.defl=3 sensitivity.min=0 sensitivity.max=7
-    //% address.defl=0x28
-    //% weight=80
-    //% expandableArgumentMode="toggle"
-    //% inlineInputMode=inline
     export function createCAP1203(mode?: TouchMode, sensitivity?: number, address?: number): void {
         if (mode === undefined) mode = TouchMode.Multi;
         if (sensitivity === undefined) sensitivity = 3;
