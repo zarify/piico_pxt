@@ -358,7 +358,6 @@ namespace piicodev {
      */
     //% blockId=create_rgb
     //% block="create PiicoDev RGB||at address $address"
-    //% blockSetVariable=rgbLED
     //% address.defl=0x08
     //% weight=70
     //% expandableArgumentMode="toggle"

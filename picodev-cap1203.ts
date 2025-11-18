@@ -141,7 +141,6 @@ namespace piicodev {
      */
     //% blockId=create_cap1203
     //% block="create CAP1203 touch sensor||mode $mode|sensitivity $sensitivity|address $address"
-    //% blockSetVariable=touchSensor
     //% mode.defl=TouchMode.Multi
     //% sensitivity.defl=3 sensitivity.min=0 sensitivity.max=7
     //% address.defl=0x28

@@ -156,7 +156,6 @@ namespace piicodev {
      */
     //% blockId=create_vl53l1x
     //% block="create VL53L1X distance sensor||at address $address"
-    //% blockSetVariable=distanceSensor
     //% address.defl=0x29
     //% weight=90
     //% expandableArgumentMode="toggle"

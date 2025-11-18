@@ -188,7 +188,6 @@ namespace piicodev {
      */
     //% blockId=create_buzzer
     //% block="create PiicoDev Buzzer||at address $address"
-    //% blockSetVariable=buzzer
     //% address.defl=0x5C
     //% weight=75
     //% expandableArgumentMode="toggle"

@@ -275,7 +275,6 @@ namespace piicodev {
      */
     //% blockId=create_veml6040
     //% block="create VEML6040 color sensor||at address $address"
-    //% blockSetVariable=colorSensor
     //% address.defl=0x10
     //% weight=85
     //% expandableArgumentMode="toggle"

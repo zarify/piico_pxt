@@ -273,7 +273,6 @@ namespace piicodev {
      */
     //% blockId=create_bme280
     //% block="create BME280 sensor||at address $address"
-    //% blockSetVariable=bme280
     //% address.defl=0x77
     //% weight=95
     //% expandableArgumentMode="toggle"
