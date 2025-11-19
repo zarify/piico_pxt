@@ -301,6 +301,7 @@ namespace piicodev {
     // Wrapper functions to call methods on the internal RGB instance
     /**
      * Set a pixel to specific RGB values
+     * Note: Call RGB show after to update the LEDs
      */
     //% blockId=rgb_set_pixel_rgb
     //% block="RGB set pixel $pixel to red $red green $green blue $blue"
@@ -317,6 +318,7 @@ namespace piicodev {
 
     /**
      * Set a pixel to a named color
+     * Note: Call RGB show after to update the LEDs
      */
     //% blockId=rgb_set_pixel_color
     //% block="RGB set pixel $pixel to $color"
@@ -329,6 +331,7 @@ namespace piicodev {
 
     /**
      * Set a pixel using color wheel position (0.0-1.0)
+     * Note: Call RGB show after to update the LEDs
      */
     //% blockId=rgb_set_pixel_wheel
     //% block="RGB set pixel $pixel using color wheel $position"
@@ -342,6 +345,7 @@ namespace piicodev {
 
     /**
      * Set all pixels to the same RGB values
+     * Note: Call RGB show after to update the LEDs
      */
     //% blockId=rgb_set_all_rgb
     //% block="RGB set all pixels to red $red green $green blue $blue"
@@ -357,6 +361,7 @@ namespace piicodev {
 
     /**
      * Set all pixels to a named color
+     * Note: Call RGB show after to update the LEDs
      */
     //% blockId=rgb_set_all_color
     //% block="RGB set all pixels to $color"
@@ -422,6 +427,52 @@ namespace piicodev {
     export function createRGB(address?: number): void {
         if (address === undefined) address = 0x08;
         _rgb = new RGB(address);
+    }
+
+    /**
+     * Debug: Check if RGB module is detected at the specified address
+     * Default address is 0x08 (all DIP switches off)
+     */
+    export function rgbIsDetected(address?: number): boolean {
+        if (address === undefined) address = 0x08;
+        return picodevUnified.isDevicePresent(address);
+    }
+
+    /**
+     * Debug: Scan I2C bus for RGB modules (addresses 0x08-0x17)
+     * Call this to find where your RGB module is connected
+     * Returns the address if found, or 0 if not found
+     */
+    export function rgbScanBus(): number {
+        // RGB modules respond at addresses 0x08 through 0x17 based on DIP switch configuration
+        for (let addr = 0x08; addr <= 0x17; addr++) {
+            if (picodevUnified.isDevicePresent(addr)) {
+                return addr;
+            }
+        }
+        return 0; // Not found
+    }
+
+    /**
+     * Debug: Test RGB communication directly (write test pattern)
+     * Tries to write a test pattern to the RGB module
+     * @param address I2C address to test (default 0x08)
+     */
+    export function rgbTestWrite(address?: number): void {
+        if (address === undefined) address = 0x08;
+        try {
+            // Try to write brightness value
+            let buf = pins.createBuffer(1);
+            buf.setNumber(NumberFormat.UInt8LE, 0, 128);
+            let result = picodevUnified.writeRegister(address, 0x06, buf);
+            if (result === 0) {
+                basic.showIcon(IconNames.Heart);
+            } else {
+                basic.showIcon(IconNames.Sad);
+            }
+        } catch (e) {
+            basic.showIcon(IconNames.No);
+        }
     }
 
     // Internal singleton instance
