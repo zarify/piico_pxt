@@ -211,7 +211,7 @@ namespace piicodev {
          * Read humidity as percentage
          */
         //% blockId=bme280_read_humidity
-        //% block="BME280 read humidity (%)"
+        //% block="BME280 read humidity (%%)"
         //% weight=99
         public readHumidity(): number {
             try {
@@ -376,7 +376,7 @@ namespace piicodev {
      * Read humidity as percentage
      */
     //% blockId=bme280_read_humidity
-    //% block="BME280 read humidity (\%)"
+    //% block="BME280 read humidity (%%)"
     //% group="Reading"
     //% weight=99
     export function bme280ReadHumidity(): number {
