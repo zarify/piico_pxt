@@ -6,6 +6,7 @@
  */
 
 //% weight=95 color=#0078D7 icon="\uf2c9"
+//% groups=['Reading', 'Configuration', 'others']
 namespace piicodev {
 
     /**
@@ -363,6 +364,7 @@ namespace piicodev {
      */
     //% blockId=bme280_read_temperature
     //% block="BME280 read temperature (°C)"
+    //% group="Reading"
     //% weight=100
     export function bme280ReadTemperature(): number {
         if (!_bme280) _bme280 = new BME280(0x77);
@@ -374,7 +376,8 @@ namespace piicodev {
      * Read humidity as percentage
      */
     //% blockId=bme280_read_humidity
-    //% block="BME280 read humidity (%)"
+    //% block="BME280 read humidity (\%)"
+    //% group="Reading"
     //% weight=99
     export function bme280ReadHumidity(): number {
         if (!_bme280) _bme280 = new BME280(0x77);
@@ -387,6 +390,7 @@ namespace piicodev {
      */
     //% blockId=bme280_read_pressure
     //% block="BME280 read pressure (hPa)"
+    //% group="Reading"
     //% weight=98
     export function bme280ReadPressure(): number {
         if (!_bme280) _bme280 = new BME280(0x77);
@@ -399,6 +403,7 @@ namespace piicodev {
      */
     //% blockId=bme280_altitude
     //% block="BME280 calculate altitude (m)"
+    //% group="Reading"
     //% weight=97
     export function bme280Altitude(): number {
         if (!_bme280) _bme280 = new BME280(0x77);
@@ -411,6 +416,7 @@ namespace piicodev {
      */
     //% blockId=bme280_set_temp_oversampling
     //% block="BME280 set temperature oversampling $mode"
+    //% group="Configuration"
     //% advanced=true
     //% weight=50
     export function bme280SetTemperatureOversampling(mode: Oversampling): void {
@@ -423,6 +429,7 @@ namespace piicodev {
      */
     //% blockId=bme280_set_pressure_oversampling
     //% block="BME280 set pressure oversampling $mode"
+    //% group="Configuration"
     //% advanced=true
     //% weight=49
     export function bme280SetPressureOversampling(mode: Oversampling): void {
@@ -435,6 +442,7 @@ namespace piicodev {
      */
     //% blockId=bme280_set_humidity_oversampling
     //% block="BME280 set humidity oversampling $mode"
+    //% group="Configuration"
     //% advanced=true
     //% weight=48
     export function bme280SetHumidityOversampling(mode: Oversampling): void {
@@ -447,6 +455,7 @@ namespace piicodev {
      */
     //% blockId=bme280_set_iir_filter
     //% block="BME280 set IIR filter $coefficient"
+    //% group="Configuration"
     //% advanced=true
     //% weight=47
     export function bme280SetIIRFilter(coefficient: IIRFilter): void {

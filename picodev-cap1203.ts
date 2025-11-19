@@ -5,6 +5,7 @@
  */
 
 //% weight=80 color=#FFA500 icon="\uf25a"
+//% groups=['Reading', 'Configuration', 'others']
 namespace piicodev {
 
     /**
@@ -198,6 +199,7 @@ namespace piicodev {
      */
     //% blockId=cap1203_is_pressed
     //% block="CAP1203 is pad $pad pressed?"
+    //% group="Reading"
     //% pad.min=1 pad.max=3 pad.defl=1
     //% weight=100
     export function cap1203IsPadPressed(pad: number): boolean {
@@ -211,6 +213,7 @@ namespace piicodev {
      */
     //% blockId=cap1203_read_raw
     //% block="CAP1203 pad $pad raw value"
+    //% group="Reading"
     //% pad.min=1 pad.max=3 pad.defl=1
     //% weight=99
     export function cap1203ReadRawValue(pad: number): number {
@@ -224,6 +227,7 @@ namespace piicodev {
      */
     //% blockId=cap1203_set_sensitivity
     //% block="CAP1203 set sensitivity $level"
+    //% group="Configuration"
     //% level.min=0 level.max=7 level.defl=3
     //% advanced=true
     //% weight=50
@@ -237,6 +241,7 @@ namespace piicodev {
      */
     //% blockId=cap1203_clear_interrupt
     //% block="CAP1203 clear interrupt"
+    //% group="Configuration"
     //% advanced=true
     //% weight=49
     export function cap1203ClearInterrupt(): void {

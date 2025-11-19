@@ -5,6 +5,7 @@
  */
 
 //% weight=70 color=#32CD32 icon="\uf0eb"
+//% groups=['Setting Colors', 'Display', 'Control', 'others']
 namespace piicodev {
 
     /**
@@ -305,6 +306,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_pixel_rgb
     //% block="RGB set pixel $pixel to red $red green $green blue $blue"
+    //% group="Setting Colors"
     //% pixel.min=0 pixel.max=2 pixel.defl=0
     //% red.min=0 red.max=255 red.defl=255
     //% green.min=0 green.max=255 green.defl=0
@@ -322,6 +324,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_pixel_color
     //% block="RGB set pixel $pixel to $color"
+    //% group="Setting Colors"
     //% pixel.min=0 pixel.max=2 pixel.defl=0
     //% weight=99
     export function setPixelColor(pixel: number, color: RGBColor): void {
@@ -335,6 +338,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_pixel_wheel
     //% block="RGB set pixel $pixel using color wheel $position"
+    //% group="Setting Colors"
     //% pixel.min=0 pixel.max=2 pixel.defl=0
     //% position.min=0 position.max=1 position.defl=0
     //% weight=98
@@ -349,6 +353,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_all_rgb
     //% block="RGB set all pixels to red $red green $green blue $blue"
+    //% group="Setting Colors"
     //% red.min=0 red.max=255 red.defl=255
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
@@ -365,6 +370,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_all_color
     //% block="RGB set all pixels to $color"
+    //% group="Setting Colors"
     //% weight=96
     export function setAllColor(color: RGBColor): void {
         if (!_rgb) _rgb = new RGB(0x08);
@@ -376,6 +382,7 @@ namespace piicodev {
      */
     //% blockId=rgb_show
     //% block="RGB show"
+    //% group="Display"
     //% weight=95
     export function rgbShow(): void {
         if (!_rgb) _rgb = new RGB(0x08);
@@ -387,6 +394,7 @@ namespace piicodev {
      */
     //% blockId=rgb_clear
     //% block="RGB clear all"
+    //% group="Display"
     //% weight=94
     export function rgbClear(): void {
         if (!_rgb) _rgb = new RGB(0x08);
@@ -398,6 +406,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_brightness
     //% block="RGB set brightness $level"
+    //% group="Control"
     //% level.min=0 level.max=255 level.defl=50
     //% weight=93
     export function setBrightness(level: number): void {
@@ -410,6 +419,7 @@ namespace piicodev {
      */
     //% blockId=rgb_power_led
     //% block="RGB set power LED $on"
+    //% group="Control"
     //% on.shadow="toggleOnOff"
     //% on.defl=true
     //% advanced=true

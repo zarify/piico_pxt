@@ -5,6 +5,7 @@
  */
 
 //% weight=75 color=#9370DB icon="\uf0a2"
+//% groups=['Playing', 'Control', 'others']
 namespace piicodev {
 
     /**
@@ -199,6 +200,7 @@ namespace piicodev {
      */
     //% blockId=buzzer_play_tone
     //% block="Buzzer play tone $frequency Hz||for $duration ms"
+    //% group="Playing"
     //% frequency.min=20 frequency.max=20000 frequency.defl=440
     //% duration.defl=1000
     //% weight=100
@@ -213,6 +215,7 @@ namespace piicodev {
      */
     //% blockId=buzzer_stop
     //% block="Buzzer stop tone"
+    //% group="Playing"
     //% weight=99
     export function stopTone(): void {
         if (!_buzzer) _buzzer = new Buzzer(0x5C);
@@ -224,6 +227,7 @@ namespace piicodev {
      */
     //% blockId=buzzer_set_volume
     //% block="Buzzer set volume $volume"
+    //% group="Control"
     //% weight=98
     export function setVolume(volume: BuzzerVolume): void {
         if (!_buzzer) _buzzer = new Buzzer(0x5C);
@@ -235,6 +239,7 @@ namespace piicodev {
      */
     //% blockId=buzzer_firmware_version
     //% block="Buzzer firmware version"
+    //% group="Control"
     //% advanced=true
     //% weight=50
     export function buzzerGetFirmwareVersion(): string {
@@ -248,6 +253,7 @@ namespace piicodev {
      */
     //% blockId=buzzer_power_led
     //% block="Buzzer set power LED $on"
+    //% group="Control"
     //% on.shadow="toggleOnOff"
     //% on.defl=true
     //% advanced=true

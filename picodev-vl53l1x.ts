@@ -5,6 +5,7 @@
  */
 
 //% weight=90 color=#8B4513 icon="\uf545"
+//% groups=['Reading', 'Configuration', 'others']
 namespace piicodev {
 
     /**
@@ -285,6 +286,7 @@ namespace piicodev {
      */
     //% blockId=vl53l1x_read_distance
     //% block="VL53L1X read distance (mm)"
+    //% group="Reading"
     //% weight=100
     export function vl53l1xReadDistance(): number {
         if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
@@ -297,6 +299,7 @@ namespace piicodev {
      */
     //% blockId=vl53l1x_get_status
     //% block="VL53L1X measurement status"
+    //% group="Reading"
     //% weight=99
     export function vl53l1xGetStatus(): string {
         if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
@@ -309,6 +312,7 @@ namespace piicodev {
      */
     //% blockId=vl53l1x_reset
     //% block="VL53L1X reset sensor"
+    //% group="Configuration"
     //% advanced=true
     //% weight=50
     export function vl53l1xReset(): void {
@@ -323,6 +327,7 @@ namespace piicodev {
      */
     //% blockId=vl53l1x_set_distance_mode
     //% block="VL53L1X set distance mode $mode"
+    //% group="Configuration"
     //% advanced=true
     //% weight=48
     export function vl53l1xSetDistanceMode(mode: DistanceMode): void {
