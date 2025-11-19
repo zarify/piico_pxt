@@ -253,12 +253,8 @@ namespace piicodev {
 
         /**
          * Change the I2C address (for using multiple sensors)
+         * @internal
          */
-        //% blockId=vl53l1x_change_address
-        //% block="VL53L1X change address to $newAddress"
-        //% advanced=true
-        //% weight=49
-        //% newAddress.defl=0x29
         public changeAddress(newAddress: number): void {
             this.writeReg(0x0001, newAddress & 0x7F);
             basic.pause(50);
@@ -320,18 +316,7 @@ namespace piicodev {
         if (_vl53l1x) _vl53l1x.reset();
     }
 
-    /**
-     * Change the I2C address (for using multiple sensors)
-     */
-    //% blockId=vl53l1x_change_address
-    //% block="VL53L1X change address to $newAddress"
-    //% advanced=true
-    //% weight=49
-    //% newAddress.defl=0x29
-    export function vl53l1xChangeAddress(newAddress: number): void {
-        if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
-        if (_vl53l1x) _vl53l1x.changeAddress(newAddress);
-    }
+
 
     /**
      * Set distance mode

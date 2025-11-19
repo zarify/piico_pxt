@@ -232,12 +232,8 @@ namespace piicodev {
 
         /**
          * Change the I2C address (for using multiple RGB modules)
+         * @internal
          */
-        //% blockId=rgb_change_address
-        //% block="RGB change address to $newAddress"
-        //% advanced=true
-        //% weight=49
-        //% newAddress.defl=0x08
         public changeAddress(newAddress: number): void {
             try {
                 // Validate address range
@@ -418,18 +414,7 @@ namespace piicodev {
         if (_rgb) _rgb.setPowerLED(on);
     }
 
-    /**
-     * Change the I2C address (for using multiple RGB modules)
-     */
-    //% blockId=rgb_change_address
-    //% block="RGB change address to $newAddress"
-    //% advanced=true
-    //% weight=49
-    //% newAddress.defl=0x08
-    export function changeRGBAddress(newAddress: number): void {
-        if (!_rgb) _rgb = new RGB(0x08);
-        if (_rgb) _rgb.changeAddress(newAddress);
-    }
+
 
     /**
      * Create a new PiicoDev RGB LED instance

@@ -287,16 +287,16 @@ namespace piicodev {
         }
 
         /**
-         * Calculate altitude in meters based on sea level pressure
+         * Calculate altitude in meters based on standard sea level pressure
          */
         //% blockId=bme280_altitude
-        //% block="BME280 calculate altitude at sea level $seaLevelPressure hPa"
-        //% seaLevelPressure.defl=1013.25
+        //% block="BME280 calculate altitude (m)"
         //% weight=97
-        public altitude(seaLevelPressure: number): number {
+        public altitude(): number {
             try {
                 let pressure = this.readPressure();
-                return 44330 * (1 - Math.pow(pressure / seaLevelPressure, 1 / 5.255));
+                // Uses standard sea level pressure of 1013.25 hPa
+                return 44330 * (1 - Math.pow(pressure / 1013.25, 1 / 5.255));
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
                 return 0;
@@ -395,15 +395,14 @@ namespace piicodev {
     }
 
     /**
-     * Calculate altitude in meters based on sea level pressure
+     * Calculate altitude in meters based on standard sea level pressure
      */
     //% blockId=bme280_altitude
-    //% block="BME280 calculate altitude at sea level $seaLevelPressure hPa"
-    //% seaLevelPressure.defl=1013.25
+    //% block="BME280 calculate altitude (m)"
     //% weight=97
-    export function bme280Altitude(seaLevelPressure: number): number {
+    export function bme280Altitude(): number {
         if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) return _bme280.altitude(seaLevelPressure);
+        if (_bme280) return _bme280.altitude();
         return 0;
     }
 

@@ -205,7 +205,7 @@ namespace piicodev {
          * Get color hue (0-360 degrees)
          */
         //% blockId=veml6040_hue
-        //% block="VEML6040 color hue (0-360)"
+        //% block="VEML6040 color hue"
         //% weight=95
         public getHue(): number {
             try {
@@ -224,7 +224,7 @@ namespace piicodev {
          * Get color saturation (0-100%)
          */
         //% blockId=veml6040_saturation
-        //% block="VEML6040 color saturation (%)"
+        //% block="VEML6040 color saturation"
         //% weight=94
         public getSaturation(): number {
             try {
@@ -243,7 +243,7 @@ namespace piicodev {
          * Get color brightness/value (0-100%)
          */
         //% blockId=veml6040_brightness
-        //% block="VEML6040 color brightness (%)"
+        //% block="VEML6040 color brightness"
         //% weight=93
         public getBrightness(): number {
             try {
@@ -383,7 +383,7 @@ namespace piicodev {
      * Get color hue (0-360 degrees)
      */
     //% blockId=veml6040_hue
-    //% block="VEML6040 color hue (0-360)"
+    //% block="VEML6040 color hue"
     //% weight=95
     export function veml6040GetHue(): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
@@ -395,7 +395,7 @@ namespace piicodev {
      * Get color saturation (0-100%)
      */
     //% blockId=veml6040_saturation
-    //% block="VEML6040 color saturation (%)"
+    //% block="VEML6040 color saturation"
     //% weight=94
     export function veml6040GetSaturation(): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
@@ -407,7 +407,7 @@ namespace piicodev {
      * Get color brightness/value (0-100%)
      */
     //% blockId=veml6040_brightness
-    //% block="VEML6040 color brightness (%)"
+    //% block="VEML6040 color brightness"
     //% weight=93
     export function veml6040GetBrightness(): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);

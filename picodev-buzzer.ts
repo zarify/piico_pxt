@@ -170,12 +170,8 @@ namespace piicodev {
 
         /**
          * Change the I2C address (for using multiple buzzers)
+         * @internal
          */
-        //% blockId=buzzer_change_address
-        //% block="Buzzer change address to $newAddress"
-        //% advanced=true
-        //% weight=48
-        //% newAddress.defl=0x5C
         public changeAddress(newAddress: number): void {
             try {
                 // Validate address range
@@ -261,18 +257,7 @@ namespace piicodev {
         if (_buzzer) _buzzer.setPowerLED(on);
     }
 
-    /**
-     * Change the I2C address (for using multiple buzzers)
-     */
-    //% blockId=buzzer_change_address
-    //% block="Buzzer change address to $newAddress"
-    //% advanced=true
-    //% weight=48
-    //% newAddress.defl=0x5C
-    export function buzzerChangeAddress(newAddress: number): void {
-        if (!_buzzer) _buzzer = new Buzzer(0x5C);
-        if (_buzzer) _buzzer.changeAddress(newAddress);
-    }
+
 
     /**
      * Create a new PiicoDev Buzzer instance
