@@ -19,7 +19,7 @@ namespace piicodev {
     /**
      * Extension version information
      */
-    export const VERSION = "0.1.0";
+    export const VERSION = "0.1.1";
 
     /**
      * Check if extension is properly loaded
