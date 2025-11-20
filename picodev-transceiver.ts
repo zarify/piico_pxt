@@ -48,7 +48,7 @@ namespace piicodev {
             try {
                 // Truncate message to max length
                 if (message.length > 59) {
-                    message = message.substring(0, 59);
+                    message = message.substr(0, 59);
                 }
 
                 // Convert message to bytes and send
