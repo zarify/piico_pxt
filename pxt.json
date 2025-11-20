@@ -1,6 +1,6 @@
 {
     "name": "makecode-piicodev",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "PiicoDev sensor ecosystem support for BBC micro:bit V2",
     "license": "MIT",
     "author": "zarify",
@@ -17,7 +17,18 @@
         "picodev-veml6040.ts",
         "picodev-cap1203.ts",
         "picodev-buzzer.ts",
-        "picodev-rgb.ts"
+        "picodev-rgb.ts",
+        "picodev-tmp117.ts",
+        "picodev-switch.ts",
+        "picodev-potentiometer.ts",
+        "picodev-lis3dh.ts",
+        "picodev-mmc5603.ts",
+        "picodev-ens160.ts",
+        "picodev-veml6030.ts",
+        "picodev-servo.ts",
+        "picodev-rfid.ts",
+        "picodev-ultrasonic.ts",
+        "picodev-transceiver.ts"
     ],
     "testFiles": [
         "test.ts"
