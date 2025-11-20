@@ -132,6 +132,166 @@ function testRGB() {
     piicodev.rgbClear()
 }
 
+// Test TMP117 Temperature Sensor
+function testTMP117() {
+    piicodev.createTMP117(0x48)
+    basic.showString("TMP117")
+
+    // Test temperature readings
+    for (let i = 0; i < 5; i++) {
+        let tempC = piicodev.readTMP117TempC()
+        basic.showNumber(Math.round(tempC))
+        basic.pause(500)
+    }
+}
+
+// Test Switch Button
+function testSwitch() {
+    piicodev.createSwitch(0x42)
+    basic.showString("SWITCH")
+
+    // Test button detection
+    basic.forever(function () {
+        if (piicodev.switchIsPressed()) {
+            basic.showString("P")
+        } else {
+            basic.clearScreen()
+        }
+        basic.pause(100)
+    })
+}
+
+// Test Potentiometer
+function testPotentiometer() {
+    piicodev.createPotentiometer(0x35, 0, 100)
+    basic.showString("POT")
+
+    // Test potentiometer reading
+    for (let i = 0; i < 10; i++) {
+        let value = piicodev.readPotScaled()
+        basic.showNumber(Math.round(value))
+        basic.pause(300)
+    }
+}
+
+// Test LIS3DH Accelerometer
+function testLIS3DH() {
+    piicodev.createLIS3DH(0x18, piicodev.AccelRange.Range2G, piicodev.SampleRate.Rate400Hz)
+    basic.showString("LIS3DH")
+
+    // Test acceleration reading
+    for (let i = 0; i < 10; i++) {
+        let x = piicodev.readLIS3DHAccelX()
+        basic.showNumber(Math.round(x))
+        basic.pause(300)
+    }
+}
+
+// Test MMC5603 Magnetometer
+function testMMC5603() {
+    piicodev.createMMC5603(0x30)
+    basic.showString("MMC5603")
+
+    // Test heading
+    for (let i = 0; i < 10; i++) {
+        let heading = piicodev.getMMC5603Heading()
+        basic.showNumber(Math.round(heading))
+        basic.pause(500)
+    }
+}
+
+// Test ENS160 Air Quality
+function testENS160() {
+    piicodev.createENS160(0x53)
+    basic.showString("ENS160")
+
+    // Test AQI reading
+    for (let i = 0; i < 5; i++) {
+        let aqi = piicodev.readENS160AQI()
+        let rating = piicodev.getENS160AQIRating()
+        basic.showNumber(aqi)
+        basic.pause(500)
+        basic.showString(rating)
+        basic.pause(500)
+    }
+}
+
+// Test VEML6030 Ambient Light
+function testVEML6030() {
+    piicodev.createVEML6030(0x10)
+    basic.showString("VEML6030")
+
+    // Test light measurement
+    for (let i = 0; i < 10; i++) {
+        let lux = piicodev.readVEML6030Lux()
+        basic.showNumber(Math.round(lux))
+        basic.pause(300)
+    }
+}
+
+// Test Servo
+function testServo() {
+    basic.showString("SERVO")
+
+    // Test servo on AnalogPin P0
+    piicodev.initServo(AnalogPin.P0, 0, 180)
+
+    // Sweep servo
+    for (let angle = 0; angle <= 180; angle += 10) {
+        piicodev.servoSetAngle(AnalogPin.P0, angle)
+        basic.showNumber(angle)
+        basic.pause(100)
+    }
+
+    piicodev.servoRelease(AnalogPin.P0)
+}
+
+// Test RFID
+function testRFID() {
+    piicodev.createRFID(0x2C)
+    basic.showString("RFID")
+
+    // Test tag reading
+    basic.forever(function () {
+        if (piicodev.rfidIsTagPresent()) {
+            let tagID = piicodev.rfidReadTagID()
+            basic.showString(tagID)
+            basic.pause(1000)
+        } else {
+            basic.clearScreen()
+        }
+        basic.pause(100)
+    })
+}
+
+// Test Ultrasonic
+function testUltrasonic() {
+    piicodev.createUltrasonic(0x35)
+    basic.showString("ULTRASONIC")
+
+    // Test distance reading
+    for (let i = 0; i < 10; i++) {
+        let distance = piicodev.readUltrasonicCM()
+        basic.showNumber(distance)
+        basic.pause(300)
+    }
+}
+
+// Test Transceiver
+function testTransceiver() {
+    piicodev.createTransceiver(0x1A, 1, 0)
+    basic.showString("XCEIVER")
+
+    basic.forever(function () {
+        if (piicodev.transceiverMessageAvailable()) {
+            let message = piicodev.transceiverReceiveMessage()
+            basic.showString(message)
+            basic.pause(1000)
+        }
+        basic.pause(100)
+    })
+}
+
 // Run all tests (uncomment the test you want to run)
 // testBME280()
 // testVL53L1X()
@@ -139,3 +299,14 @@ function testRGB() {
 // testCAP1203()
 // testBuzzer()
 // testRGB()
+// testTMP117()
+// testSwitch()
+// testPotentiometer()
+// testLIS3DH()
+// testMMC5603()
+// testENS160()
+// testVEML6030()
+// testServo()
+// testRFID()
+// testUltrasonic()
+// testTransceiver()
