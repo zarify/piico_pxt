@@ -15,6 +15,7 @@
         "picodev-bme280.ts",
         "picodev-vl53l1x.ts",
         "picodev-veml6040.ts",
+        "picodev-veml6030.ts",
         "picodev-cap1203.ts",
         "picodev-buzzer.ts",
         "picodev-rgb.ts"

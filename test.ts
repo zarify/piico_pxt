@@ -69,6 +69,31 @@ function testVEML6040() {
     basic.pause(500)
 }
 
+// Test VEML6030 Ambient Light Sensor
+function testVEML6030() {
+    piicodev.createVEML6030(0x10)
+    basic.showString("VEML6030")
+
+    // Test with default gain (×1)
+    let lux = piicodev.veml6030Read()
+    basic.showNumber(Math.round(lux))
+    basic.pause(1000)
+
+    // Test with high gain for low light (×2)
+    piicodev.veml6030SetGain(piicodev.VEML6030Gain.X2)
+    basic.pause(100)
+    lux = piicodev.veml6030Read()
+    basic.showNumber(Math.round(lux))
+    basic.pause(1000)
+
+    // Test with low gain for bright light (×0.125)
+    piicodev.veml6030SetGain(piicodev.VEML6030Gain.X0125)
+    basic.pause(100)
+    lux = piicodev.veml6030Read()
+    basic.showNumber(Math.round(lux))
+    basic.pause(1000)
+}
+
 // Test CAP1203 Touch Sensor
 function testCAP1203() {
     piicodev.createCAP1203(piicodev.TouchMode.Multi, 3, 0x28)
@@ -136,6 +161,7 @@ function testRGB() {
 // testBME280()
 // testVL53L1X()
 // testVEML6040()
+// testVEML6030()
 // testCAP1203()
 // testBuzzer()
 // testRGB()
