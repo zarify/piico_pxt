@@ -1,1 +1,5 @@
 plan/
+node_modules
+.pxt/storage/auth-firefox/user-state
+package.json
+package-lock.json
