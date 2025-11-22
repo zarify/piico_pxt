@@ -3,7 +3,6 @@
     "version": "0.2.0",
     "description": "PiicoDev sensor ecosystem support for BBC micro:bit V2",
     "license": "MIT",
-    "author": "zarify",
     "dependencies": {
         "core": "*",
         "radio": "*"
@@ -32,6 +31,7 @@
         "microbit"
     ],
     "preferredEditor": "blocksprj",
+    "author": "zarify",
     "yotta": {
         "config": {
             "microbit-dal": {
