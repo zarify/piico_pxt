@@ -99,6 +99,12 @@ namespace piicodev {
          */
         private initialize(): void {
             try {
+                // Soft reset the sensor first
+                let resetBuf = pins.createBuffer(1);
+                resetBuf.setNumber(NumberFormat.UInt8LE, 0, 0xB6);
+                picodevUnified.writeRegister(this.addr, 0xE0, resetBuf);
+                basic.pause(10);
+
                 // Read calibration data from device
                 this.T1 = picodevUnified.readRegisterUInt16LE(this.addr, 0x88);
                 this.T2 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0x8A));
@@ -117,18 +123,28 @@ namespace piicodev {
                 this.H2 = picodevUnified.toSigned(picodevUnified.readRegisterUInt16LE(this.addr, 0xE1));
                 this.H3 = picodevUnified.readRegisterByte(this.addr, 0xE3);
 
-                // H4 and H5 are split across registers
+                // H4 and H5 are split across registers and need to be signed 12-bit values
                 let reg28 = picodevUnified.readRegisterByte(this.addr, 0xE4);
                 let reg29 = picodevUnified.readRegisterByte(this.addr, 0xE5);
                 let reg2A = picodevUnified.readRegisterByte(this.addr, 0xE6);
-                this.H4 = (reg28 << 4) + (reg29 & 0x0F);
-                this.H5 = (reg2A << 4) + ((reg29 >> 4) & 0x0F);
+                let h4_raw = (reg28 << 4) | (reg29 & 0x0F);
+                let h5_raw = (reg2A << 4) | ((reg29 >> 4) & 0x0F);
+                // Convert 12-bit unsigned to signed
+                this.H4 = h4_raw > 2047 ? h4_raw - 4096 : h4_raw;
+                this.H5 = h5_raw > 2047 ? h5_raw - 4096 : h5_raw;
 
                 this.H6 = picodevUnified.toSigned(picodevUnified.readRegisterByte(this.addr, 0xE7));
 
-                // Configure sensor
+                // Configure sensor - match Python order
                 this.configureHumidity();
-                this.configureControl();
+                basic.pause(2);
+                // Write initial control value of 36 (0x24) like Python
+                let initBuf = pins.createBuffer(1);
+                initBuf.setNumber(NumberFormat.UInt8LE, 0, 36);
+                picodevUnified.writeRegister(this.addr, 0xF4, initBuf);
+                basic.pause(2);
+                // Configure IIR filter
+                this.configureIIRFilter();
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
             }
@@ -149,16 +165,42 @@ namespace piicodev {
          */
         private configureControl(): void {
             let buf = pins.createBuffer(1);
-            let ctrl = (this.pressMode << 5) | (this.tempMode << 2) | 0x01; // 0x01 = normal mode
+            let ctrl = (this.pressMode << 5) | (this.tempMode << 2) | 0x00; // 0x00 = sleep mode (will use forced mode per measurement)
             buf.setNumber(NumberFormat.UInt8LE, 0, ctrl);
             picodevUnified.writeRegister(this.addr, 0xF4, buf);
             basic.pause(2);
         }
 
         /**
+         * Configure IIR filter
+         */
+        private configureIIRFilter(): void {
+            let buf = pins.createBuffer(1);
+            buf.setNumber(NumberFormat.UInt8LE, 0, this.filterCoeff << 2);
+            picodevUnified.writeRegister(this.addr, 0xF5, buf);
+            basic.pause(2);
+        }
+
+        /**
+         * Trigger a forced measurement
+         */
+        private forceMeasurement(): void {
+            let buf = pins.createBuffer(1);
+            let ctrl = (this.pressMode << 5) | (this.tempMode << 2) | 0x02; // 0x02 = forced mode
+            buf.setNumber(NumberFormat.UInt8LE, 0, ctrl);
+            picodevUnified.writeRegister(this.addr, 0xF4, buf);
+        }
+
+        /**
          * Read raw sensor data
          */
         private readRawData(): number[] {
+            // Trigger measurement in normal mode (like Python)
+            let buf = pins.createBuffer(1);
+            let ctrl = (this.pressMode << 5) | (this.tempMode << 2) | 0x01; // 0x01 = normal mode
+            buf.setNumber(NumberFormat.UInt8LE, 0, ctrl);
+            picodevUnified.writeRegister(this.addr, 0xF4, buf);
+
             // Calculate measurement time based on oversampling modes
             let sleepTime = 1250;
             if (this.tempMode > 0) sleepTime += 2300 * (1 << this.tempMode);
@@ -167,7 +209,7 @@ namespace piicodev {
 
             basic.pause(1 + Math.idiv(sleepTime, 1000));
 
-            // Wait for measurement to complete
+            // Wait for measurement to complete (check measuring bit)
             while ((picodevUnified.readRegisterByte(this.addr, 0xF3) & 0x08) !== 0) {
                 basic.pause(1);
             }
@@ -234,7 +276,7 @@ namespace piicodev {
             try {
                 let raw = this.readRawData();
                 this.compensateTemperature(raw[0]); // Must read temperature first
-                return this.compensatePressure(raw[1]) / 256 / 100;
+                return this.compensatePressure(raw[1]) / 100; // Bosch algorithm returns Pa, convert to hPa
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
                 return 0;
@@ -254,37 +296,54 @@ namespace piicodev {
 
         /**
          * Compensate raw pressure data and return in Pa
+         * Using official Bosch 32-bit integer compensation algorithm
          */
         private compensatePressure(rawP: number): number {
-            let var1 = (this.tFine >> 1) - 64000;
-            let var2 = var1 * var1 * (this.P6 >> 16);
-            var2 = var2 + (var1 * this.P5 << 17);
-            var2 = var2 + (this.P4 << 35);
-            var1 = ((var1 * var1 * (this.P3 >> 8)) >> 13) + ((this.P2 * var1) << 12);
-            var1 = (((1 << 47) + var1) * this.P1) >> 33;
+            let var1: number;
+            let var2: number;
+            let var3: number;
+            let var4: number;
+            let var5: number;
+            let pressure: number;
 
-            if (var1 === 0) return 0; // avoid exception caused by division by zero
+            var1 = Math.idiv(this.tFine, 2) - 64000;
+            var2 = Math.idiv(Math.idiv(Math.idiv(var1, 4) * Math.idiv(var1, 4), 2048) * this.P6, 1);
+            var2 = var2 + (var1 * this.P5 * 2);
+            var2 = Math.idiv(var2, 4) + (this.P4 * 65536);
+            var3 = Math.idiv(this.P3 * Math.idiv(Math.idiv(var1, 4) * Math.idiv(var1, 4), 8192), 8);
+            var4 = Math.idiv(this.P2 * var1, 2);
+            var1 = Math.idiv(var3 + var4, 262144);
+            var1 = Math.idiv((32768 + var1) * this.P1, 32768);
 
-            let pressure = ((1048576 - rawP) - (var2 >> 12)) * 3125 / var1;
-            var1 = (this.P9 * (pressure >> 13) * (pressure >> 13)) >> 25;
-            var2 = (this.P8 * pressure) >> 19;
-            pressure = ((pressure + var1 + var2) >> 8) + (this.P7 << 4);
+            if (var1 === 0) return 0;
+
+            var5 = 1048576 - rawP;
+            pressure = Math.idiv((var5 - Math.idiv(var2, 4096)) * 3125, var1);
+
+            if (pressure < 0x80000000) {
+                pressure = Math.idiv(pressure * 2, 1);
+            } else {
+                pressure = Math.idiv(pressure, var1) * 2;
+            }
+
+            var1 = Math.idiv(this.P9 * Math.idiv(Math.idiv(Math.idiv(pressure, 8) * Math.idiv(pressure, 8), 8192), 1), 4096);
+            var2 = Math.idiv(Math.idiv(pressure, 4) * this.P8, 8192);
+            pressure = pressure + Math.idiv(var1 + var2 + this.P7, 16);
+
             return pressure;
         }
 
         /**
          * Compensate raw humidity data and return in 1/1024 %RH
+         * Formula from Python: h=((raw_h<<14)-(self._H4<<20)-self._H5*h+16384>>15)*((((h*self._H6>>10)*((h*self._H3>>11)+32768)>>10)+2097152)*self._H2+8192>>14)
          */
         private compensateHumidity(rawH: number): number {
-            let var_h = this.tFine - 76800;
-            var_h = ((rawH << 14) - (this.H4 << 20) - (this.H5 * var_h) + 16384) >> 15;
-            var_h = ((((var_h * var_h) >> 11) * (this.H1 << 4)) >> 20) +
-                (((this.H2 << 11) * var_h) >> 10);
-            var_h = ((var_h + 2097152) * this.H3) >> 14;
-            var_h = (var_h - (((var_h >> 15) * (var_h >> 15)) >> 7) * (this.H6 >> 4));
-            var_h = var_h < 0 ? 0 : var_h;
-            var_h = var_h > 419430400 ? 419430400 : var_h;
-            return var_h >> 12;
+            let h = this.tFine - 76800;
+            h = (((rawH << 14) - (this.H4 << 20) - this.H5 * h + 16384) >> 15) * ((((h * this.H6 >> 10) * ((h * this.H3 >> 11) + 32768) >> 10) + 2097152) * this.H2 + 8192 >> 14);
+            h = h - (((h >> 15) * (h >> 15) >> 7) * this.H1 >> 4);
+            h = h < 0 ? 0 : h;
+            h = h > 419430400 ? 419430400 : h;
+            return h >> 12;
         }
 
         /**
