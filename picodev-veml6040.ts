@@ -132,7 +132,8 @@ namespace piicodev {
 
         /**
          * Convert RGB to HSV
-         * Returns object with hue (0-360), saturation (0-1), value (0-1)
+         * Returns array with [hue (0-360), saturation (0-1), value (0-1)]
+         * Matches the Python implementation exactly
          */
         private rgbToHsv(r: number, g: number, b: number): number[] {
             let rf = r / 65535;
@@ -143,16 +144,21 @@ namespace piicodev {
             let min = Math.min(rf, Math.min(gf, bf));
             let delta = max - min;
 
-            // Calculate hue
+            // Calculate hue (matches Python: h={r:(g-b)/d+(6 if g<b else 0),g:(b-r)/d+2,b:(r-g)/d+4}[high];h/=6)
             let hue = 0;
             if (delta !== 0) {
                 if (max === rf) {
-                    hue = 60 * (((gf - bf) / delta) % 6);
+                    // Python: (g-b)/d + (6 if g<b else 0), then /6, then *360
+                    hue = (gf - bf) / delta + (gf < bf ? 6 : 0);
                 } else if (max === gf) {
-                    hue = 60 * (((bf - rf) / delta) + 2);
+                    // Python: (b-r)/d + 2
+                    hue = (bf - rf) / delta + 2;
                 } else {
-                    hue = 60 * (((rf - gf) / delta) + 4);
+                    // Python: (r-g)/d + 4
+                    hue = (rf - gf) / delta + 4;
                 }
+                // Divide by 6 then multiply by 360 (equivalent to * 60)
+                hue = (hue / 6) * 360;
             }
 
             // Ensure hue is positive
@@ -167,6 +173,8 @@ namespace piicodev {
 
         /**
          * Classify the detected color and return its name
+         * Uses RGB ratio-based approach to handle sensor's yellow bias
+         * Optimized for close-distance detection (sensor must be very close to surface)
          */
         //% blockId=veml6040_classify_color
         //% block="VEML6040 classify color"
@@ -177,24 +185,58 @@ namespace piicodev {
                 let g = this.readGreen();
                 let b = this.readBlue();
 
-                let hsv = this.rgbToHsv(r, g, b);
-                let hue = hsv[0];
-                let brightness = hsv[2];
-
-                // If brightness is too low, it's not a valid color
-                if (brightness < 0.1) {
+                // Calculate total and percentages
+                let total = r + g + b;
+                if (total === 0) {
                     return "none";
                 }
 
-                // Classify based on hue
-                // Using 60-degree sectors for basic color classification
-                if (hue < 30 || hue >= 330) return "red";
-                if (hue >= 30 && hue < 90) return "yellow";
-                if (hue >= 90 && hue < 150) return "green";
-                if (hue >= 150 && hue < 210) return "cyan";
-                if (hue >= 210 && hue < 270) return "blue";
-                if (hue >= 270 && hue < 330) return "magenta";
+                // Filter out very low readings (sensor pointing at nothing/dark surface far away)
+                if (total < 800) {
+                    return "none";
+                }
 
+                let rPct = r / total;
+                let gPct = g / total;
+                let bPct = b / total;
+
+                // Find max and min percentages
+                let maxPct = Math.max(rPct, Math.max(gPct, bPct));
+                let minPct = Math.min(rPct, Math.min(gPct, bPct));
+                let range = maxPct - minPct;
+
+                // Red detection: R% is dominant and significantly higher
+                if (rPct > 0.45 && rPct > gPct && rPct > bPct) {
+                    return "red";
+                }
+
+                // Green detection: G% is dominant and significantly higher
+                if (gPct > 0.40 && gPct > rPct && gPct > bPct) {
+                    return "green";
+                }
+
+                // Blue detection: B% is highest OR (G% slightly higher but B% strong)
+                // Blue is tricky due to sensor bias - it often reads with G slightly higher than B
+                if (bPct > rPct && bPct > gPct) {
+                    return "blue";
+                }
+                if (bPct > 0.27 && gPct > rPct && (gPct - bPct) < 0.10) {
+                    return "blue";
+                }
+
+                // White detection: balanced channels with good blue content
+                // Must have tight range AND higher B% than black would have
+                if (range < 0.16 && rPct > 0.36 && gPct > 0.38 && bPct > 0.235) {
+                    return "white";
+                }
+
+                // Black detection: all channels similar and relatively balanced
+                // Checked after white - has slightly wider range tolerance
+                if (range < 0.17 && rPct > 0.35 && gPct > 0.35) {
+                    return "black";
+                }
+
+                // If nothing matched, return none
                 return "none";
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
