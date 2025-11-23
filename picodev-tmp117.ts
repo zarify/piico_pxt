@@ -43,7 +43,7 @@ namespace piicodev {
         readTempC(): number {
             try {
                 // Read 2 bytes (16-bit temperature value)
-                let data = picodevUnified.readRegisterBlock(this.addr, TMP117.REG_TEMP, 2);
+                let data = picodevUnified.readRegister(this.addr, TMP117.REG_TEMP, 2);
 
                 // Combine bytes (big-endian, signed 16-bit)
                 let tempRaw = (data[0] << 8) | data[1];

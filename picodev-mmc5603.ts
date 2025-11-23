@@ -163,7 +163,7 @@ namespace piicodev {
         private readRaw(): { x: number, y: number, z: number } {
             try {
                 // Read 6 bytes starting from XOUT0
-                let data = picodevUnified.readRegisterBlock(this.addr, MMC5603.REG_XOUT0, 6);
+                let data = picodevUnified.readRegister(this.addr, MMC5603.REG_XOUT0, 6);
 
                 // Combine bytes (16-bit values, big-endian)
                 let x = (data[0] << 8) | data[1];
