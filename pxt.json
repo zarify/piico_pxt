@@ -17,7 +17,8 @@
         "picodev-veml6030.ts",
         "picodev-cap1203.ts",
         "picodev-buzzer.ts",
-        "picodev-rgb.ts"
+        "picodev-rgb.ts",
+        "picodev-button.ts"
     ],
     "testFiles": [
         "test.ts"
