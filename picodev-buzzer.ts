@@ -4,8 +4,8 @@
  * Programmable buzzer with tone generation and volume control.
  */
 
-//% weight=75 color=#9370DB icon="\uf0a2"
-//% groups=['Playing', 'Control', 'others']
+//% weight=89 color=#E63022 icon="\uf0a2"
+//% groups=['Outputs']
 namespace piicodev {
 
     /**

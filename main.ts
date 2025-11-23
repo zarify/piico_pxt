@@ -7,10 +7,10 @@
  * Based on MIT-licensed PiicoDev MicroPython libraries from Core Electronics.
  * 
  * @author zarify
- * @version 0.2.0
+ * @version 0.3.0
  */
 
-//% weight=100 color=#00A4CC icon="\uf2db" block="PiicoDev"
+//% weight=50 color=#00A4CC icon="\uf2db" block="PiicoDev"
 namespace piicodev {
 
     // This is the main entry point namespace for all PiicoDev sensors.
@@ -19,7 +19,7 @@ namespace piicodev {
     /**
      * Extension version information
      */
-    export const VERSION = "0.2.0";
+    export const VERSION = "0.3.0";
 
     /**
      * Check if extension is properly loaded

@@ -5,8 +5,8 @@
  * and ambient light detection capabilities.
  */
 
-//% weight=85 color=#FF6B9D icon="\uf53f"
-//% groups=['Reading', 'Color Analysis', 'Configuration', 'others']
+//% weight=77 color=#00A4A6 icon="\uf53f"
+//% groups=['Environment']
 namespace piicodev {
 
     /**
@@ -27,6 +27,32 @@ namespace piicodev {
         Magenta,
         //% block="none"
         None
+    }
+
+    /**
+     * Color channel selection for RGBW readings
+     */
+    export enum ColorChannel {
+        //% block="red"
+        Red = 0,
+        //% block="green"
+        Green = 1,
+        //% block="blue"
+        Blue = 2,
+        //% block="white"
+        White = 3
+    }
+
+    /**
+     * HSB color component
+     */
+    export enum HSBComponent {
+        //% block="hue"
+        Hue = 0,
+        //% block="saturation"
+        Saturation = 1,
+        //% block="brightness"
+        Brightness = 2
     }
 
     /**
@@ -132,7 +158,8 @@ namespace piicodev {
 
         /**
          * Convert RGB to HSV
-         * Returns object with hue (0-360), saturation (0-1), value (0-1)
+         * Returns array with [hue (0-360), saturation (0-1), value (0-1)]
+         * Matches the Python implementation exactly
          */
         private rgbToHsv(r: number, g: number, b: number): number[] {
             let rf = r / 65535;
@@ -143,16 +170,21 @@ namespace piicodev {
             let min = Math.min(rf, Math.min(gf, bf));
             let delta = max - min;
 
-            // Calculate hue
+            // Calculate hue (matches Python: h={r:(g-b)/d+(6 if g<b else 0),g:(b-r)/d+2,b:(r-g)/d+4}[high];h/=6)
             let hue = 0;
             if (delta !== 0) {
                 if (max === rf) {
-                    hue = 60 * (((gf - bf) / delta) % 6);
+                    // Python: (g-b)/d + (6 if g<b else 0), then /6, then *360
+                    hue = (gf - bf) / delta + (gf < bf ? 6 : 0);
                 } else if (max === gf) {
-                    hue = 60 * (((bf - rf) / delta) + 2);
+                    // Python: (b-r)/d + 2
+                    hue = (bf - rf) / delta + 2;
                 } else {
-                    hue = 60 * (((rf - gf) / delta) + 4);
+                    // Python: (r-g)/d + 4
+                    hue = (rf - gf) / delta + 4;
                 }
+                // Divide by 6 then multiply by 360 (equivalent to * 60)
+                hue = (hue / 6) * 360;
             }
 
             // Ensure hue is positive
@@ -167,6 +199,8 @@ namespace piicodev {
 
         /**
          * Classify the detected color and return its name
+         * Uses RGB ratio-based approach to handle sensor's yellow bias
+         * Optimized for close-distance detection (sensor must be very close to surface)
          */
         //% blockId=veml6040_classify_color
         //% block="VEML6040 classify color"
@@ -177,24 +211,58 @@ namespace piicodev {
                 let g = this.readGreen();
                 let b = this.readBlue();
 
-                let hsv = this.rgbToHsv(r, g, b);
-                let hue = hsv[0];
-                let brightness = hsv[2];
-
-                // If brightness is too low, it's not a valid color
-                if (brightness < 0.1) {
+                // Calculate total and percentages
+                let total = r + g + b;
+                if (total === 0) {
                     return "none";
                 }
 
-                // Classify based on hue
-                // Using 60-degree sectors for basic color classification
-                if (hue < 30 || hue >= 330) return "red";
-                if (hue >= 30 && hue < 90) return "yellow";
-                if (hue >= 90 && hue < 150) return "green";
-                if (hue >= 150 && hue < 210) return "cyan";
-                if (hue >= 210 && hue < 270) return "blue";
-                if (hue >= 270 && hue < 330) return "magenta";
+                // Filter out very low readings (sensor pointing at nothing/dark surface far away)
+                if (total < 800) {
+                    return "none";
+                }
 
+                let rPct = r / total;
+                let gPct = g / total;
+                let bPct = b / total;
+
+                // Find max and min percentages
+                let maxPct = Math.max(rPct, Math.max(gPct, bPct));
+                let minPct = Math.min(rPct, Math.min(gPct, bPct));
+                let range = maxPct - minPct;
+
+                // Red detection: R% is dominant and significantly higher
+                if (rPct > 0.45 && rPct > gPct && rPct > bPct) {
+                    return "red";
+                }
+
+                // Green detection: G% is dominant and significantly higher
+                if (gPct > 0.40 && gPct > rPct && gPct > bPct) {
+                    return "green";
+                }
+
+                // Blue detection: B% is highest OR (G% slightly higher but B% strong)
+                // Blue is tricky due to sensor bias - it often reads with G slightly higher than B
+                if (bPct > rPct && bPct > gPct) {
+                    return "blue";
+                }
+                if (bPct > 0.27 && gPct > rPct && (gPct - bPct) < 0.10) {
+                    return "blue";
+                }
+
+                // White detection: balanced channels with good blue content
+                // Must have tight range AND higher B% than black would have
+                if (range < 0.16 && rPct > 0.36 && gPct > 0.38 && bPct > 0.235) {
+                    return "white";
+                }
+
+                // Black detection: all channels similar and relatively balanced
+                // Checked after white - has slightly wider range tolerance
+                if (range < 0.17 && rPct > 0.35 && gPct > 0.35) {
+                    return "black";
+                }
+
+                // If nothing matched, return none
                 return "none";
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
@@ -321,55 +389,20 @@ namespace piicodev {
 
     // Wrapper functions to call methods on the internal VEML6040 instance
     /**
-     * Read red light intensity (0-65535)
+     * Read light intensity for a specific color channel (0-65535)
+     * @param channel The color channel to read (Red, Green, Blue, or White)
      */
-    //% blockId=veml6040_read_red
-    //% block="VEML6040 read red light"
+    //% blockId=veml6040_read_channel
+    //% block="VEML6040 read $channel light"
     //% group="Reading"
     //% weight=100
-    export function veml6040ReadRed(): number {
+    export function veml6040ReadChannel(channel: ColorChannel): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readRed();
-        return 0;
-    }
-
-    /**
-     * Read green light intensity (0-65535)
-     */
-    //% blockId=veml6040_read_green
-    //% block="VEML6040 read green light"
-    //% group="Reading"
-    //% weight=99
-    export function veml6040ReadGreen(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readGreen();
-        return 0;
-    }
-
-    /**
-     * Read blue light intensity (0-65535)
-     */
-    //% blockId=veml6040_read_blue
-    //% block="VEML6040 read blue light"
-    //% group="Reading"
-    //% weight=98
-    export function veml6040ReadBlue(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readBlue();
-        return 0;
-    }
-
-    /**
-     * Read white light intensity (0-65535)
-     */
-    //% blockId=veml6040_read_white
-    //% block="VEML6040 read white light"
-    //% group="Reading"
-    //% weight=97
-    export function veml6040ReadWhite(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readWhite();
-        return 0;
+        if (!_veml6040) return 0;
+        if (channel === ColorChannel.Red) return _veml6040.readRed();
+        else if (channel === ColorChannel.Green) return _veml6040.readGreen();
+        else if (channel === ColorChannel.Blue) return _veml6040.readBlue();
+        else return _veml6040.readWhite();
     }
 
     /**
@@ -386,42 +419,19 @@ namespace piicodev {
     }
 
     /**
-     * Get color hue (0-360 degrees)
+     * Get HSB color component value
+     * @param component The HSB component to read (Hue, Saturation, or Brightness)
      */
-    //% blockId=veml6040_hue
-    //% block="VEML6040 color hue"
+    //% blockId=veml6040_get_hsb
+    //% block="VEML6040 color $component"
     //% group="Color Analysis"
     //% weight=95
-    export function veml6040GetHue(): number {
+    export function veml6040GetHSB(component: HSBComponent): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.getHue();
-        return 0;
-    }
-
-    /**
-     * Get color saturation (0-100%)
-     */
-    //% blockId=veml6040_saturation
-    //% block="VEML6040 color saturation"
-    //% group="Color Analysis"
-    //% weight=94
-    export function veml6040GetSaturation(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.getSaturation();
-        return 0;
-    }
-
-    /**
-     * Get color brightness/value (0-100%)
-     */
-    //% blockId=veml6040_brightness
-    //% block="VEML6040 color brightness"
-    //% group="Color Analysis"
-    //% weight=93
-    export function veml6040GetBrightness(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.getBrightness();
-        return 0;
+        if (!_veml6040) return 0;
+        if (component === HSBComponent.Hue) return _veml6040.getHue();
+        else if (component === HSBComponent.Saturation) return _veml6040.getSaturation();
+        else return _veml6040.getBrightness();
     }
 
     /**
