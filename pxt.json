@@ -20,7 +20,8 @@
         "picodev-rgb.ts",
         "picodev-button.ts",
         "picodev-potentiometer.ts",
-        "picodev-lis3dh.ts"
+        "picodev-lis3dh.ts",
+        "picodev-servo.ts"
     ],
     "testFiles": [
         "test.ts"
