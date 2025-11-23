@@ -501,12 +501,4 @@ namespace piicodev {
         if (!_bme280) _bme280 = new BME280(0x77);
         if (_bme280) _bme280.setIIRFilter(coefficient);
     }
-
-    /**
-     * Create a new BME280 sensor instance
-     */
-    export function createBME280(address?: number): void {
-        if (address === undefined) address = 0x77;
-        _bme280 = new BME280(address);
-    }
 }
