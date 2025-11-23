@@ -461,12 +461,4 @@ namespace piicodev {
         if (_veml6040) return _veml6040.getColorTemperature();
         return 0;
     }
-
-    /**
-     * Create a new VEML6040 color sensor instance
-     */
-    export function createVEML6040(address?: number): void {
-        if (address === undefined) address = 0x10;
-        _veml6040 = new VEML6040(address);
-    }
 }

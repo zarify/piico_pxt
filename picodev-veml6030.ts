@@ -210,13 +210,4 @@ namespace piicodev {
         if (!_veml6030) _veml6030 = new VEML6030();
         _veml6030.setGain(gain);
     }
-
-    /**
-     * Create a new VEML6030 ambient light sensor instance
-     * @param address I2C address (default: 0x10)
-     */
-    export function createVEML6030(address?: number): void {
-        if (address === undefined) address = 0x10;
-        _veml6030 = new VEML6030(address);
-    }
 }

@@ -235,20 +235,6 @@ namespace piicodev {
     }
 
     /**
-     * Get firmware version as string
-     */
-    //% blockId=buzzer_firmware_version
-    //% block="Buzzer firmware version"
-    //% group="Control"
-    //% advanced=true
-    //% weight=50
-    export function buzzerGetFirmwareVersion(): string {
-        if (!_buzzer) _buzzer = new Buzzer(0x5C);
-        if (_buzzer) return _buzzer.getFirmwareVersion();
-        return "0.0";
-    }
-
-    /**
      * Control the power LED on the buzzer module
      */
     //% blockId=buzzer_power_led

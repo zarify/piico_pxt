@@ -295,34 +295,6 @@ namespace piicodev {
     }
 
     /**
-     * Get the status of the last measurement
-     */
-    //% blockId=vl53l1x_get_status
-    //% block="VL53L1X measurement status"
-    //% group="Reading"
-    //% weight=99
-    export function vl53l1xGetStatus(): string {
-        if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
-        if (_vl53l1x) return _vl53l1x.getStatus();
-        return "OK";
-    }
-
-    /**
-     * Reset the sensor
-     */
-    //% blockId=vl53l1x_reset
-    //% block="VL53L1X reset sensor"
-    //% group="Configuration"
-    //% advanced=true
-    //% weight=50
-    export function vl53l1xReset(): void {
-        if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
-        if (_vl53l1x) _vl53l1x.reset();
-    }
-
-
-
-    /**
      * Set distance mode
      */
     //% blockId=vl53l1x_set_distance_mode
@@ -333,13 +305,5 @@ namespace piicodev {
     export function vl53l1xSetDistanceMode(mode: DistanceMode): void {
         if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
         if (_vl53l1x) _vl53l1x.setDistanceMode(mode);
-    }
-
-    /**
-     * Create a new VL53L1X distance sensor instance
-     */
-    export function createVL53L1X(address?: number): void {
-        if (address === undefined) address = 0x29;
-        _vl53l1x = new VL53L1X(address);
     }
 }

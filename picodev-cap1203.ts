@@ -235,27 +235,4 @@ namespace piicodev {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) _cap1203.setSensitivity(level);
     }
-
-    /**
-     * Clear touch interrupt
-     */
-    //% blockId=cap1203_clear_interrupt
-    //% block="CAP1203 clear interrupt"
-    //% group="Configuration"
-    //% advanced=true
-    //% weight=49
-    export function cap1203ClearInterrupt(): void {
-        if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
-        if (_cap1203) _cap1203.clearInterrupt();
-    }
-
-    /**
-     * Create a new CAP1203 touch sensor instance
-     */
-    export function createCAP1203(mode?: TouchMode, sensitivity?: number, address?: number): void {
-        if (mode === undefined) mode = TouchMode.Multi;
-        if (sensitivity === undefined) sensitivity = 3;
-        if (address === undefined) address = 0x28;
-        _cap1203 = new CAP1203(mode, sensitivity, address);
-    }
 }
