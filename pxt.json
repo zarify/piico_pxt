@@ -18,7 +18,8 @@
         "picodev-cap1203.ts",
         "picodev-buzzer.ts",
         "picodev-rgb.ts",
-        "picodev-button.ts"
+        "picodev-button.ts",
+        "picodev-potentiometer.ts"
     ],
     "testFiles": [
         "test.ts"
