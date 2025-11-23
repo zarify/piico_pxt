@@ -21,7 +21,9 @@
         "picodev-button.ts",
         "picodev-potentiometer.ts",
         "picodev-lis3dh.ts",
-        "picodev-servo.ts"
+        "picodev-servo.ts",
+        "picodev-mmc5603.ts",
+        "picodev-tmp117.ts"
     ],
     "testFiles": [
         "test.ts"
