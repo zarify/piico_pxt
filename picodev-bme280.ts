@@ -44,6 +44,30 @@ namespace piicodev {
     }
 
     /**
+     * BME280 measurement type for oversampling configuration
+     */
+    export enum BME280Measurement {
+        //% block="temperature"
+        Temperature = 0,
+        //% block="pressure"
+        Pressure = 1,
+        //% block="humidity"
+        Humidity = 2
+    }
+
+    /**
+     * BME280 sensor reading type
+     */
+    export enum BME280Reading {
+        //% block="temperature (°C)"
+        Temperature = 0,
+        //% block="humidity (%)"
+        Humidity = 1,
+        //% block="pressure (hPa)"
+        Pressure = 2
+    }
+
+    /**
      * BME280 Environment Sensor class
      */
     class BME280 {
@@ -419,42 +443,19 @@ namespace piicodev {
 
     // Wrapper functions to call methods on the internal BME280 instance
     /**
-     * Read temperature in degrees Celsius
+     * Read sensor measurement
+     * @param reading The type of reading (Temperature, Humidity, or Pressure)
      */
-    //% blockId=bme280_read_temperature
-    //% block="BME280 read temperature (°C)"
+    //% blockId=bme280_read
+    //% block="BME280 read $reading"
     //% group="Reading"
     //% weight=100
-    export function bme280ReadTemperature(): number {
+    export function bme280Read(reading: BME280Reading): number {
         if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) return _bme280.readTemperature();
-        return 0;
-    }
-
-    /**
-     * Read humidity as percentage
-     */
-    //% blockId=bme280_read_humidity
-    //% block="BME280 read humidity (pct)"
-    //% group="Reading"
-    //% weight=99
-    export function bme280ReadHumidity(): number {
-        if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) return _bme280.readHumidity();
-        return 0;
-    }
-
-    /**
-     * Read atmospheric pressure in hPa (hectopascals)
-     */
-    //% blockId=bme280_read_pressure
-    //% block="BME280 read pressure (hPa)"
-    //% group="Reading"
-    //% weight=98
-    export function bme280ReadPressure(): number {
-        if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) return _bme280.readPressure();
-        return 0;
+        if (!_bme280) return 0;
+        if (reading === BME280Reading.Temperature) return _bme280.readTemperature();
+        else if (reading === BME280Reading.Humidity) return _bme280.readHumidity();
+        else return _bme280.readPressure();
     }
 
     /**
@@ -471,42 +472,21 @@ namespace piicodev {
     }
 
     /**
-     * Set temperature oversampling mode
+     * Set oversampling mode for a measurement type
+     * @param measurement The measurement type (Temperature, Pressure, or Humidity)
+     * @param mode The oversampling mode
      */
-    //% blockId=bme280_set_temp_oversampling
-    //% block="BME280 set temperature oversampling $mode"
+    //% blockId=bme280_set_oversampling
+    //% block="BME280 set $measurement oversampling $mode"
     //% group="Configuration"
     //% advanced=true
     //% weight=50
-    export function bme280SetTemperatureOversampling(mode: Oversampling): void {
+    export function bme280SetOversampling(measurement: BME280Measurement, mode: Oversampling): void {
         if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) _bme280.setTemperatureOversampling(mode);
-    }
-
-    /**
-     * Set pressure oversampling mode
-     */
-    //% blockId=bme280_set_pressure_oversampling
-    //% block="BME280 set pressure oversampling $mode"
-    //% group="Configuration"
-    //% advanced=true
-    //% weight=49
-    export function bme280SetPressureOversampling(mode: Oversampling): void {
-        if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) _bme280.setPressureOversampling(mode);
-    }
-
-    /**
-     * Set humidity oversampling mode
-     */
-    //% blockId=bme280_set_humidity_oversampling
-    //% block="BME280 set humidity oversampling $mode"
-    //% group="Configuration"
-    //% advanced=true
-    //% weight=48
-    export function bme280SetHumidityOversampling(mode: Oversampling): void {
-        if (!_bme280) _bme280 = new BME280(0x77);
-        if (_bme280) _bme280.setHumidityOversampling(mode);
+        if (!_bme280) return;
+        if (measurement === BME280Measurement.Temperature) _bme280.setTemperatureOversampling(mode);
+        else if (measurement === BME280Measurement.Pressure) _bme280.setPressureOversampling(mode);
+        else _bme280.setHumidityOversampling(mode);
     }
 
     /**

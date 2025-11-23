@@ -30,6 +30,32 @@ namespace piicodev {
     }
 
     /**
+     * Color channel selection for RGBW readings
+     */
+    export enum ColorChannel {
+        //% block="red"
+        Red = 0,
+        //% block="green"
+        Green = 1,
+        //% block="blue"
+        Blue = 2,
+        //% block="white"
+        White = 3
+    }
+
+    /**
+     * HSB color component
+     */
+    export enum HSBComponent {
+        //% block="hue"
+        Hue = 0,
+        //% block="saturation"
+        Saturation = 1,
+        //% block="brightness"
+        Brightness = 2
+    }
+
+    /**
      * VEML6040 Color Sensor class
      */
     class VEML6040 {
@@ -363,55 +389,20 @@ namespace piicodev {
 
     // Wrapper functions to call methods on the internal VEML6040 instance
     /**
-     * Read red light intensity (0-65535)
+     * Read light intensity for a specific color channel (0-65535)
+     * @param channel The color channel to read (Red, Green, Blue, or White)
      */
-    //% blockId=veml6040_read_red
-    //% block="VEML6040 read red light"
+    //% blockId=veml6040_read_channel
+    //% block="VEML6040 read $channel light"
     //% group="Reading"
     //% weight=100
-    export function veml6040ReadRed(): number {
+    export function veml6040ReadChannel(channel: ColorChannel): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readRed();
-        return 0;
-    }
-
-    /**
-     * Read green light intensity (0-65535)
-     */
-    //% blockId=veml6040_read_green
-    //% block="VEML6040 read green light"
-    //% group="Reading"
-    //% weight=99
-    export function veml6040ReadGreen(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readGreen();
-        return 0;
-    }
-
-    /**
-     * Read blue light intensity (0-65535)
-     */
-    //% blockId=veml6040_read_blue
-    //% block="VEML6040 read blue light"
-    //% group="Reading"
-    //% weight=98
-    export function veml6040ReadBlue(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readBlue();
-        return 0;
-    }
-
-    /**
-     * Read white light intensity (0-65535)
-     */
-    //% blockId=veml6040_read_white
-    //% block="VEML6040 read white light"
-    //% group="Reading"
-    //% weight=97
-    export function veml6040ReadWhite(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.readWhite();
-        return 0;
+        if (!_veml6040) return 0;
+        if (channel === ColorChannel.Red) return _veml6040.readRed();
+        else if (channel === ColorChannel.Green) return _veml6040.readGreen();
+        else if (channel === ColorChannel.Blue) return _veml6040.readBlue();
+        else return _veml6040.readWhite();
     }
 
     /**
@@ -428,42 +419,19 @@ namespace piicodev {
     }
 
     /**
-     * Get color hue (0-360 degrees)
+     * Get HSB color component value
+     * @param component The HSB component to read (Hue, Saturation, or Brightness)
      */
-    //% blockId=veml6040_hue
-    //% block="VEML6040 color hue"
+    //% blockId=veml6040_get_hsb
+    //% block="VEML6040 color $component"
     //% group="Color Analysis"
     //% weight=95
-    export function veml6040GetHue(): number {
+    export function veml6040GetHSB(component: HSBComponent): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.getHue();
-        return 0;
-    }
-
-    /**
-     * Get color saturation (0-100%)
-     */
-    //% blockId=veml6040_saturation
-    //% block="VEML6040 color saturation"
-    //% group="Color Analysis"
-    //% weight=94
-    export function veml6040GetSaturation(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.getSaturation();
-        return 0;
-    }
-
-    /**
-     * Get color brightness/value (0-100%)
-     */
-    //% blockId=veml6040_brightness
-    //% block="VEML6040 color brightness"
-    //% group="Color Analysis"
-    //% weight=93
-    export function veml6040GetBrightness(): number {
-        if (!_veml6040) _veml6040 = new VEML6040(0x10);
-        if (_veml6040) return _veml6040.getBrightness();
-        return 0;
+        if (!_veml6040) return 0;
+        if (component === HSBComponent.Hue) return _veml6040.getHue();
+        else if (component === HSBComponent.Saturation) return _veml6040.getSaturation();
+        else return _veml6040.getBrightness();
     }
 
     /**

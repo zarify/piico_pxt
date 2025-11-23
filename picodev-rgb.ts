@@ -31,6 +31,111 @@ namespace piicodev {
     }
 
     /**
+     * Create a color from RGB values
+     * @param red Red value (0-255)
+     * @param green Green value (0-255)
+     * @param blue Blue value (0-255)
+     */
+    //% blockId=rgb_color_from_rgb
+    //% block="color red $red green $green blue $blue"
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=0
+    //% blue.min=0 blue.max=255 blue.defl=0
+    //% group="Setting Colors"
+    //% weight=110
+    //% inlineInputMode=inline
+    export function colorFromRGB(red: number, green: number, blue: number): number {
+        red = Math.max(0, Math.min(255, red));
+        green = Math.max(0, Math.min(255, green));
+        blue = Math.max(0, Math.min(255, blue));
+        return (red << 16) | (green << 8) | blue;
+    }
+
+    /**
+     * Create a color from HSB (Hue, Saturation, Brightness) values
+     * @param hue Hue value (0-360 degrees)
+     * @param saturation Saturation (0-100%)
+     * @param brightness Brightness (0-100%)
+     */
+    //% blockId=rgb_color_from_hsb
+    //% block="color hue $hue saturation $saturation brightness $brightness"
+    //% hue.min=0 hue.max=360 hue.defl=0
+    //% saturation.min=0 saturation.max=100 saturation.defl=100
+    //% brightness.min=0 brightness.max=100 brightness.defl=100
+    //% group="Setting Colors"
+    //% weight=109
+    //% inlineInputMode=inline
+    export function colorFromHSB(hue: number, saturation: number, brightness: number): number {
+        // Normalize inputs
+        let h = (hue % 360) / 360;
+        let s = Math.max(0, Math.min(100, saturation)) / 100;
+        let v = Math.max(0, Math.min(100, brightness)) / 100;
+
+        // Convert HSB to RGB
+        let rgb = hsbToRGB(h, s, v);
+        return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+    }
+
+    /**
+     * Get a predefined color
+     * @param color Named color
+     */
+    //% blockId=rgb_predefined_color
+    //% block="$color"
+    //% group="Setting Colors"
+    //% weight=108
+    export function color(color: RGBColor): number {
+        let rgb = getColorRGB(color);
+        return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+    }
+
+    /**
+     * Convert HSB to RGB
+     * @param h Hue (0.0-1.0)
+     * @param s Saturation (0.0-1.0)
+     * @param v Value/Brightness (0.0-1.0)
+     */
+    function hsbToRGB(h: number, s: number, v: number): number[] {
+        if (s === 0) {
+            let val = Math.round(v * 255);
+            return [val, val, val];
+        }
+
+        let i = Math.floor(h * 6);
+        let f = h * 6 - i;
+        let p = Math.round(255 * v * (1 - s));
+        let q = Math.round(255 * v * (1 - s * f));
+        let t = Math.round(255 * v * (1 - s * (1 - f)));
+        let vInt = Math.round(v * 255);
+
+        i = i % 6;
+
+        if (i === 0) return [vInt, t, p];
+        if (i === 1) return [q, vInt, p];
+        if (i === 2) return [p, vInt, t];
+        if (i === 3) return [p, q, vInt];
+        if (i === 4) return [t, p, vInt];
+        return [vInt, p, q];
+    }
+
+    /**
+     * Get RGB values for a named color
+     */
+    function getColorRGB(color: RGBColor): number[] {
+        switch (color) {
+            case RGBColor.Red: return [255, 0, 0];
+            case RGBColor.Green: return [0, 255, 0];
+            case RGBColor.Blue: return [0, 0, 255];
+            case RGBColor.Yellow: return [255, 255, 0];
+            case RGBColor.Cyan: return [0, 255, 255];
+            case RGBColor.Magenta: return [255, 0, 255];
+            case RGBColor.White: return [255, 255, 255];
+            case RGBColor.Off: return [0, 0, 0];
+            default: return [0, 0, 0];
+        }
+    }
+
+    /**
      * PiicoDev RGB LED class
      */
     class RGB {
@@ -67,88 +172,41 @@ namespace piicodev {
         }
 
         /**
-         * Set a pixel to specific RGB values
+         * Set a pixel to a specific color
          * @param pixel Pixel number (0, 1, or 2)
-         * @param red Red intensity (0-255)
-         * @param green Green intensity (0-255)
-         * @param blue Blue intensity (0-255)
+         * @param color Color value (use color blocks)
          */
-        //% blockId=rgb_set_pixel_rgb
-        //% block="RGB set pixel $pixel to red $red green $green blue $blue"
-        //% pixel.min=0 pixel.max=2 pixel.defl=0
-        //% red.min=0 red.max=255 red.defl=255
-        //% green.min=0 green.max=255 green.defl=0
-        //% blue.min=0 blue.max=255 blue.defl=0
-        //% weight=100
-        //% inlineInputMode=inline
-        public setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
-            if (pixel >= 0 && pixel <= 2) {
-                this.pixels[pixel] = [
-                    Math.max(0, Math.min(255, red)),
-                    Math.max(0, Math.min(255, green)),
-                    Math.max(0, Math.min(255, blue))
-                ];
-            }
-        }
-
-        /**
-         * Set a pixel to a named color
-         * @param pixel Pixel number (0, 1, or 2)
-         * @param color Named color
-         */
-        //% blockId=rgb_set_pixel_color
+        //% blockId=rgb_set_pixel
         //% block="RGB set pixel $pixel to $color"
         //% pixel.min=0 pixel.max=2 pixel.defl=0
-        //% weight=99
-        public setPixelColor(pixel: number, color: RGBColor): void {
-            let rgb = this.getColorRGB(color);
-            this.setPixelRGB(pixel, rgb[0], rgb[1], rgb[2]);
-        }
-
-        /**
-         * Set a pixel using color wheel position (0.0-1.0)
-         * @param pixel Pixel number (0, 1, or 2)
-         * @param position Position on color wheel (0.0-1.0)
-         */
-        //% blockId=rgb_set_pixel_wheel
-        //% block="RGB set pixel $pixel using color wheel $position"
-        //% pixel.min=0 pixel.max=2 pixel.defl=0
-        //% position.min=0 position.max=1 position.defl=0
-        //% weight=98
-        public setPixelColorWheel(pixel: number, position: number): void {
-            let rgb = this.wheel(position, 1, 1);
-            this.setPixelRGB(pixel, rgb[0], rgb[1], rgb[2]);
-        }
-
-        /**
-         * Set all pixels to the same RGB values
-         * @param red Red intensity (0-255)
-         * @param green Green intensity (0-255)
-         * @param blue Blue intensity (0-255)
-         */
-        //% blockId=rgb_set_all_rgb
-        //% block="RGB set all pixels to red $red green $green blue $blue"
-        //% red.min=0 red.max=255 red.defl=255
-        //% green.min=0 green.max=255 green.defl=0
-        //% blue.min=0 blue.max=255 blue.defl=0
-        //% weight=97
-        //% inlineInputMode=inline
-        public setAllRGB(red: number, green: number, blue: number): void {
-            for (let i = 0; i < 3; i++) {
-                this.setPixelRGB(i, red, green, blue);
+        //% color.shadow="rgb_predefined_color"
+        //% group="Setting Colors"
+        //% weight=100
+        public setPixel(pixel: number, color: number): void {
+            if (pixel >= 0 && pixel <= 2) {
+                let red = (color >> 16) & 0xFF;
+                let green = (color >> 8) & 0xFF;
+                let blue = color & 0xFF;
+                this.pixels[pixel] = [red, green, blue];
             }
         }
 
         /**
-         * Set all pixels to a named color
-         * @param color Named color
+         * Set all pixels to the same color
+         * @param color Color value (use color blocks)
          */
-        //% blockId=rgb_set_all_color
+        //% blockId=rgb_set_all
         //% block="RGB set all pixels to $color"
-        //% weight=96
-        public setAllColor(color: RGBColor): void {
-            let rgb = this.getColorRGB(color);
-            this.setAllRGB(rgb[0], rgb[1], rgb[2]);
+        //% color.shadow="rgb_predefined_color"
+        //% group="Setting Colors"
+        //% weight=97
+        public setAll(color: number): void {
+            let red = (color >> 16) & 0xFF;
+            let green = (color >> 8) & 0xFF;
+            let blue = color & 0xFF;
+            for (let i = 0; i < 3; i++) {
+                this.pixels[i] = [red, green, blue];
+            }
         }
 
         /**
@@ -251,130 +309,36 @@ namespace piicodev {
                 picodevUnified.logI2CError(this.addr);
             }
         }
-
-        /**
-         * Get RGB values for a named color
-         */
-        private getColorRGB(color: RGBColor): number[] {
-            switch (color) {
-                case RGBColor.Red: return [255, 0, 0];
-                case RGBColor.Green: return [0, 255, 0];
-                case RGBColor.Blue: return [0, 0, 255];
-                case RGBColor.Yellow: return [255, 255, 0];
-                case RGBColor.Cyan: return [0, 255, 255];
-                case RGBColor.Magenta: return [255, 0, 255];
-                case RGBColor.White: return [255, 255, 255];
-                case RGBColor.Off: return [0, 0, 0];
-                default: return [0, 0, 0];
-            }
-        }
-
-        /**
-         * Color wheel function - converts HSV to RGB
-         * @param h Hue (0.0-1.0)
-         * @param s Saturation (0.0-1.0)
-         * @param v Value/Brightness (0.0-1.0)
-         */
-        private wheel(h: number, s: number, v: number): number[] {
-            if (s === 0) {
-                let val = Math.round(v * 255);
-                return [val, val, val];
-            }
-
-            let i = Math.floor(h * 6);
-            let f = h * 6 - i;
-            let p = Math.round(255 * v * (1 - s));
-            let q = Math.round(255 * v * (1 - s * f));
-            let t = Math.round(255 * v * (1 - s * (1 - f)));
-            let vInt = Math.round(v * 255);
-
-            i = i % 6;
-
-            if (i === 0) return [vInt, t, p];
-            if (i === 1) return [q, vInt, p];
-            if (i === 2) return [p, vInt, t];
-            if (i === 3) return [p, q, vInt];
-            if (i === 4) return [t, p, vInt];
-            return [vInt, p, q];
-        }
     }
 
     // Wrapper functions to call methods on the internal RGB instance
     /**
-     * Set a pixel to specific RGB values
+     * Set a pixel to a specific color
      * Note: Call RGB show after to update the LEDs
      */
-    //% blockId=rgb_set_pixel_rgb
-    //% block="RGB set pixel $pixel to red $red green $green blue $blue"
-    //% group="Setting Colors"
-    //% pixel.min=0 pixel.max=2 pixel.defl=0
-    //% red.min=0 red.max=255 red.defl=255
-    //% green.min=0 green.max=255 green.defl=0
-    //% blue.min=0 blue.max=255 blue.defl=0
-    //% weight=100
-    //% inlineInputMode=inline
-    export function setPixelRGB(pixel: number, red: number, green: number, blue: number): void {
-        if (!_rgb) _rgb = new RGB(0x08);
-        if (_rgb) _rgb.setPixelRGB(pixel, red, green, blue);
-    }
-
-    /**
-     * Set a pixel to a named color
-     * Note: Call RGB show after to update the LEDs
-     */
-    //% blockId=rgb_set_pixel_color
+    //% blockId=rgb_set_pixel
     //% block="RGB set pixel $pixel to $color"
     //% group="Setting Colors"
     //% pixel.min=0 pixel.max=2 pixel.defl=0
-    //% weight=99
-    export function setPixelColor(pixel: number, color: RGBColor): void {
+    //% color.shadow="rgb_predefined_color"
+    //% weight=100
+    export function setPixel(pixel: number, color: number): void {
         if (!_rgb) _rgb = new RGB(0x08);
-        if (_rgb) _rgb.setPixelColor(pixel, color);
+        if (_rgb) _rgb.setPixel(pixel, color);
     }
 
     /**
-     * Set a pixel using color wheel position (0.0-1.0)
+     * Set all pixels to the same color
      * Note: Call RGB show after to update the LEDs
      */
-    //% blockId=rgb_set_pixel_wheel
-    //% block="RGB set pixel $pixel using color wheel $position"
-    //% group="Setting Colors"
-    //% pixel.min=0 pixel.max=2 pixel.defl=0
-    //% position.min=0 position.max=1 position.defl=0
-    //% weight=98
-    export function setPixelColorWheel(pixel: number, position: number): void {
-        if (!_rgb) _rgb = new RGB(0x08);
-        if (_rgb) _rgb.setPixelColorWheel(pixel, position);
-    }
-
-    /**
-     * Set all pixels to the same RGB values
-     * Note: Call RGB show after to update the LEDs
-     */
-    //% blockId=rgb_set_all_rgb
-    //% block="RGB set all pixels to red $red green $green blue $blue"
-    //% group="Setting Colors"
-    //% red.min=0 red.max=255 red.defl=255
-    //% green.min=0 green.max=255 green.defl=0
-    //% blue.min=0 blue.max=255 blue.defl=0
-    //% weight=97
-    //% inlineInputMode=inline
-    export function setAllRGB(red: number, green: number, blue: number): void {
-        if (!_rgb) _rgb = new RGB(0x08);
-        if (_rgb) _rgb.setAllRGB(red, green, blue);
-    }
-
-    /**
-     * Set all pixels to a named color
-     * Note: Call RGB show after to update the LEDs
-     */
-    //% blockId=rgb_set_all_color
+    //% blockId=rgb_set_all
     //% block="RGB set all pixels to $color"
     //% group="Setting Colors"
-    //% weight=96
-    export function setAllColor(color: RGBColor): void {
+    //% color.shadow="rgb_predefined_color"
+    //% weight=97
+    export function setAll(color: number): void {
         if (!_rgb) _rgb = new RGB(0x08);
-        if (_rgb) _rgb.setAllColor(color);
+        if (_rgb) _rgb.setAll(color);
     }
 
     /**
