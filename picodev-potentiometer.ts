@@ -107,7 +107,9 @@ namespace piicodev {
             try {
                 // Write to LED register with bit 7 set (0x80 | value)
                 let value = state ? 1 : 0;
-                picodevUnified.writeRegisterUInt8(this.addr, 0x80 | Potentiometer.REG_LED, value);
+                let buf = pins.createBuffer(1);
+                buf.setNumber(NumberFormat.UInt8LE, 0, value);
+                picodevUnified.writeRegister(this.addr, 0x80 | Potentiometer.REG_LED, buf);
             } catch (e) {
                 // Silently handle errors
             }
