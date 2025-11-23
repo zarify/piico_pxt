@@ -5,8 +5,8 @@
  * Reads temperature in Celsius, Fahrenheit, or Kelvin.
  */
 
-//% weight=55 color=#FF4500 icon="\uf2c9"
-//% groups=['Reading', 'others']
+//% weight=79 color=#00A4A6 icon="\uf2c9"
+//% groups=['Environment']
 namespace piicodev {
 
     /**

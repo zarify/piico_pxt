@@ -10,7 +10,7 @@
  * @version 0.2.0
  */
 
-//% weight=100 color=#00A4CC icon="\uf2db" block="PiicoDev"
+//% weight=50 color=#00A4CC icon="\uf2db" block="PiicoDev"
 namespace piicodev {
 
     // This is the main entry point namespace for all PiicoDev sensors.

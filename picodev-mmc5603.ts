@@ -5,8 +5,8 @@
  * Provides compass heading and magnetic field magnitude readings.
  */
 
-//% weight=60 color=#1E90FF icon="\uf14e"
-//% groups=['Reading', 'Compass', 'Configuration', 'others']
+//% weight=76 color=#00A4A6 icon="\uf14e"
+//% groups=['Environment']
 namespace piicodev {
 
     /**

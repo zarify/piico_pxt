@@ -5,8 +5,8 @@
  * and ambient light detection capabilities.
  */
 
-//% weight=85 color=#FF6B9D icon="\uf53f"
-//% groups=['Reading', 'Color Analysis', 'Configuration', 'others']
+//% weight=77 color=#00A4A6 icon="\uf53f"
+//% groups=['Environment']
 namespace piicodev {
 
     /**

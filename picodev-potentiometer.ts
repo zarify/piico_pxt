@@ -5,8 +5,8 @@
  * Read raw ADC values (0-1023) or map to custom ranges.
  */
 
-//% weight=80 color=#FF6B35 icon="\uf1de"
-//% groups=['Reading', 'Configuration', 'others']
+//% weight=98 color=#0078D7 icon="\uf1de"
+//% groups=['Inputs']
 namespace piicodev {
 
     /**

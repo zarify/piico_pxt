@@ -4,8 +4,8 @@
  * 3-pixel programmable RGB LED strip with color wheel effects.
  */
 
-//% weight=70 color=#32CD32 icon="\uf0eb"
-//% groups=['Setting Colors', 'Display', 'Control', 'others']
+//% weight=90 color=#E63022 icon="\uf0eb"
+//% groups=['Outputs']
 namespace piicodev {
 
     /**

@@ -5,8 +5,8 @@
  * for accurate temperature, humidity, and atmospheric pressure readings.
  */
 
-//% weight=95 color=#0078D7 icon="\uf2c9"
-//% groups=['Reading', 'Configuration', 'others']
+//% weight=80 color=#00A4A6 icon="\uf2c9"
+//% groups=['Environment']
 namespace piicodev {
 
     /**

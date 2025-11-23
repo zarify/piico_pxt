@@ -5,8 +5,8 @@
  * Supports tap detection, shake detection, and configurable sensitivity ranges.
  */
 
-//% weight=85 color=#00A651 icon="\uf3fd"
-//% groups=['Events', 'Reading', 'Configuration', 'Detection', 'others']
+//% weight=70 color=#8B6914 icon="\uf3fd"
+//% groups=['Motion']
 namespace piicodev {
 
     /**
