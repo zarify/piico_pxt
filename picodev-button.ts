@@ -281,7 +281,7 @@ namespace piicodev {
     //% block="on $which $event"
     //% which.defl=ButtonSelect.Button1
     //% weight=100
-    //% group="Events"
+    //% group="Button"
     export function onButtonEvent(which: ButtonSelect, event: ButtonEvent, handler: () => void): void {
         let button = getButton(which);
         button.startEventPolling();  // Start polling if not already started
@@ -297,7 +297,7 @@ namespace piicodev {
     //% block="$which is pressed"
     //% which.defl=ButtonSelect.Button1
     //% weight=90
-    //% group="Reading"
+    //% group="Button"
     export function buttonIsPressed(which: ButtonSelect = ButtonSelect.Button1): boolean {
         let button = getButton(which);
         return button.isPressed();
@@ -312,7 +312,7 @@ namespace piicodev {
     //% block="$which press count"
     //% which.defl=ButtonSelect.Button1
     //% weight=87
-    //% group="Reading"
+    //% group="Button"
     export function buttonPressCount(which: ButtonSelect = ButtonSelect.Button1): number {
         let button = getButton(which);
         // Start polling if not already started (needed to update the counter)
@@ -328,7 +328,7 @@ namespace piicodev {
     //% which.defl=ButtonSelect.Button1
     //% on.shadow="toggleOnOff"
     //% weight=80
-    //% group="Configuration"
+    //% group="Button"
     export function buttonSetLED(which: ButtonSelect = ButtonSelect.Button1, on: boolean): void {
         let button = getButton(which);
         button.setLED(on);
@@ -342,7 +342,7 @@ namespace piicodev {
     //% which.defl=ButtonSelect.Button1
     //% ms.min=50 ms.max=1000 ms.defl=300
     //% weight=70
-    //% group="Configuration"
+    //% group="Button"
     //% advanced=true
     export function buttonSetDoublePressTime(which: ButtonSelect = ButtonSelect.Button1, ms: number): void {
         let button = getButton(which);

@@ -226,7 +226,7 @@ namespace piicodev {
     //% blockId=servo_init
     //% block="initialize servo driver||at address $address"
     //% address.defl=0x44
-    //% group="Configuration"
+    //% group="Servo"
     //% weight=90
     //% advanced=true
     export function servoInit(address?: number): void {
@@ -246,7 +246,7 @@ namespace piicodev {
     //% block="set servo $channel angle to $angle °"
     //% channel.defl=ServoChannel.S1
     //% angle.min=0 angle.max=180 angle.defl=90
-    //% group="Servo Control"
+    //% group="Servo"
     //% weight=100
     export function servoAngle(channel: ServoChannel, angle: number): void {
         // Auto-initialize if needed
@@ -272,7 +272,7 @@ namespace piicodev {
     //% block="set servo $channel speed to $speed \\%"
     //% channel.defl=ServoChannel.S1
     //% speed.min=-100 speed.max=100 speed.defl=0
-    //% group="Servo Control"
+    //% group="Servo"
     //% weight=99
     export function servoSpeed(channel: ServoChannel, speed: number): void {
         // Auto-initialize if needed
@@ -296,7 +296,7 @@ namespace piicodev {
     //% blockId=servo_release
     //% block="release servo $channel"
     //% channel.defl=ServoChannel.S1
-    //% group="Servo Control"
+    //% group="Servo"
     //% weight=98
     export function servoRelease(channel: ServoChannel): void {
         if (!_servoDriver) return;
@@ -321,7 +321,7 @@ namespace piicodev {
     //% minUs.defl=600
     //% maxUs.defl=2400
     //% degrees.defl=180
-    //% group="Configuration"
+    //% group="Servo"
     //% weight=80
     //% advanced=true
     //% inlineInputMode=inline

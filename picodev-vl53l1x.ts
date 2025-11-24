@@ -286,7 +286,7 @@ namespace piicodev {
      */
     //% blockId=vl53l1x_read_distance
     //% block="VL53L1X read distance (mm)"
-    //% group="Reading"
+    //% group="Distance Sensor"
     //% weight=100
     export function vl53l1xReadDistance(): number {
         if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
@@ -299,7 +299,7 @@ namespace piicodev {
      */
     //% blockId=vl53l1x_set_distance_mode
     //% block="VL53L1X set distance mode $mode"
-    //% group="Configuration"
+    //% group="Distance Sensor"
     //% advanced=true
     //% weight=48
     export function vl53l1xSetDistanceMode(mode: DistanceMode): void {

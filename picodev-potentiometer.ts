@@ -144,7 +144,7 @@ namespace piicodev {
      */
     //% block="$potentiometer raw value"
     //% potentiometer.defl=PotentiometerSelect.Potentiometer1
-    //% group="Reading"
+    //% group="Potentiometer"
     //% weight=100
     export function potentiometerRawValue(potentiometer: PotentiometerSelect): number {
         let pot = getPotentiometer(potentiometer);
@@ -157,7 +157,7 @@ namespace piicodev {
      */
     //% block="$potentiometer value"
     //% potentiometer.defl=PotentiometerSelect.Potentiometer1
-    //% group="Reading"
+    //% group="Potentiometer"
     //% weight=90
     export function potentiometerValue(potentiometer: PotentiometerSelect): number {
         let pot = getPotentiometer(potentiometer);
@@ -172,7 +172,7 @@ namespace piicodev {
     //% block="set $potentiometer LED $state"
     //% potentiometer.defl=PotentiometerSelect.Potentiometer1
     //% state.defl=true
-    //% group="Configuration"
+    //% group="Potentiometer"
     //% weight=40
     export function setPotentiometerLED(potentiometer: PotentiometerSelect, state: boolean): void {
         let pot = getPotentiometer(potentiometer);

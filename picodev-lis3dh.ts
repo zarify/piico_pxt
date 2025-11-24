@@ -627,7 +627,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_read_acceleration
     //% block="LIS3DH acceleration $axis (m/s²)"
-    //% group="Reading"
+    //% group="Accelerometer"
     //% weight=100
     export function lis3dhAcceleration(axis: Axis): number {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -642,7 +642,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_read_angle
     //% block="LIS3DH tilt angle $axis (degrees)"
-    //% group="Reading"
+    //% group="Accelerometer"
     //% weight=95
     export function lis3dhAngle(axis: Axis): number {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -657,7 +657,8 @@ namespace piicodev {
      */
     //% blockId=lis3dh_set_range
     //% block="LIS3DH set range $r"
-    //% group="Configuration"
+    //% group="Accelerometer"
+    //% advanced=true
     //% weight=90
     export function lis3dhSetRange(r: AccelRange): void {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -670,7 +671,8 @@ namespace piicodev {
      */
     //% blockId=lis3dh_set_rate
     //% block="LIS3DH set data rate $r"
-    //% group="Configuration"
+    //% group="Accelerometer"
+    //% advanced=true
     //% weight=85
     export function lis3dhSetRate(r: DataRate): void {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -682,7 +684,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_tapped
     //% block="LIS3DH tap detected"
-    //% group="Detection"
+    //% group="Accelerometer"
     //% weight=75
     export function lis3dhTapped(): boolean {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -694,7 +696,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_shake
     //% block="LIS3DH shake detected"
-    //% group="Detection"
+    //% group="Accelerometer"
     //% weight=90
     export function lis3dhShake(): boolean {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -707,7 +709,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_set_tap_sensitivity
     //% block="LIS3DH set tap sensitivity $threshold"
-    //% group="Configuration"
+    //% group="Accelerometer"
     //% weight=70
     //% threshold.min=0 threshold.max=127 threshold.defl=40
     //% advanced=true
@@ -722,7 +724,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_set_shake_sensitivity
     //% block="LIS3DH set shake sensitivity $threshold"
-    //% group="Configuration"
+    //% group="Accelerometer"
     //% weight=65
     //% threshold.min=10 threshold.max=50 threshold.defl=15
     //% advanced=true
@@ -738,7 +740,7 @@ namespace piicodev {
      */
     //% blockId=lis3dh_on_event
     //% block="on LIS3DH $event"
-    //% group="Events"
+    //% group="Accelerometer"
     //% weight=100
     export function lis3dhOnEvent(event: AccelEvent, handler: () => void): void {
         if (!_lis3dh) _lis3dh = new LIS3DH();

@@ -318,7 +318,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_pixel
     //% block="RGB set pixel $pixel to $color"
-    //% group="Setting Colors"
+    //% group="RGB Lights"
     //% pixel.min=0 pixel.max=2 pixel.defl=0
     //% color.shadow="rgb_predefined_color"
     //% weight=100
@@ -333,7 +333,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_all
     //% block="RGB set all pixels to $color"
-    //% group="Setting Colors"
+    //% group="RGB Lights"
     //% color.shadow="rgb_predefined_color"
     //% weight=97
     export function setAll(color: number): void {
@@ -346,7 +346,7 @@ namespace piicodev {
      */
     //% blockId=rgb_show
     //% block="RGB show"
-    //% group="Display"
+    //% group="RGB Lights"
     //% weight=95
     export function rgbShow(): void {
         if (!_rgb) _rgb = new RGB(0x08);
@@ -358,7 +358,7 @@ namespace piicodev {
      */
     //% blockId=rgb_clear
     //% block="RGB clear all"
-    //% group="Display"
+    //% group="RGB Lights"
     //% weight=94
     export function rgbClear(): void {
         if (!_rgb) _rgb = new RGB(0x08);
@@ -370,7 +370,7 @@ namespace piicodev {
      */
     //% blockId=rgb_set_brightness
     //% block="RGB set brightness $level"
-    //% group="Control"
+    //% group="RGB Lights"
     //% level.min=0 level.max=255 level.defl=50
     //% weight=93
     export function setBrightness(level: number): void {
@@ -383,7 +383,7 @@ namespace piicodev {
      */
     //% blockId=rgb_power_led
     //% block="RGB set power LED $on"
-    //% group="Control"
+    //% group="RGB Lights"
     //% on.shadow="toggleOnOff"
     //% on.defl=true
     //% advanced=true

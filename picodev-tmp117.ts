@@ -100,7 +100,7 @@ namespace piicodev {
     //% blockId=tmp117_read_temperature
     //% block="temperature $unit"
     //% unit.defl=TempUnit.Celsius
-    //% group="Reading"
+    //% group="Temperature"
     //% weight=100
     export function tmp117Temperature(unit: TempUnit): number {
         if (!_tmp117) {

@@ -448,7 +448,7 @@ namespace piicodev {
      */
     //% blockId=bme280_read
     //% block="BME280 read $reading"
-    //% group="Reading"
+    //% group="BME280 Environment"
     //% weight=100
     export function bme280Read(reading: BME280Reading): number {
         if (!_bme280) _bme280 = new BME280(0x77);
@@ -463,7 +463,7 @@ namespace piicodev {
      */
     //% blockId=bme280_altitude
     //% block="BME280 calculate altitude (m)"
-    //% group="Reading"
+    //% group="BME280 Environment"
     //% weight=97
     export function bme280Altitude(): number {
         if (!_bme280) _bme280 = new BME280(0x77);
@@ -478,7 +478,7 @@ namespace piicodev {
      */
     //% blockId=bme280_set_oversampling
     //% block="BME280 set $measurement oversampling $mode"
-    //% group="Configuration"
+    //% group="BME280 Environment"
     //% advanced=true
     //% weight=50
     export function bme280SetOversampling(measurement: BME280Measurement, mode: Oversampling): void {
@@ -494,7 +494,7 @@ namespace piicodev {
      */
     //% blockId=bme280_set_iir_filter
     //% block="BME280 set IIR filter $coefficient"
-    //% group="Configuration"
+    //% group="BME280 Environment"
     //% advanced=true
     //% weight=47
     export function bme280SetIIRFilter(coefficient: IIRFilter): void {

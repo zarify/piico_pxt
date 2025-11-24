@@ -304,7 +304,7 @@ namespace piicodev {
      */
     //% blockId=ens160_read
     //% block="ENS160 read $reading"
-    //% group="Reading"
+    //% group="ENS160 Air Quality"
     //% weight=100
     export function ens160Read(reading: ENS160Reading): number {
         if (!_ens160) _ens160 = new ENS160(0x53);
@@ -320,7 +320,7 @@ namespace piicodev {
      */
     //% blockId=ens160_aqi_rating
     //% block="ENS160 air quality rating"
-    //% group="Reading"
+    //% group="ENS160 Air Quality"
     //% weight=95
     export function ens160GetAQIRating(): string {
         if (!_ens160) _ens160 = new ENS160(0x53);
@@ -333,7 +333,7 @@ namespace piicodev {
      */
     //% blockId=ens160_eco2_rating
     //% block="ENS160 CO₂ rating"
-    //% group="Reading"
+    //% group="ENS160 Air Quality"
     //% weight=94
     export function ens160GetECO2Rating(): string {
         if (!_ens160) _ens160 = new ENS160(0x53);
@@ -346,7 +346,7 @@ namespace piicodev {
      */
     //% blockId=ens160_operation_status
     //% block="ENS160 operation status"
-    //% group="Reading"
+    //% group="ENS160 Air Quality"
     //% weight=93
     export function ens160GetOperationStatus(): string {
         if (!_ens160) _ens160 = new ENS160(0x53);
@@ -361,7 +361,7 @@ namespace piicodev {
     //% blockId=ens160_set_temperature
     //% block="ENS160 set temperature $temperature °C"
     //% temperature.min=-40 temperature.max=85 temperature.defl=25
-    //% group="Configuration"
+    //% group="ENS160 Air Quality"
     //% advanced=true
     //% weight=60
     export function ens160SetTemperature(temperature: number): void {
@@ -376,7 +376,7 @@ namespace piicodev {
     //% blockId=ens160_set_humidity
     //% block="ENS160 set humidity $humidity %%"
     //% humidity.min=0 humidity.max=100 humidity.defl=50
-    //% group="Configuration"
+    //% group="ENS160 Air Quality"
     //% advanced=true
     //% weight=59
     export function ens160SetHumidity(humidity: number): void {
@@ -390,7 +390,7 @@ namespace piicodev {
      */
     //% blockId=ens160_set_mode
     //% block="ENS160 set mode $mode"
-    //% group="Configuration"
+    //% group="ENS160 Air Quality"
     //% advanced=true
     //% weight=58
     export function ens160SetMode(mode: ENS160Mode): void {

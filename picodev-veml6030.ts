@@ -190,7 +190,7 @@ namespace piicodev {
      */
     //% blockId=veml6030_read
     //% block="VEML6030 read ambient light (lux)"
-    //% group="Reading"
+    //% group="Light Sensor"
     //% weight=100
     export function veml6030Read(): number {
         if (!_veml6030) _veml6030 = new VEML6030();
@@ -204,7 +204,7 @@ namespace piicodev {
      */
     //% blockId=veml6030_set_gain
     //% block="VEML6030 set gain $gain"
-    //% group="Configuration"
+    //% group="Light Sensor"
     //% weight=90
     export function veml6030SetGain(gain: VEML6030Gain): void {
         if (!_veml6030) _veml6030 = new VEML6030();
