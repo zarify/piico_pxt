@@ -1,6 +1,6 @@
 {
     "name": "makecode-piicodev",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "Unofficial PiicoDev sensor ecosystem support for BBC micro:bit V2",
     "license": "MIT",
     "dependencies": {
@@ -22,7 +22,8 @@
         "picodev-potentiometer.ts",
         "picodev-lis3dh.ts",
         "picodev-mmc5603.ts",
-        "picodev-tmp117.ts"
+        "picodev-tmp117.ts",
+        "picodev-ens160.ts"
     ],
     "testFiles": [
         "test.ts"
