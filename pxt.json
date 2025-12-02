@@ -24,7 +24,9 @@
         "picodev-mmc5603.ts",
         "picodev-tmp117.ts",
         "picodev-ens160.ts",
-        "picodev-servo.ts"
+        "picodev-servo.ts",
+        "picodev-ultrasonic.ts",
+        "picodev-ms5637.ts"
     ],
     "testFiles": [
         "test.ts"
