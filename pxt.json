@@ -23,7 +23,8 @@
         "picodev-lis3dh.ts",
         "picodev-mmc5603.ts",
         "picodev-tmp117.ts",
-        "picodev-ens160.ts"
+        "picodev-ens160.ts",
+        "picodev-servo.ts"
     ],
     "testFiles": [
         "test.ts"
