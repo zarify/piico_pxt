@@ -10,24 +10,6 @@
 namespace piicodev {
 
     /**
-     * Potentiometer selector for multiple potentiometers
-     * Set DIP switches on the back of the potentiometer, then power-cycle for address to take effect
-     * Each switch adds a value: Switch1=+1, Switch2=+2, Switch3=+4, Switch4=+8
-     */
-    export enum PotentiometerSelect {
-        //% block="Potentiometer 1"
-        Potentiometer1 = 0x35,  // Default: All switches OFF (53 decimal)
-        //% block="Potentiometer 2"
-        Potentiometer2 = 0x09,  // Switch 1 ON (9 decimal)
-        //% block="Potentiometer 3"
-        Potentiometer3 = 0x0A,  // Switch 2 ON (10 decimal)
-        //% block="Potentiometer 4"
-        Potentiometer4 = 0x0C,  // Switch 3 ON (12 decimal)
-        //% block="Potentiometer 5"
-        Potentiometer5 = 0x10   // Switch 4 ON (16 decimal)
-    }
-
-    /**
      * PiicoDev Potentiometer class
      */
     class Potentiometer {
@@ -122,7 +104,13 @@ namespace piicodev {
     /**
      * Get or create a potentiometer instance
      */
-    function getPotentiometer(address: number): Potentiometer {
+    function getPotentiometer(id: PiicoDevID): Potentiometer {
+        // Calculate I2C address based on ID switches
+        let address = picodevUnified.calculateIDSwitchAddress(0x35, id);
+
+        // Register this sensor ID and check for duplicates
+        picodevUnified.registerSensorID("Potentiometer", id, address);
+
         // Check if instance already exists
         for (let i = 0; i < potentiometerInstances.length; i++) {
             if (potentiometerInstances[i] && (potentiometerInstances[i] as any).addr === address) {
@@ -140,42 +128,42 @@ namespace piicodev {
 
     /**
      * Read the raw ADC value from a potentiometer (0-1023)
-     * @param potentiometer the potentiometer to read from
+     * @param id the potentiometer ID to read from
      */
-    //% block="$potentiometer raw value"
-    //% potentiometer.defl=PotentiometerSelect.Potentiometer1
+    //% block="potentiometer $id raw value"
+    //% id.defl=PiicoDevID.ID0
     //% group="Potentiometer"
     //% weight=100
-    export function potentiometerRawValue(potentiometer: PotentiometerSelect): number {
-        let pot = getPotentiometer(potentiometer);
+    export function potentiometerRawValue(id: PiicoDevID): number {
+        let pot = getPotentiometer(id);
         return pot.getRaw();
     }
 
     /**
      * Read the scaled value from a potentiometer
-     * @param potentiometer the potentiometer to read from
+     * @param id the potentiometer ID to read from
      */
-    //% block="$potentiometer value"
-    //% potentiometer.defl=PotentiometerSelect.Potentiometer1
+    //% block="potentiometer $id value"
+    //% id.defl=PiicoDevID.ID0
     //% group="Potentiometer"
     //% weight=90
-    export function potentiometerValue(potentiometer: PotentiometerSelect): number {
-        let pot = getPotentiometer(potentiometer);
+    export function potentiometerValue(id: PiicoDevID): number {
+        let pot = getPotentiometer(id);
         return pot.getValue();
     }
 
     /**
      * Turn the potentiometer LED on or off
-     * @param potentiometer the potentiometer to control
+     * @param id the potentiometer ID to control
      * @param state true for on, false for off
      */
-    //% block="set $potentiometer LED $state"
-    //% potentiometer.defl=PotentiometerSelect.Potentiometer1
+    //% block="potentiometer $id LED $state"
+    //% id.defl=PiicoDevID.ID0
     //% state.defl=true
     //% group="Potentiometer"
     //% weight=40
-    export function setPotentiometerLED(potentiometer: PotentiometerSelect, state: boolean): void {
-        let pot = getPotentiometer(potentiometer);
+    export function setPotentiometerLED(id: PiicoDevID, state: boolean): void {
+        let pot = getPotentiometer(id);
         pot.setLED(state);
     }
 }

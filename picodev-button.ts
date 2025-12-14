@@ -22,24 +22,6 @@ namespace piicodev {
     }
 
     /**
-     * Button selector for multiple buttons
-     * Set DIP switches on the back of the button, then power-cycle for address to take effect
-     * Each switch adds a value: Switch1=+1, Switch2=+2, Switch3=+4, Switch4=+8
-     */
-    export enum ButtonSelect {
-        //% block="Button 1"
-        Button1 = 0x42,  // Default: All switches OFF (66 decimal)
-        //% block="Button 2"
-        Button2 = 0x09,  // Switch 1 ON (9 decimal)
-        //% block="Button 3"
-        Button3 = 0x0A,  // Switch 2 ON (10 decimal)
-        //% block="Button 4"
-        Button4 = 0x0C,  // Switch 3 ON (12 decimal)
-        //% block="Button 5"
-        Button5 = 0x10   // Switch 4 ON (16 decimal)
-    }
-
-    /**
      * PiicoDev Button class
      */
     class Button {
@@ -252,14 +234,18 @@ namespace piicodev {
         }
     }
 
-    // Internal storage for button instances (up to 4 buttons)
+    // Internal storage for button instances (up to 16 buttons with different IDs)
     let _buttons: Button[] = [];
 
     /**
      * Get or create a button instance
      */
-    function getButton(which: ButtonSelect): Button {
-        let address = which as number;
+    function getButton(id: PiicoDevID): Button {
+        // Calculate I2C address based on ID switches
+        let address = picodevUnified.calculateIDSwitchAddress(0x42, id);
+
+        // Register this sensor ID and check for duplicates
+        picodevUnified.registerSensorID("Button", id, address);
 
         // Check if button already exists
         for (let i = 0; i < _buttons.length; i++) {
@@ -278,12 +264,12 @@ namespace piicodev {
      * Register code to run when a button event occurs
      */
     //% blockId=button_on_event
-    //% block="on $which $event"
-    //% which.defl=ButtonSelect.Button1
+    //% block="on button $id $event"
+    //% id.defl=PiicoDevID.ID0
     //% weight=100
     //% group="Button"
-    export function onButtonEvent(which: ButtonSelect, event: ButtonEvent, handler: () => void): void {
-        let button = getButton(which);
+    export function onButtonEvent(id: PiicoDevID, event: ButtonEvent, handler: () => void): void {
+        let button = getButton(id);
         button.startEventPolling();  // Start polling if not already started
         control.onEvent(button.getEventId(), event as number, handler);
     }
@@ -294,12 +280,12 @@ namespace piicodev {
      * This is safe to use in forever loops - it doesn't affect events or counters
      */
     //% blockId=button_is_pressed
-    //% block="$which is pressed"
-    //% which.defl=ButtonSelect.Button1
+    //% block="button $id is pressed"
+    //% id.defl=PiicoDevID.ID0
     //% weight=90
     //% group="Button"
-    export function buttonIsPressed(which: ButtonSelect = ButtonSelect.Button1): boolean {
-        let button = getButton(which);
+    export function buttonIsPressed(id: PiicoDevID = PiicoDevID.ID0): boolean {
+        let button = getButton(id);
         return button.isPressed();
     }
 
@@ -309,12 +295,12 @@ namespace piicodev {
      * Works independently - you can use this with or without event handlers
      */
     //% blockId=button_press_count
-    //% block="$which press count"
-    //% which.defl=ButtonSelect.Button1
+    //% block="button $id press count"
+    //% id.defl=PiicoDevID.ID0
     //% weight=87
     //% group="Button"
-    export function buttonPressCount(which: ButtonSelect = ButtonSelect.Button1): number {
-        let button = getButton(which);
+    export function buttonPressCount(id: PiicoDevID = PiicoDevID.ID0): number {
+        let button = getButton(id);
         // Start polling if not already started (needed to update the counter)
         button.startEventPolling();
         return button.getPressCount();
@@ -324,13 +310,13 @@ namespace piicodev {
      * Control the button's power LED
      */
     //% blockId=button_set_led
-    //% block="$which LED $on"
-    //% which.defl=ButtonSelect.Button1
+    //% block="button $id LED $on"
+    //% id.defl=PiicoDevID.ID0
     //% on.shadow="toggleOnOff"
     //% weight=80
     //% group="Button"
-    export function buttonSetLED(which: ButtonSelect = ButtonSelect.Button1, on: boolean): void {
-        let button = getButton(which);
+    export function buttonSetLED(id: PiicoDevID = PiicoDevID.ID0, on: boolean): void {
+        let button = getButton(id);
         button.setLED(on);
     }
 
@@ -338,14 +324,14 @@ namespace piicodev {
      * Set the time window for double-press detection
      */
     //% blockId=button_set_double_press_time
-    //% block="$which set double press time $ms ms"
-    //% which.defl=ButtonSelect.Button1
+    //% block="button $id set double press time $ms ms"
+    //% id.defl=PiicoDevID.ID0
     //% ms.min=50 ms.max=1000 ms.defl=300
     //% weight=70
     //% group="Button"
     //% advanced=true
-    export function buttonSetDoublePressTime(which: ButtonSelect = ButtonSelect.Button1, ms: number): void {
-        let button = getButton(which);
+    export function buttonSetDoublePressTime(id: PiicoDevID = PiicoDevID.ID0, ms: number): void {
+        let button = getButton(id);
         button.setDoublePressTime(ms);
     }
 }

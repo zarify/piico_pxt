@@ -191,71 +191,88 @@ namespace piicodev {
         }
     }
 
-    // Internal singleton instance
-    let _buzzer: Buzzer;
+    // Instance cache for buzzer modules
+    let buzzerInstances: Buzzer[] = [];
 
-    // Wrapper functions to call methods on the internal Buzzer instance
+    /**
+     * Get or create a buzzer instance
+     */
+    function getBuzzer(id: PiicoDevID): Buzzer {
+        // Calculate I2C address based on ID switches
+        let address = picodevUnified.calculateIDSwitchAddress(0x5C, id);
+
+        // Register this sensor ID and check for duplicates
+        picodevUnified.registerSensorID("Buzzer", id, address);
+
+        // Check if instance already exists
+        for (let i = 0; i < buzzerInstances.length; i++) {
+            if (buzzerInstances[i] && (buzzerInstances[i] as any).addr === address) {
+                return buzzerInstances[i];
+            }
+        }
+
+        // Create new instance
+        let buzzer = new Buzzer(address);
+        buzzerInstances.push(buzzer);
+        return buzzer;
+    }
+
+    // Wrapper functions to call methods on buzzer instances
     /**
      * Play a tone at the specified frequency for a duration
      */
     //% blockId=buzzer_play_tone
-    //% block="Buzzer play tone $frequency Hz||for $duration ms"
+    //% block="buzzer $id play tone $frequency Hz||for $duration ms"
+    //% id.defl=PiicoDevID.ID0
     //% group="Buzzer"
     //% frequency.min=20 frequency.max=20000 frequency.defl=440
     //% duration.defl=1000
     //% weight=100
     //% expandableArgumentMode="toggle"
-    export function playTone(frequency: number, duration?: number): void {
-        if (!_buzzer) _buzzer = new Buzzer(0x5C);
-        if (_buzzer) _buzzer.playTone(frequency, duration);
+    export function playTone(id: PiicoDevID, frequency: number, duration?: number): void {
+        let buzzer = getBuzzer(id);
+        buzzer.playTone(frequency, duration);
     }
 
     /**
      * Stop any currently playing tone
      */
     //% blockId=buzzer_stop
-    //% block="Buzzer stop tone"
+    //% block="buzzer $id stop tone"
+    //% id.defl=PiicoDevID.ID0
     //% group="Buzzer"
     //% weight=99
-    export function stopTone(): void {
-        if (!_buzzer) _buzzer = new Buzzer(0x5C);
-        if (_buzzer) _buzzer.stopTone();
+    export function stopTone(id: PiicoDevID): void {
+        let buzzer = getBuzzer(id);
+        buzzer.stopTone();
     }
 
     /**
      * Set buzzer volume (hardware v1.0+ only)
      */
     //% blockId=buzzer_set_volume
-    //% block="Buzzer set volume $volume"
+    //% block="buzzer $id set volume $volume"
+    //% id.defl=PiicoDevID.ID0
     //% group="Buzzer"
     //% weight=98
-    export function setVolume(volume: BuzzerVolume): void {
-        if (!_buzzer) _buzzer = new Buzzer(0x5C);
-        if (_buzzer) _buzzer.setVolume(volume);
+    export function setVolume(id: PiicoDevID, volume: BuzzerVolume): void {
+        let buzzer = getBuzzer(id);
+        buzzer.setVolume(volume);
     }
 
     /**
      * Control the power LED on the buzzer module
      */
     //% blockId=buzzer_power_led
-    //% block="Buzzer set power LED $on"
+    //% block="buzzer $id LED $on"
+    //% id.defl=PiicoDevID.ID0
     //% group="Buzzer"
     //% on.shadow="toggleOnOff"
     //% on.defl=true
     //% advanced=true
     //% weight=49
-    export function buzzerSetPowerLED(on: boolean): void {
-        if (!_buzzer) _buzzer = new Buzzer(0x5C);
-        if (_buzzer) _buzzer.setPowerLED(on);
-    }
-
-
-
-    /**
-     * Create a new PiicoDev Buzzer instance
-     */
-    export function createBuzzer(address?: number): void {
-        if (address === undefined) address = 0x5C;
-        _buzzer = new Buzzer(address);
+    export function buzzerSetPowerLED(id: PiicoDevID, on: boolean): void {
+        let buzzer = getBuzzer(id);
+        buzzer.setPowerLED(on);
     }
 }

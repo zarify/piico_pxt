@@ -249,120 +249,143 @@ namespace piicodev {
         }
     }
 
-    // Global Ultrasonic instance
-    let _ultrasonic: Ultrasonic = null;
+    // Instance cache for ultrasonic sensors
+    let ultrasonicInstances: Ultrasonic[] = [];
+
+    /**
+     * Get or create an ultrasonic sensor instance
+     */
+    function getUltrasonic(id: PiicoDevID): Ultrasonic {
+        // Calculate I2C address based on ID switches
+        let address = picodevUnified.calculateIDSwitchAddress(0x35, id);
+
+        // Register this sensor ID and check for duplicates
+        picodevUnified.registerSensorID("Ultrasonic", id, address);
+
+        // Check if instance already exists
+        for (let i = 0; i < ultrasonicInstances.length; i++) {
+            if (ultrasonicInstances[i] && (ultrasonicInstances[i] as any).addr === address) {
+                return ultrasonicInstances[i];
+            }
+        }
+
+        // Create new instance
+        let sensor = new Ultrasonic(address);
+        ultrasonicInstances.push(sensor);
+        return sensor;
+    }
 
     /**
      * Read distance from ultrasonic sensor
-     * @param unit Distance unit (millimeters or inches)
-     * @returns Distance in selected unit
+     * @param id the ultrasonic sensor ID
+     * @param unit distance unit to return
+     * @returns distance in specified unit
      */
     //% blockId=ultrasonic_read_distance
-    //% block="distance $unit"
+    //% block="ultrasonic $id distance $unit"
+    //% id.defl=PiicoDevID.ID0
     //% unit.defl=UltrasonicUnit.Millimeters
     //% group="Ultrasonic Distance"
     //% weight=100
-    export function ultrasonicDistance(unit: UltrasonicUnit): number {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        return _ultrasonic.readDistance(unit);
+    export function ultrasonicDistance(id: PiicoDevID, unit: UltrasonicUnit): number {
+        let sensor = getUltrasonic(id);
+        return sensor.readDistance(unit);
     }
 
     /**
      * Check if a new distance sample is available
+     * @param id the ultrasonic sensor ID
      * @returns true if new sample is ready
      */
     //% blockId=ultrasonic_new_sample
-    //% block="new distance sample available"
+    //% block="ultrasonic $id new sample available"
+    //% id.defl=PiicoDevID.ID0
     //% group="Ultrasonic Distance"
     //% weight=95
-    export function ultrasonicNewSample(): boolean {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        return _ultrasonic.newSampleAvailable();
+    export function ultrasonicNewSample(id: PiicoDevID): boolean {
+        let sensor = getUltrasonic(id);
+        return sensor.newSampleAvailable();
     }
 
     /**
      * Set the ultrasonic sensor sample period
+     * @param id the ultrasonic sensor ID
      * @param period Sample period in milliseconds (0 to disable, 1-65535)
      */
     //% blockId=ultrasonic_set_period
-    //% block="set distance sample period to $period ms"
+    //% block="ultrasonic $id set sample period to $period ms"
+    //% id.defl=PiicoDevID.ID0
     //% period.min=0 period.max=65535 period.defl=20
     //% group="Ultrasonic Distance"
     //% weight=85
     //% advanced=true
-    export function ultrasonicSetPeriod(period: number): void {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        _ultrasonic.setPeriod(period);
+    export function ultrasonicSetPeriod(id: PiicoDevID, period: number): void {
+        let sensor = getUltrasonic(id);
+        sensor.setPeriod(period);
     }
 
     /**
      * Get the ultrasonic sensor sample period
+     * @param id the ultrasonic sensor ID
      * @returns Sample period in milliseconds
      */
     //% blockId=ultrasonic_get_period
-    //% block="distance sample period (ms)"
+    //% block="ultrasonic $id sample period (ms)"
+    //% id.defl=PiicoDevID.ID0
     //% group="Ultrasonic Distance"
     //% weight=84
     //% advanced=true
-    export function ultrasonicGetPeriod(): number {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        return _ultrasonic.getPeriod();
+    export function ultrasonicGetPeriod(id: PiicoDevID): number {
+        let sensor = getUltrasonic(id);
+        return sensor.getPeriod();
     }
 
     /**
      * Control the ultrasonic sensor LED
+     * @param id the ultrasonic sensor ID
      * @param state true to turn LED on, false to turn off
      */
     //% blockId=ultrasonic_set_led
-    //% block="set ultrasonic LED $state"
+    //% block="ultrasonic $id LED $state"
+    //% id.defl=PiicoDevID.ID0
     //% state.shadow="toggleOnOff"
     //% group="Ultrasonic Distance"
     //% weight=83
     //% advanced=true
-    export function ultrasonicSetLED(state: boolean): void {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        _ultrasonic.setLED(state);
+    export function ultrasonicSetLED(id: PiicoDevID, state: boolean): void {
+        let sensor = getUltrasonic(id);
+        sensor.setLED(state);
     }
 
     /**
      * Get the ultrasonic sensor LED state
+     * @param id the ultrasonic sensor ID
      * @returns true if LED is on
      */
     //% blockId=ultrasonic_get_led
-    //% block="ultrasonic LED on"
+    //% block="ultrasonic $id LED on"
+    //% id.defl=PiicoDevID.ID0
     //% group="Ultrasonic Distance"
     //% weight=82
     //% advanced=true
-    export function ultrasonicGetLED(): boolean {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        return _ultrasonic.getLED();
+    export function ultrasonicGetLED(id: PiicoDevID): boolean {
+        let sensor = getUltrasonic(id);
+        return sensor.getLED();
     }
 
     /**
      * Get the ultrasonic sensor firmware version
+     * @param id the ultrasonic sensor ID
      * @returns Firmware version string
      */
     //% blockId=ultrasonic_firmware
-    //% block="ultrasonic firmware version"
+    //% block="ultrasonic $id firmware version"
+    //% id.defl=PiicoDevID.ID0
     //% group="Ultrasonic Distance"
     //% weight=70
     //% advanced=true
-    export function ultrasonicFirmware(): string {
-        if (!_ultrasonic) {
-            _ultrasonic = new Ultrasonic();
-        }
-        return _ultrasonic.readFirmware();
+    export function ultrasonicFirmware(id: PiicoDevID): string {
+        let sensor = getUltrasonic(id);
+        return sensor.readFirmware();
     }
 }
