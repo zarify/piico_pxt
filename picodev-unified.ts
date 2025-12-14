@@ -27,7 +27,7 @@
  * Sensors with ID switches: Button, Potentiometer, Ultrasonic, Buzzer, 915MHz Transceiver (future)
  */
 //% blockId=picodev_id
-export enum PiicoDevID {
+enum PiicoDevID {
     //% block="[----] ID 0"
     ID0 = 0,
     //% block="[+---] ID 1"
