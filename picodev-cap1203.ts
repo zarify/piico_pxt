@@ -19,6 +19,18 @@ namespace piicodev {
     }
 
     /**
+     * CAP1203 Pad numbers
+     */
+    export enum PadNumber {
+        //% block="1"
+        Pad1 = 1,
+        //% block="2"
+        Pad2 = 2,
+        //% block="3"
+        Pad3 = 3
+    }
+
+    /**
      * CAP1203 Touch Sensor class
      */
     class CAP1203 {
@@ -96,7 +108,6 @@ namespace piicodev {
          */
         //% blockId=cap1203_is_pressed
         //% block="CAP1203 is pad $pad pressed?"
-        //% pad.min=1 pad.max=3 pad.defl=1
         //% weight=100
         public isPadPressed(pad: number): boolean {
             try {
@@ -123,7 +134,6 @@ namespace piicodev {
          */
         //% blockId=cap1203_read_raw
         //% block="CAP1203 pad $pad raw value"
-        //% pad.min=1 pad.max=3 pad.defl=1
         //% weight=99
         public readRawValue(pad: number): number {
             try {
@@ -193,6 +203,38 @@ namespace piicodev {
     // Internal singleton instance
     let _cap1203: CAP1203;
 
+    // Event tracking for pad touches
+    let _cap1203LastState: number[] = [false, false, false];
+    let _cap1203EventsInitialized = false;
+    const CAP1203_EVENT_ID = 3200; // Event source ID for CAP1203 (following pattern: Button=3000, LIS3DH=3100)
+
+    /**
+     * Initialize background checking for pad touch events
+     */
+    function initCap1203Events(): void {
+        if (_cap1203EventsInitialized) return;
+        _cap1203EventsInitialized = true;
+
+        control.inBackground(() => {
+            while (true) {
+                if (_cap1203) {
+                    for (let pad = 1; pad <= 3; pad++) {
+                        let isPressed = _cap1203.isPadPressed(pad);
+                        if (isPressed && !_cap1203LastState[pad - 1]) {
+                            // Pad just pressed
+                            _cap1203LastState[pad - 1] = true;
+                            control.raiseEvent(CAP1203_EVENT_ID, pad);
+                        } else if (!isPressed && _cap1203LastState[pad - 1]) {
+                            // Pad released
+                            _cap1203LastState[pad - 1] = false;
+                        }
+                    }
+                }
+                basic.pause(50); // Check every 50ms
+            }
+        });
+    }
+
     // Wrapper functions to call methods on the internal CAP1203 instance
     /**
      * Check if a specific touch pad is currently pressed
@@ -200,9 +242,9 @@ namespace piicodev {
     //% blockId=cap1203_is_pressed
     //% block="CAP1203 is pad $pad pressed?"
     //% group="CAP1203 Touch Sensor"
-    //% pad.min=1 pad.max=3 pad.defl=1
+    //% pad.defl=PadNumber.Pad1
     //% weight=100
-    export function cap1203IsPadPressed(pad: number): boolean {
+    export function cap1203IsPadPressed(pad: PadNumber): boolean {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) return _cap1203.isPadPressed(pad);
         return false;
@@ -214,9 +256,9 @@ namespace piicodev {
     //% blockId=cap1203_read_raw
     //% block="CAP1203 pad $pad raw value"
     //% group="CAP1203 Touch Sensor"
-    //% pad.min=1 pad.max=3 pad.defl=1
+    //% pad.defl=PadNumber.Pad1
     //% weight=99
-    export function cap1203ReadRawValue(pad: number): number {
+    export function cap1203ReadRawValue(pad: PadNumber): number {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) return _cap1203.readRawValue(pad);
         return 0;
@@ -234,5 +276,19 @@ namespace piicodev {
     export function cap1203SetSensitivity(level: number): void {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
         if (_cap1203) _cap1203.setSensitivity(level);
+    }
+
+    /**
+     * Run code when a specific CAP1203 pad is touched
+     */
+    //% blockId=cap1203_on_pad_touched
+    //% block="on CAP1203 pad $pad touched"
+    //% group="CAP1203 Touch Sensor"
+    //% pad.defl=PadNumber.Pad1
+    //% weight=101
+    export function cap1203OnPadTouched(pad: PadNumber, handler: () => void): void {
+        if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
+        initCap1203Events();
+        control.onEvent(CAP1203_EVENT_ID, pad, handler);
     }
 }
