@@ -244,9 +244,6 @@ namespace piicodev {
         // Calculate I2C address based on ID switches
         let address = picodevUnified.calculateIDSwitchAddress(0x42, id);
 
-        // Register this sensor ID and check for duplicates
-        picodevUnified.registerSensorID("Button", id, address);
-
         // Check if button already exists
         for (let i = 0; i < _buttons.length; i++) {
             if (_buttons[i] && _buttons[i].getAddress() === address) {

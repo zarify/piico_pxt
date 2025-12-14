@@ -108,9 +108,6 @@ namespace piicodev {
         // Calculate I2C address based on ID switches
         let address = picodevUnified.calculateIDSwitchAddress(0x35, id);
 
-        // Register this sensor ID and check for duplicates
-        picodevUnified.registerSensorID("Potentiometer", id, address);
-
         // Check if instance already exists
         for (let i = 0; i < potentiometerInstances.length; i++) {
             if (potentiometerInstances[i] && (potentiometerInstances[i] as any).addr === address) {

@@ -201,9 +201,6 @@ namespace piicodev {
         // Calculate I2C address based on ID switches
         let address = picodevUnified.calculateIDSwitchAddress(0x5C, id);
 
-        // Register this sensor ID and check for duplicates
-        picodevUnified.registerSensorID("Buzzer", id, address);
-
         // Check if instance already exists
         for (let i = 0; i < buzzerInstances.length; i++) {
             if (buzzerInstances[i] && (buzzerInstances[i] as any).addr === address) {

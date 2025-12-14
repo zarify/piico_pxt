@@ -312,12 +312,6 @@ namespace picodevUnified {
     }
 
     /**
-     * Registry of active sensor IDs to detect duplicates
-     * Format: {sensor: "SensorName", id: ID_VALUE, addr: I2C_ADDRESS}
-     */
-    let _registeredSensorIDs: { sensor: string, id: number, addr: number }[] = [];
-
-    /**
      * Calculate the I2C address for a sensor based on its default address and ID switch setting
      * 
      * @param defaultAddress The sensor's default I2C address (when all DIP switches are OFF)
@@ -333,45 +327,6 @@ namespace picodevUnified {
             return defaultAddress;
         }
         return 0x08 + id;
-    }
-
-    /**
-     * Register a sensor ID and check for duplicates
-     * 
-     * This function tracks which sensor types are using which IDs to help detect
-     * configuration errors where multiple sensors are set to the same address.
-     * 
-     * @param sensorType Name of the sensor type (e.g., "Button", "Potentiometer")
-     * @param id The PiicoDevID being used
-     * @param address The calculated I2C address
-     * 
-     * If a duplicate ID is detected (same address already in use), displays a brief
-     * error on the micro:bit LED display and logs details to serial output.
-     */
-    export function registerSensorID(sensorType: string, id: PiicoDevID, address: number): void {
-        // Check if this address is already registered
-        for (let i = 0; i < _registeredSensorIDs.length; i++) {
-            let registered = _registeredSensorIDs[i];
-            if (registered.addr === address) {
-                // Found duplicate address - show brief error on display
-                basic.showString("ID!", 50);  // Fast scroll speed (50ms per character)
-
-                // Log detailed error to serial for debugging
-                serial.writeLine("PiicoDev ID Error: Address conflict at 0x" + toHex(address));
-                serial.writeLine("  Already used by: " + registered.sensor + " (ID " + registered.id + ")");
-                serial.writeLine("  Also used by: " + sensorType + " (ID " + id + ")");
-                serial.writeLine("  Change one sensor's DIP switches to a different ID");
-
-                return;
-            }
-        }
-
-        // No duplicate found - register this sensor ID
-        _registeredSensorIDs.push({
-            sensor: sensorType,
-            id: id,
-            addr: address
-        });
     }
 }
 
