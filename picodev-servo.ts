@@ -107,9 +107,9 @@ namespace piicodev {
 
                 if (value === 0) {
                     on = 0;
-                    off = 4095;
+                    off = 4096;
                 } else if (value === 4095) {
-                    on = 4095;
+                    on = 4096;
                     off = 0;
                 }
 
@@ -200,8 +200,10 @@ namespace piicodev {
             speed = Math.min(100, Math.max(-100, speed));
             this._speed = speed;
 
-            // Remap -100 to 100 to min_duty to max_duty
-            let duty = Math.floor(this.remap(speed, -100, 100, this.minDuty, this.maxDuty) + 0.5);
+            // Convert from -100/100 to -1/1 range to match Python implementation
+            let normalizedSpeed = speed / 100;
+            // Remap -1 to 1 to min_duty to max_duty
+            let duty = Math.floor(this.remap(normalizedSpeed, -1, 1, this.minDuty, this.maxDuty) + 0.5);
             this.controller.setDuty(this.channel, duty);
         }
 
