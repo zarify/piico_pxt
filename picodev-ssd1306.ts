@@ -71,30 +71,70 @@ namespace piicodev {
          */
         private initialize(): void {
             try {
-                // Initialization sequence
-                let initCmds = [
-                    SSD1306.SET_DISP,                    // Display off
-                    SSD1306.SET_MEM_ADDR, 0x00,          // Horizontal addressing mode
-                    SSD1306.SET_DISP_START_LINE,         // Start line 0
-                    SSD1306.SET_SEG_REMAP | 0x01,        // Column 127 mapped to SEG0
-                    SSD1306.SET_MUX_RATIO, this.height - 1,  // MUX ratio
-                    SSD1306.SET_COM_OUT_DIR | 0x08,      // Scan from COM[N] to COM0
-                    SSD1306.SET_DISP_OFFSET, 0x00,       // No offset
-                    SSD1306.SET_COM_PIN_CFG, 0x12,       // COM pin configuration
-                    SSD1306.SET_DISP_CLK_DIV, 0x80,      // Clock divide ratio
-                    SSD1306.SET_PRECHARGE, 0xF1,         // Pre-charge period
-                    SSD1306.SET_VCOM_DESEL, 0x30,        // VCOMH deselect level
-                    SSD1306.SET_CONTRAST, 0xFF,          // Maximum contrast
-                    SSD1306.SET_ENTIRE_ON,               // Output follows RAM content
-                    SSD1306.SET_NORM_INV,                // Normal display (not inverted)
-                    SSD1306.SET_IREF_SELECT, 0x30,       // Internal IREF
-                    SSD1306.SET_CHARGE_PUMP, 0x14,       // Enable charge pump
-                    SSD1306.SET_DISP | 0x01              // Display on
-                ];
+                // Initialization sequence for SSD1306 128x64
+                // Display off
+                this.writeCmd(SSD1306.SET_DISP);
 
-                for (let i = 0; i < initCmds.length; i++) {
-                    this.writeCmd(initCmds[i]);
-                }
+                // Set memory addressing mode to horizontal (0x00)
+                this.writeCmd(SSD1306.SET_MEM_ADDR);
+                this.writeCmd(0x00);
+
+                // Display start line
+                this.writeCmd(SSD1306.SET_DISP_START_LINE | 0x00);
+
+                // Segment remap: column 127 mapped to SEG0 (flip horizontally)
+                this.writeCmd(SSD1306.SET_SEG_REMAP | 0x01);
+
+                // MUX ratio
+                this.writeCmd(SSD1306.SET_MUX_RATIO);
+                this.writeCmd(this.height - 1);
+
+                // COM output scan direction: scan from COM[N] to COM0 (flip vertically)
+                this.writeCmd(SSD1306.SET_COM_OUT_DIR | 0x08);
+
+                // Display offset
+                this.writeCmd(SSD1306.SET_DISP_OFFSET);
+                this.writeCmd(0x00);
+
+                // COM pins hardware configuration
+                this.writeCmd(SSD1306.SET_COM_PIN_CFG);
+                this.writeCmd(0x12);
+
+                // Display clock divide ratio
+                this.writeCmd(SSD1306.SET_DISP_CLK_DIV);
+                this.writeCmd(0x80);
+
+                // Pre-charge period
+                this.writeCmd(SSD1306.SET_PRECHARGE);
+                this.writeCmd(0xF1);
+
+                // VCOMH deselect level
+                this.writeCmd(SSD1306.SET_VCOM_DESEL);
+                this.writeCmd(0x30);
+
+                // Contrast
+                this.writeCmd(SSD1306.SET_CONTRAST);
+                this.writeCmd(0xFF);
+
+                // Entire display on: output follows RAM content
+                this.writeCmd(SSD1306.SET_ENTIRE_ON);
+
+                // Normal display (not inverted)
+                this.writeCmd(SSD1306.SET_NORM_INV);
+
+                // Internal IREF setting
+                this.writeCmd(SSD1306.SET_IREF_SELECT);
+                this.writeCmd(0x30);
+
+                // Charge pump enable
+                this.writeCmd(SSD1306.SET_CHARGE_PUMP);
+                this.writeCmd(0x14);
+
+                // Display on
+                this.writeCmd(SSD1306.SET_DISP | 0x01);
+
+                // Give display time to initialize
+                basic.pause(100);
 
                 // Clear the display
                 this.clear();
@@ -108,16 +148,22 @@ namespace piicodev {
          * Write a command byte
          */
         private writeCmd(cmd: number): void {
-            let buf = pins.createBuffer(1);
-            buf[0] = cmd;
-            picodevUnified.writeRegister(this.addr, 0x80, buf);
+            let buf = pins.createBuffer(2);
+            buf[0] = 0x00;  // Control byte: Co=0, D/C=0 (command)
+            buf[1] = cmd;
+            pins.i2cWriteBuffer(this.addr, buf, false);
         }
 
         /**
          * Write data bytes
          */
         private writeData(data: Buffer): void {
-            picodevUnified.writeRegister(this.addr, 0x40, data);
+            let buf = pins.createBuffer(1 + data.length);
+            buf[0] = 0x40;  // Control byte: Co=0, D/C=1 (data)
+            for (let i = 0; i < data.length; i++) {
+                buf[1 + i] = data[i];
+            }
+            pins.i2cWriteBuffer(this.addr, buf, false);
         }
 
         /**
@@ -187,12 +233,23 @@ namespace piicodev {
                 this.writeCmd(0);
                 this.writeCmd(this.pages - 1);
 
-                // Write buffer in chunks (I2C size limit)
-                let chunkSize = 16;
+                // Write buffer in chunks, but handle control bytes properly
+                // Maximum I2C transfer is typically 32 bytes including control byte
+                let chunkSize = 31;  // Leave room for control byte
                 for (let i = 0; i < this.buffer.length; i += chunkSize) {
                     let end = Math.min(i + chunkSize, this.buffer.length);
-                    let chunk = this.buffer.slice(i, end);
-                    this.writeData(chunk);
+                    let dataLength = end - i;
+
+                    // Create buffer with control byte + data
+                    let buf = pins.createBuffer(1 + dataLength);
+                    buf[0] = 0x40;  // Control byte: D/C=1 (data)
+
+                    // Copy chunk to buffer
+                    for (let j = 0; j < dataLength; j++) {
+                        buf[1 + j] = this.buffer[i + j];
+                    }
+
+                    pins.i2cWriteBuffer(this.addr, buf, false);
                 }
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
@@ -405,6 +462,37 @@ namespace piicodev {
                 [0x00, 0x41, 0x41, 0x7F, 0x00], // ] (93)
                 [0x04, 0x02, 0x01, 0x02, 0x04], // ^ (94)
                 [0x40, 0x40, 0x40, 0x40, 0x40], // _ (95)
+                [0x00, 0x01, 0x02, 0x04, 0x00], // ` (96)
+                [0x20, 0x54, 0x54, 0x54, 0x78], // a (97)
+                [0x7F, 0x48, 0x44, 0x44, 0x38], // b (98)
+                [0x38, 0x44, 0x44, 0x44, 0x20], // c (99)
+                [0x38, 0x44, 0x44, 0x48, 0x7F], // d (100)
+                [0x38, 0x54, 0x54, 0x54, 0x18], // e (101)
+                [0x08, 0x7E, 0x09, 0x01, 0x02], // f (102)
+                [0x0C, 0x52, 0x52, 0x52, 0x3E], // g (103)
+                [0x7F, 0x08, 0x04, 0x04, 0x78], // h (104)
+                [0x00, 0x44, 0x7D, 0x40, 0x00], // i (105)
+                [0x20, 0x40, 0x44, 0x3D, 0x00], // j (106)
+                [0x7F, 0x10, 0x28, 0x44, 0x00], // k (107)
+                [0x00, 0x41, 0x7F, 0x40, 0x00], // l (108)
+                [0x7C, 0x04, 0x18, 0x04, 0x78], // m (109)
+                [0x7C, 0x08, 0x04, 0x04, 0x78], // n (110)
+                [0x38, 0x44, 0x44, 0x44, 0x38], // o (111)
+                [0x7C, 0x14, 0x14, 0x14, 0x08], // p (112)
+                [0x08, 0x14, 0x14, 0x18, 0x7C], // q (113)
+                [0x7C, 0x08, 0x04, 0x04, 0x08], // r (114)
+                [0x48, 0x54, 0x54, 0x54, 0x20], // s (115)
+                [0x04, 0x3F, 0x44, 0x40, 0x20], // t (116)
+                [0x3C, 0x40, 0x40, 0x20, 0x7C], // u (117)
+                [0x1C, 0x20, 0x40, 0x20, 0x1C], // v (118)
+                [0x3C, 0x40, 0x30, 0x40, 0x3C], // w (119)
+                [0x44, 0x28, 0x10, 0x28, 0x44], // x (120)
+                [0x0C, 0x50, 0x50, 0x50, 0x3C], // y (121)
+                [0x44, 0x64, 0x54, 0x4C, 0x44], // z (122)
+                [0x00, 0x08, 0x36, 0x41, 0x00], // { (123)
+                [0x00, 0x00, 0x7F, 0x00, 0x00], // | (124)
+                [0x00, 0x41, 0x36, 0x08, 0x00], // } (125)
+                [0x08, 0x04, 0x08, 0x10, 0x08], // ~ (126)
             ];
 
             if (index >= 0 && index < font.length) {
