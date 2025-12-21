@@ -1,6 +1,6 @@
 {
     "name": "makecode-piicodev",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "description": "Unofficial PiicoDev sensor ecosystem support for BBC micro:bit V2",
     "license": "MIT",
     "dependencies": {
@@ -28,7 +28,6 @@
         "picodev-ultrasonic.ts",
         "picodev-ms5637.ts",
         "picodev-transceiver.ts",
-        "picodev-rfid.ts",
         "picodev-ssd1306.ts"
     ],
     "testFiles": [

@@ -348,7 +348,8 @@ namespace piicodev {
                 while (offset < payloadLength) {
                     let chunkSize = Math.min(Transceiver.MAXIMUM_I2C_SIZE - 1, payloadLength - offset);
                     let chunk = payload.slice(offset, offset + chunkSize);
-                    picodevUnified.writeRegister(this.addr, Transceiver.REG_PAYLOAD, chunk);
+                    // Use 0x80 bit for write operation
+                    picodevUnified.writeRegister(this.addr, Transceiver.REG_PAYLOAD | 0x80, chunk);
                     basic.pause(5);
                     offset += chunkSize;
                 }
@@ -546,6 +547,9 @@ namespace piicodev {
                 if (payload.length === 0) {
                     return false;
                 }
+
+                // Store raw payload for debugging
+                this.receivedBytes = payload;
 
                 // Parse header: [rssi, source_address(2 bytes), type, ...]
                 this.rssi = -payload[0];
@@ -861,6 +865,26 @@ namespace piicodev {
     }
 
     /**
+     * Send raw bytes to a specific address (or broadcast to all if address is 0)
+     */
+    //% blockId=transceiver_send_bytes
+    //% block="transceiver $id send bytes $data||to address $address"
+    //% id.defl=PiicoDevID.ID0
+    //% address.min=0 address.max=127 address.defl=0
+    //% weight=92
+    //% group="Transceiver"
+    //% advanced=true
+    //% expandableArgumentMode="toggle"
+    export function transceiverSendBytes(
+        id: PiicoDevID = PiicoDevID.ID0,
+        data: Buffer,
+        address?: number
+    ): void {
+        let transceiver = getTransceiver(id);
+        transceiver.sendBytes(data, address || 0);
+    }
+
+    /**
      * Run code when a string message is received
      * The received message will be available in the 'receivedString' parameter
      */
@@ -963,5 +987,49 @@ namespace piicodev {
     export function transceiverSetLED(id: PiicoDevID = PiicoDevID.ID0, on: boolean): void {
         let transceiver = getTransceiver(id);
         transceiver.setLED(on);
+    }
+
+    /**
+     * Check if a message has been received and parse it
+     * Returns true if a message was received
+     * Call this in a loop to poll for messages (like MicroPython)
+     */
+    //% blockId=transceiver_receive
+    //% block="transceiver $id receive"
+    //% id.defl=PiicoDevID.ID0
+    //% weight=85
+    //% group="Transceiver"
+    //% advanced=true
+    export function transceiverReceive(id: PiicoDevID = PiicoDevID.ID0): boolean {
+        let transceiver = getTransceiver(id);
+        return transceiver.receive();
+    }
+
+    /**
+     * Get the last received message as a string
+     */
+    //% blockId=transceiver_get_message
+    //% block="transceiver $id message"
+    //% id.defl=PiicoDevID.ID0
+    //% weight=84
+    //% group="Transceiver"
+    //% advanced=true
+    export function transceiverGetMessage(id: PiicoDevID = PiicoDevID.ID0): string {
+        let transceiver = getTransceiver(id);
+        return transceiver.getMessage();
+    }
+
+    /**
+     * Get the received bytes from the last message
+     */
+    //% blockId=transceiver_get_received_bytes
+    //% block="transceiver $id received bytes"
+    //% id.defl=PiicoDevID.ID0
+    //% weight=83
+    //% group="Transceiver"
+    //% advanced=true
+    export function transceiverGetReceivedBytes(id: PiicoDevID = PiicoDevID.ID0): Buffer {
+        let transceiver = getTransceiver(id);
+        return transceiver.getReceivedBytes();
     }
 }

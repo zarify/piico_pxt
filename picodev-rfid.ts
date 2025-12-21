@@ -121,11 +121,23 @@ namespace piicodev {
                 this.writeReg(RFID.REG_TX_ASK, 0x40);
                 this.writeReg(RFID.REG_MODE, 0x3D);
 
+                // CRITICAL: Configure RX gain to maximum for better detection
+                // RFCfgReg (0x26): Set receiver gain to maximum (48 dB)
+                this.writeReg(0x26, 0x70);  // Max gain: bits 4-6 = 111
+
+                // Configure other RF parameters
+                this.writeReg(0x27, 0x80);  // RxThresholdReg
+                this.writeReg(0x28, 0x84);  // DemodReg
+                this.writeReg(0x29, 0x00);  // Reserved
+
                 // Configure interrupts
                 this.writeReg(RFID.REG_DIV_I_EN, 0x80);
                 this.writeReg(RFID.REG_COM_I_EN, 0x20);
 
                 this.antennaOn();
+
+                // Give antenna time to stabilize
+                basic.pause(10);
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
             }
@@ -445,6 +457,17 @@ namespace piicodev {
         }
 
         /**
+         * Halt the tag (stop communication)
+         */
+        private halt(): void {
+            let buf = [0x50, 0x00];
+            let crc = this.calcCRC(buf);
+            buf.push(crc[0]);
+            buf.push(crc[1]);
+            this.toCard(RFID.CMD_TRANSCEIVE, buf);
+        }
+
+        /**
          * Classic tag: select for read/write operations
          */
         private classicSelectTag(uid: number[]): boolean {
@@ -561,23 +584,45 @@ namespace piicodev {
          */
         private pollForTags(): void {
             try {
-                if (this.detectTag()) {
+                let tagDetected = this.detectTag();
+
+                if (tagDetected) {
+                    basic.pause(5);  // Small delay for stability
                     let tagInfo = this.readTagID();
                     if (tagInfo.success) {
+                        // Check if this is a new tag (different ID or was not present)
+                        let isNewTag = !this.tagPresent || this.lastTagId !== tagInfo.idFormatted;
+
                         // Update stored tag info
                         this.lastTagId = tagInfo.idFormatted;
                         this.lastTagType = tagInfo.type;
                         this.lastTagIdBytes = tagInfo.id;
-                        this.tagPresent = true;
 
-                        // Raise tag detected event
-                        control.raiseEvent(this.eventId, 1);
+                        // Halt the tag to prevent communication issues
+                        this.halt();
+
+                        // Only raise event if this is a new tag detection
+                        if (isNewTag) {
+                            this.tagPresent = true;
+                            control.raiseEvent(this.eventId, 1);
+                        } else {
+                            this.tagPresent = true;
+                        }
+                    } else {
+                        this.tagPresent = false;
                     }
                 } else {
-                    this.tagPresent = false;
+                    // Tag no longer present
+                    if (this.tagPresent) {
+                        this.tagPresent = false;
+                        // Clear last tag info when tag is removed
+                        this.lastTagId = "";
+                    }
                 }
             } catch (e) {
-                // Silently handle errors during polling
+                // Log errors during polling for debugging
+                picodevUnified.logI2CError(this.addr);
+                this.tagPresent = false;
             }
         }
 
@@ -613,6 +658,7 @@ namespace piicodev {
                         this.lastTagId = tagInfo.idFormatted;
                         this.lastTagType = tagInfo.type;
                         this.lastTagIdBytes = tagInfo.id;
+                        this.halt();  // Halt tag after reading
                         this.tagPresent = true;
                         return true;
                     }
@@ -620,6 +666,7 @@ namespace piicodev {
                 this.tagPresent = false;
                 return false;
             } catch (e) {
+                picodevUnified.logI2CError(this.addr);
                 return false;
             }
         }
@@ -636,11 +683,13 @@ namespace piicodev {
                         this.lastTagId = tagInfo.idFormatted;
                         this.lastTagType = tagInfo.type;
                         this.lastTagIdBytes = tagInfo.id;
+                        this.halt();  // Halt tag after reading
                         return tagInfo.idFormatted;
                     }
                 }
                 return "";
             } catch (e) {
+                picodevUnified.logI2CError(this.addr);
                 return "";
             }
         }
