@@ -5,9 +5,9 @@
  * Reads temperature in Celsius, Fahrenheit, or Kelvin.
  */
 
-//% weight=79 color=#00A4A6 icon="\uf2c9"
-//% groups=['Environment']
-namespace piicodev {
+//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% groups=['TMP117']
+namespace PiicoDevEnvironmental {
 
     /**
      * Temperature unit selection

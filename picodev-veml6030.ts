@@ -5,9 +5,9 @@
  * for optimal light detection across various brightness conditions.
  */
 
-//% weight=78 color=#00A4A6 icon="\uf185"
-//% groups=['Environment']
-namespace piicodev {
+//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% groups=['VEML6030']
+namespace PiicoDevEnvironmental {
 
     /**
      * VEML6030 gain settings for sensitivity adjustment

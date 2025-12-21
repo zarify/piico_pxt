@@ -5,9 +5,9 @@
  * Provides pressure in hPa, temperature in Celsius, and calculated altitude.
  */
 
-//% weight=81 color=#00A4A6 icon="\uf2c9"
-//% groups=['Environment']
-namespace piicodev {
+//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% groups=['MS5637']
+namespace PiicoDevEnvironmental {
 
     /**
      * Resolution/Oversampling mode for MS5637

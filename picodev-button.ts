@@ -5,9 +5,9 @@
  * Features press detection, double-press detection, press counting, and LED control.
  */
 
-//% weight=100 color=#0078D7 icon="\uf205"
-//% groups=['Inputs']
-namespace piicodev {
+//% weight=95 color=#0078D7 icon="\uf25a"
+//% groups=['Button']
+namespace PiicoDevInputs {
 
     /**
      * Button events that can trigger code

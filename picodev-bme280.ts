@@ -5,9 +5,9 @@
  * for accurate temperature, humidity, and atmospheric pressure readings.
  */
 
-//% weight=80 color=#00A4A6 icon="\uf2c9"
-//% groups=['Environment']
-namespace piicodev {
+//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% groups=['BME280']
+namespace PiicoDevEnvironmental {
 
     /**
      * Oversampling mode for BME280 sensor

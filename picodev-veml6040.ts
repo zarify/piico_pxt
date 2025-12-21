@@ -5,9 +5,9 @@
  * and ambient light detection capabilities.
  */
 
-//% weight=77 color=#00A4A6 icon="\uf53f"
-//% groups=['Environment']
-namespace piicodev {
+//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% groups=['VEML6040']
+namespace PiicoDevEnvironmental {
 
     /**
      * Named colors for easy color classification

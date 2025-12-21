@@ -4,9 +4,9 @@
  * 3-pad capacitive touch sensor with configurable sensitivity and touch modes.
  */
 
-//% weight=99 color=#0078D7 icon="\uf25a"
-//% groups=['Inputs']
-namespace piicodev {
+//% weight=95 color=#0078D7 icon="\uf25a"
+//% groups=['CAP1203']
+namespace PiicoDevInputs {
 
     /**
      * Touch detection mode

@@ -5,9 +5,9 @@
  * Supports standard servos (angle control) and continuous rotation servos (speed control).
  */
 
-//% weight=65 color=#FF69B4 icon="\uf013"
-//% groups=['Servo Control', 'Configuration', 'others']
-namespace piicodev {
+//% weight=85 color=#FF6680 icon="\uf001"
+//% groups=['Servo']
+namespace PiicoDevOutputs {
 
     /**
      * Servo channel selector (1-4 as labeled on board)

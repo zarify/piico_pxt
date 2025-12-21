@@ -5,9 +5,9 @@
  * Features configurable frequency, transmission power, speed, groups, and addresses.
  */
 
-//% weight=85 color=#FF6600 icon="\uf012"
-//% groups=['Communication']
-namespace piicodev {
+//% weight=75 color=#FFA500 icon="\uf0ec"
+//% groups=['Transceiver']
+namespace PiicoDevComm {
 
     /**
      * Radio transmission speed presets

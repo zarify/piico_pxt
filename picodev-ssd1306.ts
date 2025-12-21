@@ -5,9 +5,9 @@
  * Uses buffered drawing - call show() to update the display after drawing.
  */
 
-//% weight=75 color=#FF8C00 icon="\uf26c"
-//% groups=['Display']
-namespace piicodev {
+//% weight=80 color=#9966FF icon="\uf0a1"
+//% groups=['SSD1306']
+namespace PiicoDevDisplays {
 
     /**
      * Text size options

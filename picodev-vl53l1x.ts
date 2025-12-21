@@ -4,9 +4,9 @@
  * Laser ranging sensor capable of measuring distances from 4mm to 4000mm.
  */
 
-//% weight=97 color=#0078D7 icon="\uf545"
-//% groups=['Inputs']
-namespace piicodev {
+//% weight=90 color=#E63022 icon="\uf135"
+//% groups=['VL53L1X']
+namespace PiicoDevMotion {
 
     /**
      * Distance measurement mode

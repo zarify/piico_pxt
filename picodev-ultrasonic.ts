@@ -5,9 +5,9 @@
  * Provides distance measurements in millimeters and inches.
  */
 
-//% weight=96 color=#0078D7 icon="\uf545"
-//% groups=['Inputs']
-namespace piicodev {
+//% weight=90 color=#E63022 icon="\uf135"
+//% groups=['Ultrasonic']
+namespace PiicoDevMotion {
 
     /**
      * Distance unit selection for ultrasonic sensor

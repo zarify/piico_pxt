@@ -5,9 +5,9 @@
  * and equivalent CO2 (eCO2) with built-in quality ratings.
  */
 
-//% weight=79 color=#00A4A6 icon="\uf72e"
-//% groups=['Environment']
-namespace piicodev {
+//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% groups=['ENS160']
+namespace PiicoDevEnvironmental {
 
     /**
      * Air quality reading type
