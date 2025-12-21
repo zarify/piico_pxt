@@ -204,7 +204,7 @@ namespace piicodev {
     let _cap1203: CAP1203;
 
     // Event tracking for pad touches
-    let _cap1203LastState: number[] = [false, false, false];
+    let _cap1203LastState: boolean[] = [false, false, false];
     let _cap1203EventsInitialized = false;
     const CAP1203_EVENT_ID = 3200; // Event source ID for CAP1203 (following pattern: Button=3000, LIS3DH=3100)
 
