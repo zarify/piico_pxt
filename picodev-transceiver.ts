@@ -432,7 +432,7 @@ namespace piicodev {
 
                 // Truncate message to maximum length
                 if (message.length > Transceiver.MAXIMUM_PAYLOAD_LENGTH - 2) {
-                    message = message.substring(0, Transceiver.MAXIMUM_PAYLOAD_LENGTH - 2);
+                    message = message.substr(0, Transceiver.MAXIMUM_PAYLOAD_LENGTH - 2);
                 }
 
                 // Create payload: [type, length, message_bytes]
@@ -459,7 +459,7 @@ namespace piicodev {
 
                 // Truncate key to maximum length
                 if (key.length > Transceiver.MAXIMUM_PAYLOAD_LENGTH - 6) {
-                    key = key.substring(0, Transceiver.MAXIMUM_PAYLOAD_LENGTH - 6);
+                    key = key.substr(0, Transceiver.MAXIMUM_PAYLOAD_LENGTH - 6);
                 }
 
                 // Create payload: [type, value(4 bytes), key_length, key_bytes]
@@ -495,7 +495,7 @@ namespace piicodev {
 
                 // Truncate key to maximum length
                 if (key.length > Transceiver.MAXIMUM_PAYLOAD_LENGTH - 6) {
-                    key = key.substring(0, Transceiver.MAXIMUM_PAYLOAD_LENGTH - 6);
+                    key = key.substr(0, Transceiver.MAXIMUM_PAYLOAD_LENGTH - 6);
                 }
 
                 // Convert float to integer (multiply by 1000)

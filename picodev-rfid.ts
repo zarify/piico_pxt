@@ -349,7 +349,9 @@ namespace piicodev {
 
             // Check for cascade tag (0x88)
             if (result1.uid[0] === 0x88) {
-                validUid.push(result1.uid[1], result1.uid[2], result1.uid[3]);
+                validUid.push(result1.uid[1]);
+                validUid.push(result1.uid[2]);
+                validUid.push(result1.uid[3]);
 
                 let result2 = this.anticoll(RFID.TAG_CMD_ANTICOL2);
                 if (result2.status !== RFID.OK) {
@@ -361,30 +363,46 @@ namespace piicodev {
                 }
 
                 if (result2.uid[0] === 0x88) {
-                    validUid.push(result2.uid[1], result2.uid[2], result2.uid[3]);
+                    validUid.push(result2.uid[1]);
+                    validUid.push(result2.uid[2]);
+                    validUid.push(result2.uid[3]);
 
                     let result3 = this.anticoll(RFID.TAG_CMD_ANTICOL3);
                     if (result3.status !== RFID.OK) {
                         return { success: false, id: [], idFormatted: "", type: TagType.Unknown };
                     }
 
-                    validUid.push(result3.uid[0], result3.uid[1], result3.uid[2], result3.uid[3], result3.uid[4]);
+                    validUid.push(result3.uid[0]);
+                    validUid.push(result3.uid[1]);
+                    validUid.push(result3.uid[2]);
+                    validUid.push(result3.uid[3]);
+                    validUid.push(result3.uid[4]);
                 } else {
-                    validUid.push(result2.uid[0], result2.uid[1], result2.uid[2], result2.uid[3], result2.uid[4]);
+                    validUid.push(result2.uid[0]);
+                    validUid.push(result2.uid[1]);
+                    validUid.push(result2.uid[2]);
+                    validUid.push(result2.uid[3]);
+                    validUid.push(result2.uid[4]);
                 }
             } else {
-                validUid.push(result1.uid[0], result1.uid[1], result1.uid[2], result1.uid[3], result1.uid[4]);
+                validUid.push(result1.uid[0]);
+                validUid.push(result1.uid[1]);
+                validUid.push(result1.uid[2]);
+                validUid.push(result1.uid[3]);
+                validUid.push(result1.uid[4]);
             }
 
             // Remove checksum byte
-            let id = validUid.slice(0, validUid.length - 1);
+            let id: number[] = [];
+            for (let i = 0; i < validUid.length - 1; i++) {
+                id.push(validUid[i]);
+            }
 
             // Format ID as hex string
             let idFormatted = "";
             for (let i = 0; i < id.length; i++) {
                 if (i > 0) idFormatted += ":";
-                let hex = id[i].toString(16).toUpperCase();
-                if (hex.length === 1) hex = "0" + hex;
+                let hex = picodevUnified.toHex(id[i]);
                 idFormatted += hex;
             }
 
@@ -735,7 +753,7 @@ namespace piicodev {
                     // Write to NTAG pages
                     let bufferStart = 0;
                     for (let page = RFID.NTAG_PAGE_MIN; page <= RFID.NTAG_PAGE_MAX; page++) {
-                        let chunk = text.substring(bufferStart, bufferStart + RFID.NTAG_BYTES_PER_PAGE);
+                        let chunk = text.substr(bufferStart, RFID.NTAG_BYTES_PER_PAGE);
                         bufferStart += RFID.NTAG_BYTES_PER_PAGE;
 
                         let data: number[] = [];
@@ -761,7 +779,7 @@ namespace piicodev {
                     // Write to Classic registers (first 9 slots = 144 bytes)
                     let bufferStart = 0;
                     for (let i = 0; i < 9; i++) {
-                        let chunk = text.substring(bufferStart, bufferStart + RFID.CLASSIC_BYTES_PER_REG);
+                        let chunk = text.substr(bufferStart, RFID.CLASSIC_BYTES_PER_REG);
                         bufferStart += RFID.CLASSIC_BYTES_PER_REG;
 
                         let data: number[] = [];
@@ -999,7 +1017,7 @@ namespace piicodev {
         let rfid = getRFID();
         // Limit to 144 characters
         if (text.length > 144) {
-            text = text.substring(0, 144);
+            text = text.substr(0, 144);
         }
         return rfid.writeText(text);
     }

@@ -285,7 +285,7 @@ namespace picodevUnified {
      * @param value Number to convert
      * @returns Hex string (e.g., "A5")
      */
-    function toHex(value: number): string {
+    export function toHex(value: number): string {
         let hex = "0123456789ABCDEF";
         return hex.charAt((value >> 4) & 0x0F) + hex.charAt(value & 0x0F);
     }
