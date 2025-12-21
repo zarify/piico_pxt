@@ -15,7 +15,7 @@
  * Based on MIT-licensed PiicoDev MicroPython libraries from Core Electronics.
  * 
  * @author zarify
- * @version 0.6.4
+ * @version 0.7.0
  */
 
 //% weight=50 color=#00A4CC icon="\uf2db" block="PiicoDev"
@@ -27,7 +27,7 @@ namespace piicodev {
     /**
      * Extension version information
      */
-    export const VERSION = "0.6.4";
+    export const VERSION = "0.7.0";
 
     /**
      * Check if extension is properly loaded
