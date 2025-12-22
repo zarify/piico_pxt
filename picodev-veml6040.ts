@@ -6,7 +6,7 @@
  */
 
 //% weight=100 color=#00A4A6 icon="\uf0ac"
-//% groups=['VEML6040']
+//% groups=['VEML6040 Colour Sensor']
 namespace PiicoDevEnvironmental {
 
     /**
@@ -394,7 +394,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6040_read_channel
     //% block="VEML6040 read $channel light"
-    //% group="Colour Sensor"
+    //% group="VEML6040 Colour Sensor"
     //% weight=100
     export function veml6040ReadChannel(channel: ColorChannel): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
@@ -410,7 +410,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6040_classify_color
     //% block="VEML6040 classify color"
-    //% group="Colour Sensor"
+    //% group="VEML6040 Colour Sensor"
     //% weight=96
     export function veml6040ClassifyColor(): string {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
@@ -424,7 +424,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6040_get_hsb
     //% block="VEML6040 color $component"
-    //% group="Colour Sensor"
+    //% group="VEML6040 Colour Sensor"
     //% weight=95
     export function veml6040GetHSB(component: HSBComponent): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
@@ -439,7 +439,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6040_ambient_light
     //% block="VEML6040 ambient light (lux)"
-    //% group="Colour Sensor"
+    //% group="VEML6040 Colour Sensor"
     //% advanced=true
     //% weight=50
     export function veml6040GetAmbientLight(): number {
@@ -453,7 +453,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6040_color_temperature
     //% block="VEML6040 color temperature (K)"
-    //% group="Colour Sensor"
+    //% group="VEML6040 Colour Sensor"
     //% advanced=true
     //% weight=49
     export function veml6040GetColorTemperature(): number {

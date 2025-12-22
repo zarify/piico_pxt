@@ -6,7 +6,7 @@
  */
 
 //% weight=100 color=#00A4A6 icon="\uf0ac"
-//% groups=['TMP117']
+//% groups=['TMP117 Temperature']
 namespace PiicoDevEnvironmental {
 
     /**
@@ -100,7 +100,7 @@ namespace PiicoDevEnvironmental {
     //% blockId=tmp117_read_temperature
     //% block="temperature $unit"
     //% unit.defl=TempUnit.Celsius
-    //% group="Temperature"
+    //% group="TMP117 Temperature"
     //% weight=100
     export function tmp117Temperature(unit: TempUnit): number {
         if (!_tmp117) {

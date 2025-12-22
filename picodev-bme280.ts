@@ -6,7 +6,7 @@
  */
 
 //% weight=100 color=#00A4A6 icon="\uf0ac"
-//% groups=['BME280']
+//% groups=['BME280 Environment']
 namespace PiicoDevEnvironmental {
 
     /**

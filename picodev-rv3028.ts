@@ -6,7 +6,7 @@
  */
 
 //% weight=78 color=#8B4513 icon="\uf017"
-//% groups=['Time']
+//% groups=['RV3028 Time']
 namespace piicodev {
 
     /**
@@ -595,7 +595,7 @@ namespace piicodev {
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=1
     //% weight=100
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcSetDate(year: number, month: number, day: number): void {
         let rtc = getRTC();
         rtc.year = year;
@@ -613,7 +613,7 @@ namespace piicodev {
     //% minute.min=0 minute.max=59 minute.defl=0
     //% second.min=0 second.max=59 second.defl=0
     //% weight=99
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcSetTime24(hour: number, minute: number, second: number): void {
         let rtc = getRTC();
         rtc.hour = hour;
@@ -633,7 +633,7 @@ namespace piicodev {
     //% second.min=0 second.max=59 second.defl=0
     //% ampm.defl=AMPM.PM
     //% weight=98
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcSetTime12(hour: number, minute: number, second: number, ampm: AMPM): void {
         let rtc = getRTC();
         rtc.hour = hour;
@@ -651,7 +651,7 @@ namespace piicodev {
     //% block="RTC set weekday $weekday"
     //% weekday.defl=Weekday.Monday
     //% weight=97
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcSetWeekday(weekday: Weekday): void {
         let rtc = getRTC();
         rtc.weekday = weekday;
@@ -665,7 +665,7 @@ namespace piicodev {
     //% block="RTC $component"
     //% component.defl=DateTimeComponent.Hour
     //% weight=90
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcGet(component: DateTimeComponent): number {
         let rtc = getRTC();
         rtc.getDateTime();
@@ -695,7 +695,7 @@ namespace piicodev {
     //% blockId=rtc_get_timestamp
     //% block="RTC timestamp"
     //% weight=83
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcGetTimestamp(): string {
         let rtc = getRTC();
         return rtc.getTimestamp();
@@ -710,7 +710,7 @@ namespace piicodev {
     //% minute.min=0 minute.max=59
     //% hour.min=0 hour.max=23
     //% weight=80
-    //% group="RTC"
+    //% group="RV3028 Time"
     //% expandableArgumentMode="toggle"
     export function rtcSetAlarm(minute?: number, hour?: number, weekday?: Weekday): void {
         let rtc = getRTC();
@@ -727,7 +727,7 @@ namespace piicodev {
     //% hour.min=0 hour.max=23
     //% date.min=1 date.max=31
     //% weight=79
-    //% group="RTC"
+    //% group="RV3028 Time"
     //% expandableArgumentMode="toggle"
     export function rtcSetAlarmDate(minute?: number, hour?: number, date?: number): void {
         let rtc = getRTC();
@@ -741,7 +741,7 @@ namespace piicodev {
     //% blockId=rtc_disable_alarm
     //% block="RTC disable alarm"
     //% weight=78
-    //% group="RTC"
+    //% group="RV3028 Time"
     export function rtcDisableAlarm(): void {
         let rtc = getRTC();
         rtc.disableAlarm();
@@ -753,7 +753,7 @@ namespace piicodev {
     //% blockId=rtc_on_alarm
     //% block="on RTC alarm"
     //% weight=77
-    //% group="RTC"
+    //% group="RB3028 Time"
     export function onRTCAlarm(handler: () => void): void {
         let rtc = getRTC();
         rtc.startEventPolling();
@@ -766,7 +766,7 @@ namespace piicodev {
     //% blockId=rtc_get_unix_time
     //% block="RTC Unix time"
     //% weight=70
-    //% group="RTC"
+    //% group="RV3028 Time"
     //% advanced=true
     export function rtcGetUnixTime(): number {
         let rtc = getRTC();

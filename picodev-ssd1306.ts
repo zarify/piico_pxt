@@ -6,7 +6,7 @@
  */
 
 //% weight=80 color=#9966FF icon="\uf0a1"
-//% groups=['SSD1306']
+//% groups=['SSD1306 OLED']
 namespace PiicoDevDisplays {
 
     /**
@@ -553,7 +553,7 @@ namespace PiicoDevDisplays {
     //% blockId=oled_clear
     //% block="OLED clear"
     //% weight=100
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     export function oledClear(): void {
         let oled = getOLED();
         oled.clear();
@@ -566,7 +566,7 @@ namespace PiicoDevDisplays {
     //% blockId=oled_show
     //% block="OLED show"
     //% weight=99
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     export function oledShow(): void {
         let oled = getOLED();
         oled.show();
@@ -583,7 +583,7 @@ namespace PiicoDevDisplays {
     //% y.min=0 y.max=63 y.defl=0
     //% size.defl=TextSize.Small
     //% weight=95
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% expandableArgumentMode="toggle"
     export function oledText(text: string, x: number, y: number, size?: TextSize): void {
         let oled = getOLED();
@@ -601,7 +601,7 @@ namespace PiicoDevDisplays {
     //% x1.min=0 x1.max=127 x1.defl=127
     //% y1.min=0 y1.max=63 y1.defl=63
     //% weight=90
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     export function oledLine(x0: number, y0: number, x1: number, y1: number): void {
         let oled = getOLED();
         oled.drawLine(x0, y0, x1, y1);
@@ -619,7 +619,7 @@ namespace PiicoDevDisplays {
     //% h.min=1 h.max=64 h.defl=20
     //% filled.shadow="toggleOnOff" filled.defl=false
     //% weight=85
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% expandableArgumentMode="toggle"
     export function oledRect(x: number, y: number, w: number, h: number, filled?: boolean): void {
         let oled = getOLED();
@@ -637,7 +637,7 @@ namespace PiicoDevDisplays {
     //% r.min=1 r.max=64 r.defl=20
     //% filled.shadow="toggleOnOff" filled.defl=false
     //% weight=80
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% expandableArgumentMode="toggle"
     export function oledCircle(x: number, y: number, r: number, filled?: boolean): void {
         let oled = getOLED();
@@ -654,7 +654,7 @@ namespace PiicoDevDisplays {
     //% y.min=0 y.max=63 y.defl=32
     //% on.shadow="toggleOnOff" on.defl=true
     //% weight=75
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% advanced=true
     export function oledPixel(x: number, y: number, on: boolean): void {
         let oled = getOLED();
@@ -668,7 +668,7 @@ namespace PiicoDevDisplays {
     //% block="OLED set contrast $contrast"
     //% contrast.min=0 contrast.max=255 contrast.defl=127
     //% weight=70
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% advanced=true
     export function oledSetContrast(contrast: number): void {
         let oled = getOLED();
@@ -682,7 +682,7 @@ namespace PiicoDevDisplays {
     //% block="OLED invert $invert"
     //% invert.shadow="toggleOnOff"
     //% weight=69
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% advanced=true
     export function oledInvert(invert: boolean): void {
         let oled = getOLED();
@@ -696,7 +696,7 @@ namespace PiicoDevDisplays {
     //% block="OLED power $on"
     //% on.shadow="toggleOnOff"
     //% weight=68
-    //% group="OLED"
+    //% group="SSD1306 OLED"
     //% advanced=true
     export function oledPower(on: boolean): void {
         let oled = getOLED();

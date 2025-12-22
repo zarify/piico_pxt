@@ -6,7 +6,7 @@
  */
 
 //% weight=90 color=#E63022 icon="\uf135"
-//% groups=['MMC5603']
+//% groups=['MMC5603 Magnetometer']
 namespace PiicoDevMotion {
 
     /**
@@ -266,7 +266,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=mmc5603_read_field
     //% block="magnetometer read $axis axis (μT)"
-    //% group="Magnetometer"
+    //% group="MMC5603 Magnetometer"
     //% weight=100
     export function mmc5603MagneticField(axis: MagAxis): number {
         if (!_mmc5603) {
@@ -281,7 +281,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=mmc5603_read_heading
     //% block="magnetometer heading (°)"
-    //% group="Magnetometer"
+    //% group="MMC5603 Magnetometer"
     //% weight=99
     export function mmc5603Heading(): number {
         if (!_mmc5603) {
@@ -296,7 +296,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=mmc5603_read_magnitude
     //% block="magnetometer field strength (μT)"
-    //% group="Magnetometer"
+    //% group="MMC5603 Magnetometer"
     //% weight=98
     export function mmc5603Magnitude(): number {
         if (!_mmc5603) {
@@ -313,7 +313,7 @@ namespace PiicoDevMotion {
     //% blockId=mmc5603_set_declination
     //% block="magnetometer set declination to $declination °"
     //% declination.defl=0
-    //% group="Magnetometer"
+    //% group="MMC5603 Magnetometer"
     //% weight=90
     export function mmc5603SetDeclination(declination: number): void {
         if (!_mmc5603) {
@@ -335,7 +335,7 @@ namespace PiicoDevMotion {
     //% xOffset.defl=0
     //% yOffset.defl=0
     //% zOffset.defl=0
-    //% group="Magnetometer"
+    //% group="MMC5603 Magnetometer"
     //% weight=80
     //% advanced=true
     //% inlineInputMode=inline

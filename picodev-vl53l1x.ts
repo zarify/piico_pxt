@@ -5,7 +5,7 @@
  */
 
 //% weight=90 color=#E63022 icon="\uf135"
-//% groups=['VL53L1X']
+//% groups=['VL53L1X Distance Sensor']
 namespace PiicoDevMotion {
 
     /**
@@ -286,7 +286,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=vl53l1x_read_distance
     //% block="VL53L1X read distance (mm)"
-    //% group="Distance Sensor"
+    //% group="VL53L1X Distance Sensor"
     //% weight=100
     export function vl53l1xReadDistance(): number {
         if (!_vl53l1x) _vl53l1x = new VL53L1X(0x29);
@@ -299,7 +299,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=vl53l1x_set_distance_mode
     //% block="VL53L1X set distance mode $mode"
-    //% group="Distance Sensor"
+    //% group="VL53L1X Distance Sensor"
     //% advanced=true
     //% weight=48
     export function vl53l1xSetDistanceMode(mode: DistanceMode): void {

@@ -6,7 +6,7 @@
  */
 
 //% weight=100 color=#00A4A6 icon="\uf0ac"
-//% groups=['MS5637']
+//% groups=['MS5637 Barometric']
 namespace PiicoDevEnvironmental {
 
     /**
@@ -268,7 +268,7 @@ namespace PiicoDevEnvironmental {
     //% blockId=ms5637_read_pressure
     //% block="pressure (hPa) || resolution $resolution"
     //% resolution.defl=MS5637Resolution.OSR_8192
-    //% group="Barometric"
+    //% group="MS5637 Barometric"
     //% weight=100
     //% expandableArgumentMode="toggle"
     export function ms5637Pressure(resolution?: MS5637Resolution): number {
@@ -289,7 +289,7 @@ namespace PiicoDevEnvironmental {
     //% blockId=ms5637_read_temperature
     //% block="barometric temperature (°C) || resolution $resolution"
     //% resolution.defl=MS5637Resolution.OSR_8192
-    //% group="Barometric"
+    //% group="MS5637 Barometric"
     //% weight=95
     //% expandableArgumentMode="toggle"
     export function ms5637Temperature(resolution?: MS5637Resolution): number {
@@ -311,7 +311,7 @@ namespace PiicoDevEnvironmental {
     //% blockId=ms5637_read_altitude
     //% block="altitude (m) || sea level pressure $seaLevelPressure hPa"
     //% seaLevelPressure.defl=1013.25
-    //% group="Barometric"
+    //% group="MS5637 Barometric"
     //% weight=90
     //% expandableArgumentMode="toggle"
     export function ms5637Altitude(seaLevelPressure?: number): number {

@@ -6,7 +6,7 @@
  */
 
 //% weight=90 color=#E63022 icon="\uf135"
-//% groups=['Ultrasonic']
+//% groups=['Ultrasonic Distance']
 namespace PiicoDevMotion {
 
     /**

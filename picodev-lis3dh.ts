@@ -6,7 +6,7 @@
  */
 
 //% weight=90 color=#E63022 icon="\uf135"
-//% groups=['LIS3DH']
+//% groups=['LIS3DH Accelerometer']
 namespace PiicoDevMotion {
 
     /**
@@ -238,7 +238,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_set_range
         //% block="LIS3DH set range $r"
-        //% group="Configuration"
+        //% group="LIS3DH Accelerometer"
         //% weight=90
         public setRange(r: AccelRange): void {
             try {
@@ -271,7 +271,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_set_rate
         //% block="LIS3DH set data rate $r"
-        //% group="Configuration"
+        //% group="LIS3DH Accelerometer"
         //% weight=85
         public setRate(r: DataRate): void {
             try {
@@ -308,7 +308,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_read_x
         //% block="LIS3DH acceleration X (m/s²)"
-        //% group="Reading"
+        //% group="LIS3DH Accelerometer"
         //% weight=100
         public readX(): number {
             let accel = this.readAcceleration();
@@ -320,7 +320,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_read_y
         //% block="LIS3DH acceleration Y (m/s²)"
-        //% group="Reading"
+        //% group="LIS3DH Accelerometer"
         //% weight=99
         public readY(): number {
             let accel = this.readAcceleration();
@@ -332,7 +332,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_read_z
         //% block="LIS3DH acceleration Z (m/s²)"
-        //% group="Reading"
+        //% group="LIS3DH Accelerometer"
         //% weight=98
         public readZ(): number {
             let accel = this.readAcceleration();
@@ -377,7 +377,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_angle_x
         //% block="LIS3DH tilt angle X (degrees)"
-        //% group="Reading"
+        //% group="LIS3DH Accelerometer"
         //% weight=95
         public angleX(): number {
             let angles = this.readAngles();
@@ -389,7 +389,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_angle_y
         //% block="LIS3DH tilt angle Y (degrees)"
-        //% group="Reading"
+        //% group="LID3DH Accelerometer"
         //% weight=94
         public angleY(): number {
             let angles = this.readAngles();
@@ -401,7 +401,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_angle_z
         //% block="LIS3DH tilt angle Z (degrees)"
-        //% group="Reading"
+        //% group="LIS3DH Accelerometer"
         //% weight=93
         public angleZ(): number {
             let angles = this.readAngles();
@@ -436,7 +436,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_set_tap_sensitivity
         //% block="LIS3DH set tap sensitivity $threshold"
-        //% group="Configuration"
+        //% group="LIS3DH Accelerometer"
         //% weight=70
         //% threshold.min=0 threshold.max=127 threshold.defl=40
         //% advanced=true
@@ -455,7 +455,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_set_shake_sensitivity
         //% block="LIS3DH set shake sensitivity $threshold"
-        //% group="Configuration"
+        //% group="LIS3DH Accelerometer"
         //% weight=65
         //% threshold.min=10 threshold.max=50 threshold.defl=15
         //% advanced=true
@@ -471,7 +471,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_tapped
         //% block="LIS3DH tap detected"
-        //% group="Tap Detection"
+        //% group="LIS3DH Accelerometer"
         //% weight=75
         public tapped(): boolean {
             try {
@@ -495,7 +495,7 @@ namespace PiicoDevMotion {
          */
         //% blockId=lis3dh_shake
         //% block="LIS3DH shake detected"
-        //% group="Reading"
+        //% group="LIS3DH Accelerometer"
         //% weight=90
         //% expandableArgumentMode="toggle"
         //% threshold.defl=15
@@ -627,7 +627,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_read_acceleration
     //% block="LIS3DH acceleration $axis (m/s²)"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=100
     export function lis3dhAcceleration(axis: Axis): number {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -642,7 +642,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_read_angle
     //% block="LIS3DH tilt angle $axis (degrees)"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=95
     export function lis3dhAngle(axis: Axis): number {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -657,7 +657,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_set_range
     //% block="LIS3DH set range $r"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% advanced=true
     //% weight=90
     export function lis3dhSetRange(r: AccelRange): void {
@@ -671,7 +671,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_set_rate
     //% block="LIS3DH set data rate $r"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% advanced=true
     //% weight=85
     export function lis3dhSetRate(r: DataRate): void {
@@ -684,7 +684,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_tapped
     //% block="LIS3DH tap detected"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=75
     export function lis3dhTapped(): boolean {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -696,7 +696,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_shake
     //% block="LIS3DH shake detected"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=90
     export function lis3dhShake(): boolean {
         if (!_lis3dh) _lis3dh = new LIS3DH();
@@ -709,7 +709,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_set_tap_sensitivity
     //% block="LIS3DH set tap sensitivity $threshold"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=70
     //% threshold.min=0 threshold.max=127 threshold.defl=40
     //% advanced=true
@@ -724,7 +724,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_set_shake_sensitivity
     //% block="LIS3DH set shake sensitivity $threshold"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=65
     //% threshold.min=10 threshold.max=50 threshold.defl=15
     //% advanced=true
@@ -740,7 +740,7 @@ namespace PiicoDevMotion {
      */
     //% blockId=lis3dh_on_event
     //% block="on LIS3DH $event"
-    //% group="Accelerometer"
+    //% group="LIS3DH Accelerometer"
     //% weight=100
     export function lis3dhOnEvent(event: AccelEvent, handler: () => void): void {
         if (!_lis3dh) _lis3dh = new LIS3DH();

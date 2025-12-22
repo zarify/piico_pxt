@@ -5,7 +5,7 @@
  */
 
 //% weight=85 color=#FF6680 icon="\uf001"
-//% groups=['RGB']
+//% groups=['RGB Lights']
 namespace PiicoDevOutputs {
 
     /**
@@ -41,7 +41,7 @@ namespace PiicoDevOutputs {
     //% red.min=0 red.max=255 red.defl=255
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
-    //% group="Setting Colors"
+    //% group="RGB Lights"
     //% weight=110
     //% inlineInputMode=inline
     export function colorFromRGB(red: number, green: number, blue: number): number {
@@ -62,7 +62,7 @@ namespace PiicoDevOutputs {
     //% hue.min=0 hue.max=360 hue.defl=0
     //% saturation.min=0 saturation.max=100 saturation.defl=100
     //% brightness.min=0 brightness.max=100 brightness.defl=100
-    //% group="Setting Colors"
+    //% group="RGB Lights"
     //% weight=109
     //% inlineInputMode=inline
     export function colorFromHSB(hue: number, saturation: number, brightness: number): number {
@@ -82,7 +82,7 @@ namespace PiicoDevOutputs {
      */
     //% blockId=rgb_predefined_color
     //% block="$color"
-    //% group="Setting Colors"
+    //% group="RGB Lights"
     //% weight=108
     export function color(color: RGBColor): number {
         let rgb = getColorRGB(color);
@@ -180,7 +180,7 @@ namespace PiicoDevOutputs {
         //% block="RGB set pixel $pixel to $color"
         //% pixel.min=0 pixel.max=2 pixel.defl=0
         //% color.shadow="rgb_predefined_color"
-        //% group="Setting Colors"
+        //% group="RGB Lights"
         //% weight=100
         public setPixel(pixel: number, color: number): void {
             if (pixel >= 0 && pixel <= 2) {
@@ -198,7 +198,7 @@ namespace PiicoDevOutputs {
         //% blockId=rgb_set_all
         //% block="RGB set all pixels to $color"
         //% color.shadow="rgb_predefined_color"
-        //% group="Setting Colors"
+        //% group="RGB Lights"
         //% weight=97
         public setAll(color: number): void {
             let red = (color >> 16) & 0xFF;

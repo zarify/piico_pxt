@@ -6,7 +6,7 @@
  */
 
 //% weight=100 color=#00A4A6 icon="\uf0ac"
-//% groups=['ENS160']
+//% groups=['ENS160 Air Quality']
 namespace PiicoDevEnvironmental {
 
     /**

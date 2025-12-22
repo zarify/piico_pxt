@@ -6,7 +6,7 @@
  */
 
 //% weight=100 color=#00A4A6 icon="\uf0ac"
-//% groups=['VEML6030']
+//% groups=['VEML6030 Light Sensor']
 namespace PiicoDevEnvironmental {
 
     /**
@@ -190,7 +190,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6030_read
     //% block="VEML6030 read ambient light (lux)"
-    //% group="Light Sensor"
+    //% group="VEML6030 Light Sensor"
     //% weight=100
     export function veml6030Read(): number {
         if (!_veml6030) _veml6030 = new VEML6030();
@@ -204,7 +204,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=veml6030_set_gain
     //% block="VEML6030 set gain $gain"
-    //% group="Light Sensor"
+    //% group="VEML6030 Light Sensor"
     //% weight=90
     export function veml6030SetGain(gain: VEML6030Gain): void {
         if (!_veml6030) _veml6030 = new VEML6030();
