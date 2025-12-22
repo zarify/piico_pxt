@@ -5,7 +5,7 @@
  * Maintains accurate date/time even when powered off.
  */
 
-//% weight=90 color=#8B4513 icon="\uf017"
+//% weight=90 color=#00A4CC icon="\uf2db"
 //% groups=['RV3028 Time']
 namespace piicodev {
 
