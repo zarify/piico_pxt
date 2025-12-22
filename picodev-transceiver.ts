@@ -789,8 +789,8 @@ namespace PiicoDevComm {
     //% id.defl=PiicoDevID.ID0
     //% radioAddress.min=0 radioAddress.max=127 radioAddress.defl=0
     //% group.min=0 group.max=255 group.defl=0
-    //% speed.defl=RadioSpeed.Medium
-    //% frequency.defl=RadioFrequency.Freq922
+    //% speed.defl=2
+    //% frequency.defl=922
     //% txPower.min=-2 txPower.max=20 txPower.defl=20
     //% weight=100
     //% group="Transceiver"

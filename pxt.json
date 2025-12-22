@@ -1,6 +1,6 @@
 {
     "name": "makecode-piicodev",
-    "version": "0.7.2",
+    "version": "0.7.3",
     "description": "Unofficial PiicoDev sensor ecosystem support for BBC micro:bit V2",
     "license": "MIT",
     "dependencies": {
@@ -26,6 +26,7 @@
         "picodev-cap1203.ts",
         "picodev-buzzer.ts",
         "picodev-rgb.ts",
+        "picodev-rv3028.ts",
         "picodev-servo.ts",
         "picodev-ssd1306.ts",
         "picodev-transceiver.ts"

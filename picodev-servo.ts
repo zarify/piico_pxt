@@ -246,7 +246,7 @@ namespace PiicoDevOutputs {
      */
     //% blockId=servo_set_angle
     //% block="set servo $channel angle to $angle °"
-    //% channel.defl=ServoChannel.S1
+    //% channel.defl=1
     //% angle.min=0 angle.max=180 angle.defl=90
     //% group="Servo"
     //% weight=100
@@ -272,7 +272,7 @@ namespace PiicoDevOutputs {
      */
     //% blockId=servo_set_speed
     //% block="set servo $channel speed to $speed \\%"
-    //% channel.defl=ServoChannel.S1
+    //% channel.defl=1
     //% speed.min=-100 speed.max=100 speed.defl=0
     //% group="Servo"
     //% weight=99
@@ -297,7 +297,7 @@ namespace PiicoDevOutputs {
      */
     //% blockId=servo_release
     //% block="release servo $channel"
-    //% channel.defl=ServoChannel.S1
+    //% channel.defl=1
     //% group="Servo"
     //% weight=98
     export function servoRelease(channel: ServoChannel): void {

@@ -281,7 +281,7 @@ namespace PiicoDevMotion {
     //% blockId=ultrasonic_read_distance
     //% block="ultrasonic $id distance $unit"
     //% id.defl=PiicoDevID.ID0
-    //% unit.defl=UltrasonicUnit.Millimeters
+    //% unit.defl=0
     //% group="Ultrasonic Distance"
     //% weight=100
     export function ultrasonicDistance(id: PiicoDevID, unit: UltrasonicUnit): number {

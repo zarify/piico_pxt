@@ -242,7 +242,7 @@ namespace PiicoDevInputs {
     //% blockId=cap1203_is_pressed
     //% block="CAP1203 is pad $pad pressed?"
     //% group="CAP1203 Touch Sensor"
-    //% pad.defl=PadNumber.Pad1
+    //% pad.defl=1
     //% weight=100
     export function cap1203IsPadPressed(pad: PadNumber): boolean {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
@@ -256,7 +256,7 @@ namespace PiicoDevInputs {
     //% blockId=cap1203_read_raw
     //% block="CAP1203 pad $pad raw value"
     //% group="CAP1203 Touch Sensor"
-    //% pad.defl=PadNumber.Pad1
+    //% pad.defl=1
     //% weight=99
     export function cap1203ReadRawValue(pad: PadNumber): number {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);
@@ -284,7 +284,7 @@ namespace PiicoDevInputs {
     //% blockId=cap1203_on_pad_touched
     //% block="on CAP1203 pad $pad touched"
     //% group="CAP1203 Touch Sensor"
-    //% pad.defl=PadNumber.Pad1
+    //% pad.defl=1
     //% weight=101
     export function cap1203OnPadTouched(pad: PadNumber, handler: () => void): void {
         if (!_cap1203) _cap1203 = new CAP1203(TouchMode.Multi, 3, 0x28);

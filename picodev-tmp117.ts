@@ -99,7 +99,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=tmp117_read_temperature
     //% block="temperature $unit"
-    //% unit.defl=TempUnit.Celsius
+    //% unit.defl=0
     //% group="TMP117 Temperature"
     //% weight=100
     export function tmp117Temperature(unit: TempUnit): number {

@@ -581,7 +581,7 @@ namespace PiicoDevDisplays {
     //% text.defl="Hello"
     //% x.min=0 x.max=127 x.defl=0
     //% y.min=0 y.max=63 y.defl=0
-    //% size.defl=TextSize.Small
+    //% size.defl=1
     //% weight=95
     //% group="SSD1306 OLED"
     //% expandableArgumentMode="toggle"

@@ -267,7 +267,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=ms5637_read_pressure
     //% block="pressure (hPa) || resolution $resolution"
-    //% resolution.defl=MS5637Resolution.OSR_8192
+    //% resolution.defl=5
     //% group="MS5637 Barometric"
     //% weight=100
     //% expandableArgumentMode="toggle"
@@ -288,7 +288,7 @@ namespace PiicoDevEnvironmental {
      */
     //% blockId=ms5637_read_temperature
     //% block="barometric temperature (°C) || resolution $resolution"
-    //% resolution.defl=MS5637Resolution.OSR_8192
+    //% resolution.defl=5
     //% group="MS5637 Barometric"
     //% weight=95
     //% expandableArgumentMode="toggle"
