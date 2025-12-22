@@ -875,6 +875,7 @@ namespace PiicoDevComm {
     //% group="Transceiver"
     //% advanced=true
     //% expandableArgumentMode="toggle"
+    //% hidden
     export function transceiverSendBytes(
         id: PiicoDevID = PiicoDevID.ID0,
         data: Buffer,
@@ -1028,6 +1029,7 @@ namespace PiicoDevComm {
     //% weight=83
     //% group="Transceiver"
     //% advanced=true
+    //% hidden
     export function transceiverGetReceivedBytes(id: PiicoDevID = PiicoDevID.ID0): Buffer {
         let transceiver = getTransceiver(id);
         return transceiver.getReceivedBytes();
