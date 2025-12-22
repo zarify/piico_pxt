@@ -5,7 +5,7 @@
  * Supports standard servos (angle control) and continuous rotation servos (speed control).
  */
 
-//% weight=85 color=#FF6680 icon="\uf001"
+//% weight=87 color=#FF6680 icon="\uf001"
 //% groups=['Servo']
 namespace PiicoDevOutputs {
 

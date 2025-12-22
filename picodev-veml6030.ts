@@ -5,7 +5,7 @@
  * for optimal light detection across various brightness conditions.
  */
 
-//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% weight=89 color=#00A4A6 icon="\uf0ac"
 //% groups=['VEML6030 Light Sensor']
 namespace PiicoDevEnvironmental {
 

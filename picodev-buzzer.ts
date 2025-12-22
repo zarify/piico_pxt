@@ -4,7 +4,7 @@
  * Programmable buzzer with tone generation and volume control.
  */
 
-//% weight=85 color=#FF6680 icon="\uf001"
+//% weight=87 color=#FF6680 icon="\uf001"
 //% groups=['Buzzer']
 namespace PiicoDevOutputs {
 

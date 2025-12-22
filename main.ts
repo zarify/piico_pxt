@@ -18,7 +18,7 @@
  * @version 0.7.1
  */
 
-//% weight=50 color=#00A4CC icon="\uf2db" block="PiicoDev"
+//% weight=90 color=#00A4CC icon="\uf2db" block="PiicoDev"
 namespace piicodev {
 
     // This namespace is maintained for version information and utilities.
@@ -33,7 +33,6 @@ namespace piicodev {
      * Check if extension is properly loaded
      */
     //% block="PiicoDev extension version"
-    //% advanced=true
     //% weight=1
     export function getVersion(): string {
         return VERSION;

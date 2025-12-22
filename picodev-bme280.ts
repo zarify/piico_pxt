@@ -5,7 +5,7 @@
  * for accurate temperature, humidity, and atmospheric pressure readings.
  */
 
-//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% weight=89 color=#00A4A6 icon="\uf0ac"
 //% groups=['BME280 Environment']
 namespace PiicoDevEnvironmental {
 

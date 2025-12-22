@@ -5,7 +5,7 @@
  * and equivalent CO2 (eCO2) with built-in quality ratings.
  */
 
-//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% weight=89 color=#00A4A6 icon="\uf0ac"
 //% groups=['ENS160 Air Quality']
 namespace PiicoDevEnvironmental {
 

@@ -5,7 +5,7 @@
  * Features configurable frequency, transmission power, speed, groups, and addresses.
  */
 
-//% weight=75 color=#FFA500 icon="\uf012"
+//% weight=85 color=#FFA500 icon="\uf012"
 //% groups=['Transceiver']
 namespace PiicoDevComm {
 

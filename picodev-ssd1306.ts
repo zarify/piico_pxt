@@ -5,7 +5,7 @@
  * Uses buffered drawing - call show() to update the display after drawing.
  */
 
-//% weight=80 color=#9966FF icon="\uf0a1"
+//% weight=86 color=#9966FF icon="\uf0a1"
 //% groups=['SSD1306 OLED']
 namespace PiicoDevDisplays {
 

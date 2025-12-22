@@ -5,7 +5,7 @@
  * Read raw ADC values (0-1023) or map to custom ranges.
  */
 
-//% weight=95 color=#0078D7 icon="\uf25a"
+//% weight=88 color=#0078D7 icon="\uf25a"
 //% groups=['Potentiometer']
 namespace PiicoDevInputs {
 

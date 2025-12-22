@@ -5,7 +5,7 @@
  * Provides distance measurements in millimeters and inches.
  */
 
-//% weight=90 color=#E63022 icon="\uf135"
+//% weight=86 color=#E63022 icon="\uf135"
 //% groups=['Ultrasonic Distance']
 namespace PiicoDevMotion {
 

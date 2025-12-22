@@ -5,7 +5,7 @@
  * and ambient light detection capabilities.
  */
 
-//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% weight=89 color=#00A4A6 icon="\uf0ac"
 //% groups=['VEML6040 Colour Sensor']
 namespace PiicoDevEnvironmental {
 

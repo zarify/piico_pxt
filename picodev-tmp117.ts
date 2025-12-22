@@ -5,7 +5,7 @@
  * Reads temperature in Celsius, Fahrenheit, or Kelvin.
  */
 
-//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% weight=89 color=#00A4A6 icon="\uf0ac"
 //% groups=['TMP117 Temperature']
 namespace PiicoDevEnvironmental {
 

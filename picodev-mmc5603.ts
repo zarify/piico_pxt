@@ -5,7 +5,7 @@
  * Provides compass heading and magnetic field magnitude readings.
  */
 
-//% weight=90 color=#E63022 icon="\uf135"
+//% weight=86 color=#E63022 icon="\uf135"
 //% groups=['MMC5603 Magnetometer']
 namespace PiicoDevMotion {
 

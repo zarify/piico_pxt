@@ -5,7 +5,7 @@
  * Provides pressure in hPa, temperature in Celsius, and calculated altitude.
  */
 
-//% weight=100 color=#00A4A6 icon="\uf0ac"
+//% weight=89 color=#00A4A6 icon="\uf0ac"
 //% groups=['MS5637 Barometric']
 namespace PiicoDevEnvironmental {
 
