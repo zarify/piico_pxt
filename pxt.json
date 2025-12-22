@@ -1,6 +1,6 @@
 {
     "name": "makecode-piicodev",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "description": "Unofficial PiicoDev sensor ecosystem support for BBC micro:bit V2",
     "license": "MIT",
     "dependencies": {
