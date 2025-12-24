@@ -35,7 +35,7 @@ MakeCode extension by zarify.
 
 ## Support
 
-- [Core Electronics PiicoDev Documentation](https://core-electronics.com.au/tutorials/piicodev-quickstart-guide-for-microbit.html)
+- [Core Electronics PiicoDev Documentation](https://core-electronics.com.au/guides/piicodev/)
 - [Report Issues](https://github.com/zarify/makecode-piicodev/issues)
 - [MakeCode Forums](https://forum.makecode.com)
 
