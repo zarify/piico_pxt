@@ -414,6 +414,39 @@ namespace PiicoDevEnvironmental {
     }
 
     /**
+     * Compare two color classifications for equality
+     * @param color The classified color value to compare
+     * @param target The target color to test against
+     */
+    //% blockId=veml6040_color_equals
+    //% block="$color = $target"
+    //% group="VEML6040 Colour Sensor"
+    //% weight=94
+    export function veml6040ColorEquals(color: ColorName, target: ColorName): boolean {
+        return color === target;
+    }
+
+    /**
+     * Convert a classified color value to text
+     * @param color The classified color value
+     */
+    //% blockId=veml6040_color_to_string
+    //% block="VEML6040 color text $color"
+    //% group="VEML6040 Colour Sensor"
+    //% weight=93
+    export function veml6040ColorToString(color: ColorName): string {
+        if (color === ColorName.Red) return "red";
+        else if (color === ColorName.Yellow) return "yellow";
+        else if (color === ColorName.Green) return "green";
+        else if (color === ColorName.Cyan) return "cyan";
+        else if (color === ColorName.Blue) return "blue";
+        else if (color === ColorName.Magenta) return "magenta";
+        else if (color === ColorName.White) return "white";
+        else if (color === ColorName.Black) return "black";
+        return "none";
+    }
+
+    /**
      * Get HSB color component value
      * @param component The HSB component to read (Hue, Saturation, or Brightness)
      */
