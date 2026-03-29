@@ -64,6 +64,7 @@ namespace PiicoDevEnvironmental {
      */
     class VEML6040 {
         private addr: number;
+        private initialized: boolean;
 
         // Register addresses
         private static readonly REG_RED = 0x08;
@@ -77,6 +78,7 @@ namespace PiicoDevEnvironmental {
 
         constructor(address: number = 0x10) {
             this.addr = address;
+            this.initialized = false;
             this.initialize();
         }
 
@@ -85,21 +87,36 @@ namespace PiicoDevEnvironmental {
          */
         private initialize(): void {
             try {
-                // Shutdown sensor (write 16-bit CONFIG register: low byte = 0x01 SD=1, high byte = 0x00)
-                let buf = pins.createBuffer(2);
+                // Match reference MicroPython driver: write one config byte
+                // (shutdown then default settings) via register 0x00.
+                let buf = pins.createBuffer(1);
                 buf.setNumber(NumberFormat.UInt8LE, 0, 0x01); // shutdown
-                buf.setNumber(NumberFormat.UInt8LE, 1, 0x00);
-                picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
+                let rc = picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
+                if (rc !== 0) {
+                    picodevUnified.logI2CError(this.addr);
+                    this.initialized = false;
+                    return;
+                }
 
-                // Re-initialize with default settings (SD=0, IT=40ms)
-                buf = pins.createBuffer(2);
+                // Re-initialize with default settings
+                buf = pins.createBuffer(1);
                 buf.setNumber(NumberFormat.UInt8LE, 0, 0x00); // default settings
-                buf.setNumber(NumberFormat.UInt8LE, 1, 0x00);
-                picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
+                rc = picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
+                if (rc !== 0) {
+                    picodevUnified.logI2CError(this.addr);
+                    this.initialized = false;
+                    return;
+                }
                 basic.pause(50);
+                this.initialized = true;
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
+                this.initialized = false;
             }
+        }
+
+        public isReady(): boolean {
+            return this.initialized;
         }
 
         /**
@@ -374,6 +391,7 @@ namespace PiicoDevEnvironmental {
     //% weight=100
     export function veml6040ReadChannel(channel: ColorChannel): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
+        else if (!_veml6040.isReady()) _veml6040 = new VEML6040(0x10);
         if (!_veml6040) return 0;
         if (channel === ColorChannel.Red) return _veml6040.readRed();
         else if (channel === ColorChannel.Green) return _veml6040.readGreen();
@@ -390,6 +408,7 @@ namespace PiicoDevEnvironmental {
     //% weight=96
     export function veml6040ClassifyColor(): ColorName {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
+        else if (!_veml6040.isReady()) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.classifyColor();
         return ColorName.None;
     }
@@ -404,6 +423,7 @@ namespace PiicoDevEnvironmental {
     //% weight=95
     export function veml6040GetHSB(component: HSBComponent): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
+        else if (!_veml6040.isReady()) _veml6040 = new VEML6040(0x10);
         if (!_veml6040) return 0;
         if (component === HSBComponent.Hue) return _veml6040.getHue();
         else if (component === HSBComponent.Saturation) return _veml6040.getSaturation();
@@ -420,6 +440,7 @@ namespace PiicoDevEnvironmental {
     //% weight=50
     export function veml6040GetAmbientLight(): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
+        else if (!_veml6040.isReady()) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getAmbientLight();
         return 0;
     }
@@ -434,6 +455,7 @@ namespace PiicoDevEnvironmental {
     //% weight=49
     export function veml6040GetColorTemperature(): number {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
+        else if (!_veml6040.isReady()) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.getColorTemperature();
         return 0;
     }
