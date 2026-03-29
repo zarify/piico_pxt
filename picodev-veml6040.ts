@@ -26,7 +26,11 @@ namespace PiicoDevEnvironmental {
         //% block="magenta"
         Magenta,
         //% block="none"
-        None
+        None,
+        //% block="white"
+        White,
+        //% block="black"
+        Black
     }
 
     /**
@@ -81,14 +85,16 @@ namespace PiicoDevEnvironmental {
          */
         private initialize(): void {
             try {
-                // Shutdown sensor
-                let buf = pins.createBuffer(1);
+                // Shutdown sensor (write 16-bit CONFIG register: low byte = 0x01 SD=1, high byte = 0x00)
+                let buf = pins.createBuffer(2);
                 buf.setNumber(NumberFormat.UInt8LE, 0, 0x01); // shutdown
+                buf.setNumber(NumberFormat.UInt8LE, 1, 0x00);
                 picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
 
-                // Re-initialize with default settings
-                buf = pins.createBuffer(1);
+                // Re-initialize with default settings (SD=0, IT=40ms)
+                buf = pins.createBuffer(2);
                 buf.setNumber(NumberFormat.UInt8LE, 0, 0x00); // default settings
+                buf.setNumber(NumberFormat.UInt8LE, 1, 0x00);
                 picodevUnified.writeRegister(this.addr, VEML6040.REG_CONFIG, buf);
                 basic.pause(50);
             } catch (e) {
@@ -99,9 +105,6 @@ namespace PiicoDevEnvironmental {
         /**
          * Read red light intensity (0-65535)
          */
-        //% blockId=veml6040_read_red
-        //% block="VEML6040 read red light"
-        //% weight=100
         public readRed(): number {
             try {
                 return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_RED);
@@ -114,9 +117,6 @@ namespace PiicoDevEnvironmental {
         /**
          * Read green light intensity (0-65535)
          */
-        //% blockId=veml6040_read_green
-        //% block="VEML6040 read green light"
-        //% weight=99
         public readGreen(): number {
             try {
                 return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_GREEN);
@@ -129,9 +129,6 @@ namespace PiicoDevEnvironmental {
         /**
          * Read blue light intensity (0-65535)
          */
-        //% blockId=veml6040_read_blue
-        //% block="VEML6040 read blue light"
-        //% weight=98
         public readBlue(): number {
             try {
                 return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_BLUE);
@@ -144,9 +141,6 @@ namespace PiicoDevEnvironmental {
         /**
          * Read white light intensity (0-65535)
          */
-        //% blockId=veml6040_read_white
-        //% block="VEML6040 read white light"
-        //% weight=97
         public readWhite(): number {
             try {
                 return picodevUnified.readRegisterUInt16LE(this.addr, VEML6040.REG_WHITE);
@@ -198,14 +192,11 @@ namespace PiicoDevEnvironmental {
         }
 
         /**
-         * Classify the detected color and return its name
+         * Classify the detected color and return its ColorName
          * Uses RGB ratio-based approach to handle sensor's yellow bias
          * Optimized for close-distance detection (sensor must be very close to surface)
          */
-        //% blockId=veml6040_classify_color
-        //% block="VEML6040 classify color"
-        //% weight=96
-        public classifyColor(): string {
+        public classifyColor(): ColorName {
             try {
                 let r = this.readRed();
                 let g = this.readGreen();
@@ -214,12 +205,12 @@ namespace PiicoDevEnvironmental {
                 // Calculate total and percentages
                 let total = r + g + b;
                 if (total === 0) {
-                    return "none";
+                    return ColorName.None;
                 }
 
                 // Filter out very low readings (sensor pointing at nothing/dark surface far away)
                 if (total < 800) {
-                    return "none";
+                    return ColorName.None;
                 }
 
                 let rPct = r / total;
@@ -233,49 +224,46 @@ namespace PiicoDevEnvironmental {
 
                 // Red detection: R% is dominant and significantly higher
                 if (rPct > 0.45 && rPct > gPct && rPct > bPct) {
-                    return "red";
+                    return ColorName.Red;
                 }
 
                 // Green detection: G% is dominant and significantly higher
                 if (gPct > 0.40 && gPct > rPct && gPct > bPct) {
-                    return "green";
+                    return ColorName.Green;
                 }
 
                 // Blue detection: B% is highest OR (G% slightly higher but B% strong)
                 // Blue is tricky due to sensor bias - it often reads with G slightly higher than B
                 if (bPct > rPct && bPct > gPct) {
-                    return "blue";
+                    return ColorName.Blue;
                 }
                 if (bPct > 0.27 && gPct > rPct && (gPct - bPct) < 0.10) {
-                    return "blue";
+                    return ColorName.Blue;
                 }
 
                 // White detection: balanced channels with good blue content
                 // Must have tight range AND higher B% than black would have
                 if (range < 0.16 && rPct > 0.36 && gPct > 0.38 && bPct > 0.235) {
-                    return "white";
+                    return ColorName.White;
                 }
 
                 // Black detection: all channels similar and relatively balanced
                 // Checked after white - has slightly wider range tolerance
                 if (range < 0.17 && rPct > 0.35 && gPct > 0.35) {
-                    return "black";
+                    return ColorName.Black;
                 }
 
                 // If nothing matched, return none
-                return "none";
+                return ColorName.None;
             } catch (e) {
                 picodevUnified.logI2CError(this.addr);
-                return "none";
+                return ColorName.None;
             }
         }
 
         /**
          * Get color hue (0-360 degrees)
          */
-        //% blockId=veml6040_hue
-        //% block="VEML6040 color hue"
-        //% weight=95
         public getHue(): number {
             try {
                 let r = this.readRed();
@@ -292,9 +280,6 @@ namespace PiicoDevEnvironmental {
         /**
          * Get color saturation (0-100%)
          */
-        //% blockId=veml6040_saturation
-        //% block="VEML6040 color saturation"
-        //% weight=94
         public getSaturation(): number {
             try {
                 let r = this.readRed();
@@ -311,9 +296,6 @@ namespace PiicoDevEnvironmental {
         /**
          * Get color brightness/value (0-100%)
          */
-        //% blockId=veml6040_brightness
-        //% block="VEML6040 color brightness"
-        //% weight=93
         public getBrightness(): number {
             try {
                 let r = this.readRed();
@@ -330,10 +312,7 @@ namespace PiicoDevEnvironmental {
         /**
          * Read ambient light level in lux
          */
-        //% blockId=veml6040_ambient_light
-        //% block="VEML6040 ambient light (lux)"
         //% advanced=true
-        //% weight=50
         public getAmbientLight(): number {
             try {
                 let g = this.readGreen();
@@ -347,10 +326,7 @@ namespace PiicoDevEnvironmental {
         /**
          * Read color temperature in Kelvin
          */
-        //% blockId=veml6040_color_temperature
-        //% block="VEML6040 color temperature (K)"
         //% advanced=true
-        //% weight=49
         public getColorTemperature(): number {
             try {
                 let r = this.readRed();
@@ -406,16 +382,16 @@ namespace PiicoDevEnvironmental {
     }
 
     /**
-     * Classify the detected color and return its name
+     * Classify the detected color and return its ColorName
      */
     //% blockId=veml6040_classify_color
     //% block="VEML6040 classify color"
     //% group="VEML6040 Colour Sensor"
     //% weight=96
-    export function veml6040ClassifyColor(): string {
+    export function veml6040ClassifyColor(): ColorName {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.classifyColor();
-        return "none";
+        return ColorName.None;
     }
 
     /**
