@@ -400,13 +400,9 @@ namespace PiicoDevEnvironmental {
     }
 
     /**
-     * Classify the detected color and return its ColorName
+     * Internal helper for color classification.
      */
-    //% blockId=veml6040_classify_color
-    //% block="VEML6040 classify color"
-    //% group="VEML6040 Colour Sensor"
-    //% weight=96
-    export function veml6040ClassifyColor(): ColorName {
+    function veml6040ClassifyColor(): ColorName {
         if (!_veml6040) _veml6040 = new VEML6040(0x10);
         else if (!_veml6040.isReady()) _veml6040 = new VEML6040(0x10);
         if (_veml6040) return _veml6040.classifyColor();
@@ -414,27 +410,26 @@ namespace PiicoDevEnvironmental {
     }
 
     /**
-     * Compare two color classifications for equality
-     * @param color The classified color value to compare
+     * Compare the detected colour to a target color and return true if they match
      * @param target The target color to test against
      */
     //% blockId=veml6040_color_equals
-    //% block="$color = $target"
+    //% block="VEML6040 color = $target"
     //% group="VEML6040 Colour Sensor"
     //% weight=94
-    export function veml6040ColorEquals(color: ColorName, target: ColorName): boolean {
-        return color === target;
+    export function veml6040ColorEquals(target: ColorName): boolean {
+        return veml6040ClassifyColor() === target;
     }
 
     /**
      * Convert a classified color value to text
-     * @param color The classified color value
      */
     //% blockId=veml6040_color_to_string
-    //% block="VEML6040 color text $color"
+    //% block="VEML6040 color text"
     //% group="VEML6040 Colour Sensor"
     //% weight=93
-    export function veml6040ColorToString(color: ColorName): string {
+    export function veml6040ColorToString(): string {
+        let color = veml6040ClassifyColor();
         if (color === ColorName.Red) return "red";
         else if (color === ColorName.Yellow) return "yellow";
         else if (color === ColorName.Green) return "green";
