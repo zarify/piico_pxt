@@ -233,11 +233,43 @@ namespace PiicoDevEnvironmental {
                 let rPct = r / total;
                 let gPct = g / total;
                 let bPct = b / total;
+                let hsv = this.rgbToHsv(r, g, b);
+                let hue = hsv[0];
+                let sat = hsv[1];
 
                 // Find max and min percentages
                 let maxPct = Math.max(rPct, Math.max(gPct, bPct));
                 let minPct = Math.min(rPct, Math.min(gPct, bPct));
                 let range = maxPct - minPct;
+
+                // White detection: balanced channels with good blue content
+                // Must have tight range AND higher B% than black would have
+                if (range < 0.16 && rPct > 0.36 && gPct > 0.38 && bPct > 0.235) {
+                    return ColorName.White;
+                }
+
+                // Black detection: all channels similar and relatively balanced
+                // Checked after white - has slightly wider range tolerance
+                if (range < 0.17 && rPct > 0.35 && gPct > 0.35) {
+                    return ColorName.Black;
+                }
+
+                // Secondary colours: use hue and ratio checks to better handle sensor channel bias.
+                if (sat > 0.18) {
+                    // Yellow can skew toward green on this sensor.
+                    if ((hue >= 35 && hue < 85) || (rPct > 0.30 && gPct > 0.36 && bPct < 0.22 && Math.abs(rPct - gPct) < 0.16)) {
+                        return ColorName.Yellow;
+                    }
+
+                    if ((hue >= 160 && hue < 220) || (gPct > 0.33 && bPct > 0.26 && rPct < 0.24 && Math.abs(gPct - bPct) < 0.16)) {
+                        return ColorName.Cyan;
+                    }
+
+                    // Magenta often appears with red very slightly dominant.
+                    if ((hue >= 285 && hue < 345) || (rPct > 0.34 && bPct > 0.24 && gPct < 0.24 && Math.abs(rPct - bPct) < 0.18)) {
+                        return ColorName.Magenta;
+                    }
+                }
 
                 // Red detection: R% is dominant and significantly higher
                 if (rPct > 0.45 && rPct > gPct && rPct > bPct) {
@@ -258,16 +290,11 @@ namespace PiicoDevEnvironmental {
                     return ColorName.Blue;
                 }
 
-                // White detection: balanced channels with good blue content
-                // Must have tight range AND higher B% than black would have
-                if (range < 0.16 && rPct > 0.36 && gPct > 0.38 && bPct > 0.235) {
-                    return ColorName.White;
-                }
-
-                // Black detection: all channels similar and relatively balanced
-                // Checked after white - has slightly wider range tolerance
-                if (range < 0.17 && rPct > 0.35 && gPct > 0.35) {
-                    return ColorName.Black;
+                // Hue fallback catches saturated colours that don't fit strict ratio thresholds.
+                if (sat > 0.22) {
+                    if (hue < 35 || hue >= 345) return ColorName.Red;
+                    if (hue < 160) return ColorName.Green;
+                    if (hue < 285) return ColorName.Blue;
                 }
 
                 // If nothing matched, return none
