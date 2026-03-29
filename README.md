@@ -2,6 +2,8 @@
 
 This extension provides block-based programming support for the Core Electronics PiicoDev sensor ecosystem on the BBC micro:bit V2.
 
+This is an unofficial implementation. I really like the PiicoDev kit and I wanted my daughter to be able to use MakeCode to start exploring electronics with the micro:bit. Hopefully it's useful to others too.
+
 ## Installation
 
 1. Open your micro:bit project in [MakeCode](https://makecode.microbit.org)
@@ -10,7 +12,7 @@ This extension provides block-based programming support for the Core Electronics
 Add this repository via URL:
 
 ```
-https://github.com/zarify/makecode-piicodev
+https://github.com/zarify/piico_pxt
 ```
 
 ## Hardware Requirements
@@ -33,7 +35,7 @@ MakeCode extension by zarify.
 
 ## Support
 
-- [Core Electronics PiicoDev Documentation](https://core-electronics.com.au/tutorials/piicodev-quickstart-guide-for-microbit.html)
+- [Core Electronics PiicoDev Documentation](https://core-electronics.com.au/guides/piicodev/)
 - [Report Issues](https://github.com/zarify/makecode-piicodev/issues)
 - [MakeCode Forums](https://forum.makecode.com)
 
